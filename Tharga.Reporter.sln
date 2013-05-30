@@ -1,0 +1,84 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Engine", "Tharga.Reporter.Engine\Tharga.Reporter.Engine.csproj", "{151E2FA1-4774-4F99-AB81-D571930024C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Test", "Tharga.Reporter.Test\Tharga.Reporter.Test.csproj", "{93EEF54E-3D63-4F74-A729-BB812986A82E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{93E173B0-0C60-4D98-B1DC-C397BC644CF6}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		Tharga.Reporter.vsmdi = Tharga.Reporter.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_External", "_External", "{8F31551E-2CEA-4720-8775-9A1810E3AC7D}"
+	ProjectSection(SolutionItems) = preProject
+		_External\PdfSharp.dll = _External\PdfSharp.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Console", "Tharga.Reporter.Console\Tharga.Reporter.Console.csproj", "{211A0915-64AF-4482-B669-DDE864AFE9E3}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://5.196.0.166:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Tharga.Reporter.Console\\Tharga.Reporter.Console.csproj
+		SccProjectName1 = Tharga.Reporter.Console
+		SccLocalPath1 = Tharga.Reporter.Console
+		SccProjectUniqueName2 = Tharga.Reporter.Engine\\Tharga.Reporter.Engine.csproj
+		SccProjectName2 = Tharga.Reporter.Engine
+		SccLocalPath2 = Tharga.Reporter.Engine
+		SccProjectUniqueName3 = Tharga.Reporter.Test\\Tharga.Reporter.Test.csproj
+		SccProjectName3 = Tharga.Reporter.Test
+		SccLocalPath3 = Tharga.Reporter.Test
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Tharga.Reporter.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{151E2FA1-4774-4F99-AB81-D571930024C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{93EEF54E-3D63-4F74-A729-BB812986A82E}.Release|x86.ActiveCfg = Release|Any CPU
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Debug|x86.ActiveCfg = Debug|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Debug|x86.Build.0 = Debug|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|Any CPU.ActiveCfg = Release|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|Mixed Platforms.Build.0 = Release|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|x86.ActiveCfg = Release|x86
+		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
