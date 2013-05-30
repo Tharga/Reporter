@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>Tharga Reporter</title>
+    <authors>$author$</authors>
+    <description>Tharga Reporter creates pdf reports.</description>
+    <projectUrl>http://www.thargelion.se</projectUrl>
+    <iconUrl>http://support.thargelion.se/Images/ThargelionIcon.png</iconUrl>
+    <language>en-US</language>
+    <tags></tags>
+  </metadata>  
+</package>

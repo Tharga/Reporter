@@ -74,7 +74,7 @@ namespace Tharga.Reporter.Console
             var section = Section.Create();
             section.Pane.ElementList.Add(Text.Create("Hello world!"));
             var template = Template.Create(section);
-            var byteArray = Renderer.CreatePDFDocument(template);
+            var byteArray = Rendering.CreatePDFDocument(template);
             ExecuteFile(byteArray);
 
 

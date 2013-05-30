@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Engine", "Tharga.Reporter.Engine\Tharga.Reporter.Engine.csproj", "{151E2FA1-4774-4F99-AB81-D571930024C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Test", "Tharga.Reporter.Test\Tharga.Reporter.Test.csproj", "{93EEF54E-3D63-4F74-A729-BB812986A82E}"
@@ -14,27 +14,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_External", "_External", "{8F31551E-2CEA-4720-8775-9A1810E3AC7D}"
 	ProjectSection(SolutionItems) = preProject
+		_External\NuGet.exe = _External\NuGet.exe
 		_External\PdfSharp.dll = _External\PdfSharp.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Console", "Tharga.Reporter.Console\Tharga.Reporter.Console.csproj", "{211A0915-64AF-4482-B669-DDE864AFE9E3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{70C0538B-8DE0-47A5-85E6-48FA4D914CBB}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\CreateNuGetPackage.bat = NuGet\CreateNuGetPackage.bat
+		NuGet\Tharga.Reporter.Engine.nuspec = NuGet\Tharga.Reporter.Engine.nuspec
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://5.196.0.166:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Tharga.Reporter.Console\\Tharga.Reporter.Console.csproj
-		SccProjectName1 = Tharga.Reporter.Console
-		SccLocalPath1 = Tharga.Reporter.Console
-		SccProjectUniqueName2 = Tharga.Reporter.Engine\\Tharga.Reporter.Engine.csproj
-		SccProjectName2 = Tharga.Reporter.Engine
-		SccLocalPath2 = Tharga.Reporter.Engine
-		SccProjectUniqueName3 = Tharga.Reporter.Test\\Tharga.Reporter.Test.csproj
-		SccProjectName3 = Tharga.Reporter.Test
-		SccLocalPath3 = Tharga.Reporter.Test
-	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Tharga.Reporter.vsmdi
 	EndGlobalSection

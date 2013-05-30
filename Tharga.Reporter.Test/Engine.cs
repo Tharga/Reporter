@@ -53,7 +53,7 @@ namespace Tharga.Reporter.Test
             var template = Template.Create(Section.Create());
 
             //Act
-            var byteArray = Renderer.CreatePDFDocument(template);
+            var byteArray = Rendering.CreatePDFDocument(template);
 
             //Assert
             Assert.IsTrue(byteArray.Length > 0);
