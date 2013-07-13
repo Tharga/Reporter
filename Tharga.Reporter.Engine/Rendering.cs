@@ -88,7 +88,7 @@ namespace Tharga.Reporter.Engine
                 page.Size = PdfSharp.PageSize.A4;
 
                 //Create graphical rectangle
-                var sectionBounds = new PdfSharp.Drawing.XRect(section.Margin.GetLeft(page.Width.Value), section.Margin.GetTop(page.Height.Value),
+                var sectionBounds = new XRect(section.Margin.GetLeft(page.Width.Value), section.Margin.GetTop(page.Height.Value),
                     (page.Width.Value - section.Margin.GetLeft(page.Width.Value) - section.Margin.GetRight(page.Width.Value)),
                     (page.Height.Value - section.Margin.GetTop(page.Height.Value) - section.Margin.GetBottom(page.Height.Value)));
 

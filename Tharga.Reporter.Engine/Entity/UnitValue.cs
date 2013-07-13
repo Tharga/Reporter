@@ -3,12 +3,17 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
-    public class UnitValue
+    public class UnitValue : IEquatable<UnitValue>
     {
         public enum EUnit { Point, Inch, Millimeter, Centimeter, percentage };
 
         #region Constructors
 
+        private UnitValue(double value, EUnit unit)
+        {
+            Value = value;
+            Unit = unit;
+        }
 
         private UnitValue(string s)
         {
@@ -63,17 +68,22 @@ namespace Tharga.Reporter.Engine.Entity
 
         #endregion
 
+        public bool Equals(UnitValue other)
+        {
+            if (Unit == EUnit.percentage && other.Unit != EUnit.percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
+            if (Unit != EUnit.percentage && other.Unit == EUnit.percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
+
+            var abs = Unit == other.Unit ? Math.Abs(Value - other.Value) : Math.Abs(GetXUnitValue(0) - other.GetXUnitValue(0));
+            return abs < 0.0001;
+        }
+
         new public string ToString()
         {
             return string.Format("{0}{1}", Value.ToString("0.####").Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator, "."), Unit.ToShortString());
         }
 
         internal double Value { get; set; }
-        internal EUnit Unit
-        {
-            get;
-            set;
-        }
+        internal EUnit Unit { get; set; }
 
         internal double GetXUnitValue(double totalValue)
         {
@@ -101,5 +111,46 @@ namespace Tharga.Reporter.Engine.Entity
             value.ConvertType(PdfSharp.Drawing.XGraphicsUnit.Point);
             return value.Value;
         }
+
+        #region Operators
+
+
+        public static UnitValue operator -(UnitValue a, UnitValue b)
+        {
+            if (a.Unit == EUnit.percentage && b.Unit != EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+            if (a.Unit != EUnit.percentage && b.Unit == EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+
+            if (a.Unit == b.Unit)
+                return new UnitValue(a.Value - b.Value, a.Unit);
+            return new UnitValue(a.GetXUnitValue(0) - b.GetXUnitValue(0), EUnit.Point);
+        }
+
+        public static UnitValue operator +(UnitValue a, UnitValue b)
+        {
+            if (a.Unit == EUnit.percentage && b.Unit != EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+            if (a.Unit != EUnit.percentage && b.Unit == EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+
+            if (a.Unit == b.Unit)
+                return new UnitValue(a.Value + b.Value, a.Unit);
+            return new UnitValue(a.GetXUnitValue(0) + b.GetXUnitValue(0), EUnit.Point);
+        }
+
+        public static bool operator ==(UnitValue a, UnitValue b)
+        {
+            if (((object)a) == ((object)b)) return true;
+            if (((object)a) == null || ((object)b) == null) return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(UnitValue a, UnitValue b)
+        {
+            if (((object)a) == ((object)b)) return false;
+            if (((object)a) == null || ((object)b) == null) return true;
+            return !a.Equals(b);
+        }
+
+
+        #endregion
     }
 }

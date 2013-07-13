@@ -72,11 +72,36 @@ namespace Tharga.Reporter.Console
 
             //Test 4. Create a table with data
             var section = Section.Create();
-            section.Pane.ElementList.Add(Text.Create("Hello world!"));
-            var template = Template.Create(section);
-            var byteArray = Rendering.CreatePDFDocument(template);
+            //section.Pane.ElementList.Add(Text.Create("Hello world!"));
+
+            var tableTemplate = new Table("MyTable") { BorderColor = System.Drawing.Color.Blue };
+            section.Pane.ElementList.Add(tableTemplate);
+            tableTemplate.AddColumn("Col1", "Column 1", UnitValue.Parse("5cm"));
+            tableTemplate.AddColumn("Col2", "Column 2", UnitValue.Parse("5cm"));
+
+            var documentData = new DocumentData();
+            var tableData = documentData.GetDataTable("MyTable");
+            var row = tableData.AddRow();
+            row.Add("Col1","some data for row 1");
+            row.Add("Col2", "some oter data");
+
+            var row2 = tableData.AddRow();
+            row2.Add("Col1", "some data for row 2");
+            row2.Add("Col2", "some oter data");
+
+            var template = Template.Create(section);            
+            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
             ExecuteFile(byteArray);
 
+
+            var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
+            x += UnitValue.Parse("4mm");
+            var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
+
+            if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
+                System.Diagnostics.Debug.WriteLine("Same");
+
+            var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
 
             //Test 5. Create a table with data that spans over more than one page
 
