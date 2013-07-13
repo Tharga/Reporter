@@ -54,11 +54,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
         }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, 
-            out XRect elementBounds, bool  background, bool debug)
+            out XRect elementBounds, bool includeBackground, bool debug)
         {
             var bounds = GetBounds(parentBounds);
 
-            RenderChildren(page, documentData, bounds, background, debug);
+            RenderChildren(page, documentData, bounds, includeBackground, debug);
 
             if (debug)
             {

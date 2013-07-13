@@ -47,24 +47,26 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool background, bool debug)
+            out XRect elementBounds, bool includeBackground, bool debug)
         {
             elementBounds = GetBounds(parentBounds);
 
-            using (var gfx = XGraphics.FromPdfPage(page))
+            if (includeBackground || !IsBackground)
             {
-                var borderWidth = UnitValue.Parse(BorderWidth);
-                var pen = new XPen(XColor.FromArgb(BorderColor), borderWidth.GetXUnitValue(0));
-
-                if (BackgroundColor != null)
+                using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
-                    //var brush = new XLinearGradientBrush(elementBounds.TopLeft, elementBounds.BottomRight, XColor.FromArgb(BackgroundColor.Value), XColor.FromArgb(Color.White));
-                    gfx.DrawRectangle(pen, brush, elementBounds);
+                    var borderWidth = UnitValue.Parse(BorderWidth);
+                    var pen = new XPen(XColor.FromArgb(BorderColor), borderWidth.GetXUnitValue(0));
+
+                    if (BackgroundColor != null)
+                    {
+                        var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                        gfx.DrawRectangle(pen, brush, elementBounds);
+                    }
+                    else
+                        gfx.DrawRectangle(pen, elementBounds);
                 }
-                else
-                    gfx.DrawRectangle(pen, elementBounds);
-            }            
+            }
         }
 
         protected internal override XmlElement AppendXml(ref XmlElement xmeSection)

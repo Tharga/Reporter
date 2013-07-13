@@ -72,132 +72,135 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool background, bool debug)
+            out XRect elementBounds, bool includeBackground, bool debug)
         {
             elementBounds = GetBounds(parentBounds);
 
-            using (var gfx = XGraphics.FromPdfPage(page))
+            if (includeBackground || !IsBackground)
             {
-                var debugPen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
-                var headerFont = new XFont(GetHeaderName(), GetHeaderSize(), XFontStyle.Regular);
-                var headerBrush = new XSolidBrush(XColor.FromArgb(GetHeaderColor()));
-                var lineFont = new XFont(GetLineName(), GetLineSize(), XFontStyle.Regular);
-                var lineBrush = new XSolidBrush(XColor.FromArgb(GetLineColor()));
-
-                var headerSize = gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-                var lineSize = gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
-
-                if (BorderColor != null)
+                using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    var borderPen = new XPen(BorderColor.Value);
+                    var debugPen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
+                    var headerFont = new XFont(GetHeaderName(), GetHeaderSize(), XFontStyle.Regular);
+                    var headerBrush = new XSolidBrush(XColor.FromArgb(GetHeaderColor()));
+                    var lineFont = new XFont(GetLineName(), GetLineSize(), XFontStyle.Regular);
+                    var lineBrush = new XSolidBrush(XColor.FromArgb(GetLineColor()));
 
-                    //Rectangle around the entire table
-                    gfx.DrawRectangle(borderPen, elementBounds);
+                    var headerSize = gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
+                    var lineSize = gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
 
-                    //Rectangle around the title
-                    if (BackgroundColor != null)
+                    if (BorderColor != null)
                     {
-                        var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
-                        gfx.DrawRectangle(borderPen, brush, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
-                    }
-                    else
-                        gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
-                }
+                        var borderPen = new XPen(BorderColor.Value);
 
+                        //Rectangle around the entire table
+                        gfx.DrawRectangle(borderPen, elementBounds);
 
-                var dataTable = documentData.GetDataTable(Name);
-                const double padding = 2;
-
-                var springCount = _columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
-
-                //Calculate column width
-                foreach (var column in _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
-                {
-                    var stringSize = gfx.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
-
-                    if (stringSize.Width > column.Value.Width.GetXUnitValue(elementBounds.Width))
-                        column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
-
-                    if (column.Value.HideValue != null)
-                        column.Value.Hide = true;
-
-                    foreach (var row in dataTable.Rows)
-                    {
-                        var cellData = GetValue(column.Key, row);
-                        stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                        if (stringSize.Width > column.Value.Width.GetXUnitValue(elementBounds.Width))
-                            column.Value.Width = UnitValue.Parse((stringSize.Width + (padding * 2)).ToString(CultureInfo.InvariantCulture) + "px");
-
-                        var parsedHideValue = GetValue(column.Value.HideValue, row);
-                        if (parsedHideValue != cellData)
-                            column.Value.Hide = false;
-                    }
-
-                    if (column.Value.Hide)
-                        column.Value.Width.Value = 0;
-                }
-
-                var totalWidth = elementBounds.Width;
-                var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetXUnitValue(totalWidth));
-
-                if (springCount > 0)
-                {
-                    foreach (var column in _columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
-                    {
-                        column.Value.Width = UnitValue.Parse(((elementBounds.Width - nonSpringWidth) / springCount).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
-
-
-                //Create header
-                double left = 0;
-                foreach (var column in _columns.Values.Where(x => !x.Hide).ToList())
-                {
-                    var alignmentJusttification = 0D;
-                    if (column.Align == Alignment.Right)
-                    {
-                        var stringSize = gfx.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
-                        alignmentJusttification = column.Width.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
-                    }
-                    else
-                        alignmentJusttification += padding;
-                    gfx.DrawString(column.DisplayName, headerFont, headerBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top, XStringFormats.TopLeft);
-                    left += column.Width.GetXUnitValue(elementBounds.Width);
-
-                    if (debug)
-                        gfx.DrawLine(debugPen, elementBounds.Left + left, elementBounds.Top, elementBounds.Left + left, elementBounds.Bottom);
-                }
-
-
-                var top = headerSize.Height;
-                foreach (var row in dataTable.Rows)
-                {
-                    left = 0;
-                    foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
-                    {
-                        var cellData = GetValue(column.Key, row);
-
-                        var alignmentJusttification = 0D;
-                        if (column.Value.Align == Alignment.Right)
+                        //Rectangle around the title
+                        if (BackgroundColor != null)
                         {
-                            var stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            alignmentJusttification = column.Value.Width.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
+                            var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                            gfx.DrawRectangle(borderPen, brush, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
+                        }
+                        else
+                            gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
+                    }
+
+
+                    var dataTable = documentData.GetDataTable(Name);
+                    const double padding = 2;
+
+                    var springCount = _columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
+
+                    //Calculate column width
+                    foreach (var column in _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
+                    {
+                        var stringSize = gfx.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
+
+                        if (stringSize.Width > column.Value.Width.GetXUnitValue(elementBounds.Width))
+                            column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
+
+                        if (column.Value.HideValue != null)
+                            column.Value.Hide = true;
+
+                        foreach (var row in dataTable.Rows)
+                        {
+                            var cellData = GetValue(column.Key, row);
+                            stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                            if (stringSize.Width > column.Value.Width.GetXUnitValue(elementBounds.Width))
+                                column.Value.Width = UnitValue.Parse((stringSize.Width + (padding*2)).ToString(CultureInfo.InvariantCulture) + "px");
+
+                            var parsedHideValue = GetValue(column.Value.HideValue, row);
+                            if (parsedHideValue != cellData)
+                                column.Value.Hide = false;
+                        }
+
+                        if (column.Value.Hide)
+                            column.Value.Width.Value = 0;
+                    }
+
+                    var totalWidth = elementBounds.Width;
+                    var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetXUnitValue(totalWidth));
+
+                    if (springCount > 0)
+                    {
+                        foreach (var column in _columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
+                        {
+                            column.Value.Width = UnitValue.Parse(((elementBounds.Width - nonSpringWidth)/springCount).ToString(CultureInfo.InvariantCulture));
+                        }
+                    }
+
+
+                    //Create header
+                    double left = 0;
+                    foreach (var column in _columns.Values.Where(x => !x.Hide).ToList())
+                    {
+                        var alignmentJusttification = 0D;
+                        if (column.Align == Alignment.Right)
+                        {
+                            var stringSize = gfx.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
+                            alignmentJusttification = column.Width.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
                         }
                         else
                             alignmentJusttification += padding;
+                        gfx.DrawString(column.DisplayName, headerFont, headerBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top, XStringFormats.TopLeft);
+                        left += column.Width.GetXUnitValue(elementBounds.Width);
 
-                        var parsedHideValue = GetValue(column.Value.HideValue, row);
-                        if (parsedHideValue == cellData)
-                            cellData = "";
-
-                        gfx.DrawString(cellData, lineFont, lineBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top + top, XStringFormats.TopLeft);
-                        left += column.Value.Width.GetXUnitValue(elementBounds.Width);
+                        if (debug)
+                            gfx.DrawLine(debugPen, elementBounds.Left + left, elementBounds.Top, elementBounds.Left + left, elementBounds.Bottom);
                     }
-                    top += lineSize.Height;
-                }
 
-                if (debug)
-                    gfx.DrawRectangle(debugPen, elementBounds);
+
+                    var top = headerSize.Height;
+                    foreach (var row in dataTable.Rows)
+                    {
+                        left = 0;
+                        foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
+                        {
+                            var cellData = GetValue(column.Key, row);
+
+                            var alignmentJusttification = 0D;
+                            if (column.Value.Align == Alignment.Right)
+                            {
+                                var stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                                alignmentJusttification = column.Value.Width.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
+                            }
+                            else
+                                alignmentJusttification += padding;
+
+                            var parsedHideValue = GetValue(column.Value.HideValue, row);
+                            if (parsedHideValue == cellData)
+                                cellData = "";
+
+                            gfx.DrawString(cellData, lineFont, lineBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top + top, XStringFormats.TopLeft);
+                            left += column.Value.Width.GetXUnitValue(elementBounds.Width);
+                        }
+                        top += lineSize.Height;
+                    }
+
+                    if (debug)
+                        gfx.DrawRectangle(debugPen, elementBounds);
+                }
             }
         }
 

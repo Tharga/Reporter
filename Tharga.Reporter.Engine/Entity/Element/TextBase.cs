@@ -51,7 +51,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         protected internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
-            DocumentData documentData, out XRect elementBounds, bool background, bool debug)
+                                                DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug)
         {
             var bounds = GetBounds(parentBounds);
 
@@ -64,21 +64,24 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
 
                 var offset = 0D;
-                if ( TextAlignment == Alignment.Right)
+                if (TextAlignment == Alignment.Right)
                 {
                     offset = bounds.Width - textSize.Width;
                 }
 
                 elementBounds = new XRect(bounds.Left + offset, bounds.Y, textSize.Width, textSize.Height);
-                gfx.DrawString(text, font, brush, elementBounds, XStringFormats.TopLeft);
-                //gfx.DrawString(text, font, brush, bounds, XStringFormats.TopLeft);
 
-                if (debug)
+                if (includeBackground || !IsBackground)
                 {
-                    var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
-                    gfx.DrawRectangle(debugPen, elementBounds.Left, elementBounds.Top, textSize.Width, textSize.Height);
-                }
+                    gfx.DrawString(text, font, brush, elementBounds, XStringFormats.TopLeft);
+                    //gfx.DrawString(text, font, brush, bounds, XStringFormats.TopLeft);
 
+                    if (debug)
+                    {
+                        var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
+                        gfx.DrawRectangle(debugPen, elementBounds.Left, elementBounds.Top, textSize.Width, textSize.Height);
+                    }
+                }
                 //TODO: Manually create line feed so that text can fit inside a box. (Spanning on multipler pages)
             }
         }

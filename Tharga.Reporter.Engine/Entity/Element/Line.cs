@@ -25,16 +25,19 @@ namespace Tharga.Reporter.Engine.Entity.Element
             BorderWidth = borderWidth;
         }
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool background, bool debug)
+        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug)
         {
             elementBounds = GetBounds(parentBounds);
 
-            using (var gfx = XGraphics.FromPdfPage(page))
+            if (includeBackground || !IsBackground)
             {
-                var borderWidth = UnitValue.Parse(BorderWidth);
-                var pen = new XPen(XColor.FromArgb(BorderColor), borderWidth.GetXUnitValue(0));
+                using (var gfx = XGraphics.FromPdfPage(page))
+                {
+                    var borderWidth = UnitValue.Parse(BorderWidth);
+                    var pen = new XPen(XColor.FromArgb(BorderColor), borderWidth.GetXUnitValue(0));
 
-                gfx.DrawLine(pen, elementBounds.Left, elementBounds.Top, elementBounds.Right, elementBounds.Bottom);
+                    gfx.DrawLine(pen, elementBounds.Left, elementBounds.Top, elementBounds.Right, elementBounds.Bottom);
+                }
             }
         }
 

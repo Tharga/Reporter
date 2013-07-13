@@ -15,17 +15,20 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public string Source { get; set; }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool background, bool debug)
+            out XRect elementBounds, bool includeBackground, bool debug)
         {
             var bounds = GetBounds(parentBounds);
             var imageData = GetImage(documentData, bounds);
             elementBounds = GetImageBounds(imageData, bounds);
 
-            using (var gfx = XGraphics.FromPdfPage(page))
+            if (includeBackground || !IsBackground)
             {
-                using (var image = XImage.FromGdiPlusImage(imageData))
+                using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    gfx.DrawImage(image, elementBounds);
+                    using (var image = XImage.FromGdiPlusImage(imageData))
+                    {
+                        gfx.DrawImage(image, elementBounds);
+                    }
                 }
             }
 

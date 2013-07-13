@@ -10,6 +10,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
     {
         private readonly UnitRectangle _relativeAlignment;
 
+        public bool IsBackground { get; set; }
+
         protected Element()
         {
             _relativeAlignment = new UnitRectangle();
@@ -43,7 +45,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _relativeAlignment.Height = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Height").Value);
         }
 
-        protected internal abstract void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool background, bool debug);
+        protected internal abstract void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug);
         protected internal abstract XmlElement AppendXml(ref XmlElement xmePane);
 
         protected XRect GetBounds(XRect parentBounds)
