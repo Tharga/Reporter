@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Console
@@ -15,12 +16,24 @@ namespace Tharga.Reporter.Console
             //var byteArray = Renderer.CreatePDFDocument(template);
             //ExecuteFile(byteArray);
 
-            ////Test 2. Create a basic PDF document with some text on it
-            //var section = Section.Create();
-            //section.Pane.ElementList.Add(Text.Create("Hello world!"));
-            //var template = Template.Create(section);
-            //var byteArray = Renderer.CreatePDFDocument(template);
-            //ExecuteFile(byteArray);
+            //Test 2. Create a basic PDF document with some text on it
+            var section = Section.Create();
+            var refPoint = new ReferencePoint("0","0", ReferencePoint.Stack.Vertical);
+            refPoint.ElementList.Add(Text.Create("Hello world! {Data1}", hideValue: "Data1"));
+            refPoint.ElementList.Add(Text.Create("Hello world! {Data2}", hideValue: "Data2"));
+            refPoint.ElementList.Add(Text.Create("Hello world! {Data3}", hideValue: "Data3"));
+            refPoint.ElementList.Add(Text.Create("Hello world! {Data4}", hideValue: "Data4"));
+            refPoint.ElementList.Add(Text.Create("Hello world! {Data5}", hideValue: "Data5"));
+            refPoint.ElementList.Add(Text.Create("Data 2 have a value!", hideValue: "Data2"));
+            section.Pane.ElementList.Add(refPoint);
+            var template = Template.Create(section);
+            var documentData = new DocumentData();
+            documentData.Add("Data1","Bob");
+            documentData.Add("Data2", "");
+            documentData.Add("Data3", null);
+            documentData.Add("Data5", "Loblaw");
+            var byteArray = Rendering.CreatePDFDocument(template,documentData: documentData);
+            ExecuteFile(byteArray);
 
             //Test 3. Create a document from a separate template
             //var section = Section.Create();
@@ -71,37 +84,36 @@ namespace Tharga.Reporter.Console
             //ExecuteFile(byteArray);
 
             //Test 4. Create a table with data
-            var section = Section.Create();
-            //section.Pane.ElementList.Add(Text.Create("Hello world!"));
+            //var section = Section.Create();
 
-            var tableTemplate = new Table("MyTable") { BorderColor = System.Drawing.Color.Blue };
-            section.Pane.ElementList.Add(tableTemplate);
-            tableTemplate.AddColumn("Col1", "Column 1", UnitValue.Parse("5cm"));
-            tableTemplate.AddColumn("Col2", "Column 2", UnitValue.Parse("5cm"));
+            //var tableTemplate = new Table("MyTable") { BorderColor = System.Drawing.Color.Blue };
+            //section.Pane.ElementList.Add(tableTemplate);
+            //tableTemplate.AddColumn("Col1", "Column 1", UnitValue.Parse("5cm"));
+            //tableTemplate.AddColumn("Col2", "Column 2", UnitValue.Parse("5cm"));
 
-            var documentData = new DocumentData();
-            var tableData = documentData.GetDataTable("MyTable");
-            var row = tableData.AddRow();
-            row.Add("Col1","some data for row 1");
-            row.Add("Col2", "some oter data");
+            //var documentData = new DocumentData();
+            //var tableData = documentData.GetDataTable("MyTable");
+            //var row = tableData.AddRow();
+            //row.Add("Col1","some data for row 1");
+            //row.Add("Col2", "some oter data");
 
-            var row2 = tableData.AddRow();
-            row2.Add("Col1", "some data for row 2");
-            row2.Add("Col2", "some oter data");
+            //var row2 = tableData.AddRow();
+            //row2.Add("Col1", "some data for row 2");
+            //row2.Add("Col2", "some oter data");
 
-            var template = Template.Create(section);            
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
-            ExecuteFile(byteArray);
+            //var template = Template.Create(section);            
+            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
+            //ExecuteFile(byteArray);
 
 
-            var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
-            x += UnitValue.Parse("4mm");
-            var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
+            //var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
+            //x += UnitValue.Parse("4mm");
+            //var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
 
-            if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
-                System.Diagnostics.Debug.WriteLine("Same");
+            //if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
+            //    System.Diagnostics.Debug.WriteLine("Same");
 
-            var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
+            //var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
 
             //Test 5. Create a table with data that spans over more than one page
 

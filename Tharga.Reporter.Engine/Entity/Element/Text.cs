@@ -7,6 +7,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
     public class Text : TextBase
     {
         public string Value { get; set; }
+        public string HideValue { get; set; }
 
         #region Constructors
 
@@ -41,7 +42,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         
 
         public static Text Create(string value, string left = null, string top = null, string width = null,
-            Alignment textAlignment = Alignment.Left, double fontSize = 10)
+            Alignment textAlignment = Alignment.Left, double fontSize = 10, string hideValue = null)
         {
             var text = new Text(value)
                            {
@@ -51,6 +52,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                            };
             text.TextAlignment = textAlignment;
             text.Font.Size = fontSize;
+            text.HideValue = hideValue;
             return text;
         }
 
@@ -70,6 +72,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected override string GetValue(DocumentData documentData)
         {
+            if (!string.IsNullOrEmpty(HideValue))
+            {
+                var result = documentData.Get(HideValue);
+                if (string.IsNullOrEmpty(result))
+                    return string.Empty;
+            }
+
             return Value.ParseValue(documentData);
         }
 
