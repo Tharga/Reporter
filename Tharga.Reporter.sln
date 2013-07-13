@@ -12,12 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_External", "_External", "{8F31551E-2CEA-4720-8775-9A1810E3AC7D}"
-	ProjectSection(SolutionItems) = preProject
-		_External\NuGet.exe = _External\NuGet.exe
-		_External\PdfSharp.dll = _External\PdfSharp.dll
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Console", "Tharga.Reporter.Console\Tharga.Reporter.Console.csproj", "{211A0915-64AF-4482-B669-DDE864AFE9E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{70C0538B-8DE0-47A5-85E6-48FA4D914CBB}"
