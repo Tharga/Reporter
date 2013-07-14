@@ -15,28 +15,42 @@ namespace Tharga.Reporter.Console
             //Blank_default_PDF_document();
             //Basic_PDF_document_with_some_text_on_it();
             //Multipage_PDF_document_by_section();
-            Multipage_PDF_by_spanning_data();
+            //Multipage_PDF_by_spanning_text();
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
-            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            Create_PDF_document_with_template_that_spans_over_multiple_pages();
         }
 
         private static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
         {
-            var section = Section.Create();
+            var coverPage = new Section {Name = "Cover"};
+            coverPage.Pane.ElementList.Add(new Text{Value = "This is the cover page.",Top = UnitValue.Parse("50%"), Left = UnitValue.Parse("50%")});
 
-            var tableTemplate = new Table("MyTable") { BorderColor = System.Drawing.Color.Green, Height = UnitValue.Parse("200") };
-            section.Pane.ElementList.Add(tableTemplate);
+            var index = new Section {Name = "Index"};
+            index.Pane.ElementList.Add(new Text { Value = "This is the index page.", Top = UnitValue.Parse("50mm") ,Left = UnitValue.Parse("2inch")});
+
+            var content = new Section{Name = "Content"};
+
+            var tableTemplate = new Table("MyTable") { BorderColor = System.Drawing.Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
+            content.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("A {Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("B {Col2}", "Column 2", UnitValue.Parse("5cm"));
 
-            section.Header.Height = UnitValue.Parse("2cm");
-            section.Footer.Height = UnitValue.Parse("2cm");
-            section.Margin.Top = UnitValue.Parse("1cm");
-            section.Margin.Bottom = UnitValue.Parse("1cm");
-            section.Margin.Left = UnitValue.Parse("1cm");
-            section.Margin.Right = UnitValue.Parse("1cm");
-                
+            content.Header.Height = UnitValue.Parse("2cm");
+            content.Footer.Height = UnitValue.Parse("2cm");
+            content.Margin.Top = UnitValue.Parse("1cm");
+            content.Margin.Bottom = UnitValue.Parse("1cm");
+            content.Margin.Left = UnitValue.Parse("1cm");
+            content.Margin.Right = UnitValue.Parse("1cm");
+
+            //Handling page numbers
+            //content.Header.ElementList.Add(new Text { Value = "Some text in the header. {PageNumber} of {TotalPages}" });
+            //content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. {PageNumber} of {TotalPages}" });
+            //content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. {PageNumber} of {TotalPages}" });
+            content.Header.ElementList.Add(new Text { Value = "Some text in the header." });
+            content.Footer.ElementList.Add(new Text { Value = "Some text in the footer." });
+            content.Pane.ElementList.Add(new Text { Value = "Some text in the pane." });
+
             var documentData = new DocumentData();
             var tableData = documentData.GetDataTable("MyTable");
             for (var i = 0; i < 100; i++)
@@ -45,7 +59,9 @@ namespace Tharga.Reporter.Console
                 row.Add("Col1", string.Format("some data for row {0}", i));
                 row.Add("Col2", "some oter data");
             }
-            var template = Template.Create(section);
+            var template = Template.Create(coverPage);
+            template.SectionList.Add(content);
+            template.SectionList.Add(index);
             var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: true);
 
             ExecuteFile(byteArray);
@@ -140,7 +156,7 @@ namespace Tharga.Reporter.Console
             ExecuteFile(byteArray);
         }
 
-        private static void Multipage_PDF_by_spanning_data()
+        private static void Multipage_PDF_by_spanning_text()
         {
             var section = new Section { Name = "First" };
             section.Margin = new UnitRectangle {Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm"), Right = UnitValue.Parse("1cm"), Bottom = UnitValue.Parse("1cm")};

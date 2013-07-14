@@ -24,6 +24,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private string _headerFontClass;
         private Font _lineFont;
         private string _lineFontClass;
+        
+        private int _rowPointer; //Rememgers the row possition between pages
 
         public string HeaderFontClass
         {
@@ -79,7 +81,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected internal override void ClearRenderPointer()
         {
-            throw new NotImplementedException();
+            _rowPointer = 0;
         }
 
         protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
@@ -167,8 +169,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
 
                 var top = headerSize.Height;
-                foreach (var row in dataTable.Rows)
+                //foreach (var row in dataTable.Rows)
+                for (var i = _rowPointer; i < dataTable.Rows.Count; i++)
                 {
+                    var row = dataTable.Rows[i];
+
                     left = 0;
                     foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
                     {
@@ -192,10 +197,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     }
                     top += lineSize.Height;
 
-                    if (top > elementBounds.Bottom - lineSize.Height)
+                    if (top > elementBounds.Height - lineSize.Height)
                     {
-                        //TODO: Span to next page!
-                        break;
+                        _rowPointer = i+1;
+                        return true;
                     }
                 }
 
