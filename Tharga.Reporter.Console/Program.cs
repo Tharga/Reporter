@@ -17,13 +17,13 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
-            Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
+            //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
+            Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
 
             //Bugs: 
-            //Cannot stack reference items on multiple pages
             //When spanning with textBoxes an empty page can sometimes be added, if the last word fitx exactly
 
             //What else do we want??
@@ -159,6 +159,21 @@ namespace Tharga.Reporter.Console
         {
             var template = Template.Create(Section.Create());
             var byteArray = Rendering.CreatePDFDocument(template);
+            ExecuteFile(byteArray);
+        }
+
+        private static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
+        {
+            var section = new Section { Name = "Content" };
+
+            var data = "aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk llll mmmm nnnn oooo ppp qqqq rrr sss tt uuu vvv xyz ";
+            data = "START " + data + "MIDDLE1 " + data + "MIDDLE2 " + data + "MIDDLE3 " + data + "12345 67 END";
+
+            section.Pane.ElementList.Add(new TextBox { Value = data, Top = UnitValue.Parse("1cm"), Left=UnitValue.Parse("1cm"), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("4cm"), Name = "SpanText" });
+
+            var template = Template.Create(section);
+
+            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(byteArray);
         }
 
