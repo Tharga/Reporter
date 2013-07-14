@@ -48,12 +48,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var text = GetValue(documentData, pageNumberInfo);
                 var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
 
+                var left = elementBounds.Left;
+                var top = elementBounds.Top;
+
                 //Cut the string, so that it can fit within the rectangle
                 if (textSize.Width > elementBounds.Width)
                 {
-                    var left = elementBounds.Left;
-                    var top = elementBounds.Top;
-
                     _words = text.Split(' ');
                     
                     var sb = new StringBuilder();
@@ -90,6 +90,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         }
                     }
                 }
+                else
+                    gfx.DrawString(text, font, brush, left, top, XStringFormats.TopLeft);
             }
             return false;
         }

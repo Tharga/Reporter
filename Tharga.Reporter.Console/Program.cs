@@ -21,6 +21,10 @@ namespace Tharga.Reporter.Console
             //Create_PDF_document_with_basic_template();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
 
+            //Bugs: 
+            //Cannot stack reference items on multiple pages
+            //When spanning with textBoxes an empty page can sometimes be added, if the last word fitx exactly
+
             //What else do we want??
             //- Serialize/unzerialize template to xml
         }
@@ -164,6 +168,9 @@ namespace Tharga.Reporter.Console
             var referencePoint = new ReferencePoint{ Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm")};
             referencePoint.ElementList.Add(new TextBox{ Value = GetRandomText(), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("8cm")});
             section.Pane.ElementList.Add(referencePoint);
+
+            referencePoint.ElementList.Add(new TextBox { Value = "Tiny Text", Left = UnitValue.Parse("8cm") });
+            referencePoint.ElementList.Add(new Text { Value = "Regular text", Top = UnitValue.Parse("10cm") });
 
             var template = Template.Create(section);
             
