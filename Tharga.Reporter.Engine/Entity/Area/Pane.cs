@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -22,32 +23,48 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         }
 
-        internal Pane(XmlElement xmlPane)
+        //internal Pane(XmlElement xmlPane)
+        //{
+        //    foreach(XmlElement xmlElement in xmlPane.ChildNodes)
+        //    {
+        //        switch(xmlElement.Name)
+        //        {
+        //            case "Text":
+        //                ElementList.Add(new Text(xmlElement));
+        //                break;
+        //            case "Rectangle":
+        //                ElementList.Add(new Rectangle(xmlElement));
+        //                break;
+        //            default:
+        //                throw new ArgumentOutOfRangeException(string.Format("Cannot parse {0} as an element.", xmlElement.Name));
+        //        }
+        //    }
+        //}
+
+        internal void ClearRenderPointers()
         {
-            foreach(XmlElement xmlElement in xmlPane.ChildNodes)
-            {
-                switch(xmlElement.Name)
-                {
-                    case "Text":
-                        ElementList.Add(new Text(xmlElement));
-                        break;
-                    case "Rectangle":
-                        ElementList.Add(new Rectangle(xmlElement));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(string.Format("Cannot parse {0} as an element.", xmlElement.Name));
-                }
-            }
+            foreach (var element in _elementList.Where(x => x is MultiPageElement))
+                ((MultiPageElement)element).ClearRenderPointer();
         }
 
-        internal void Render(PdfPage page, XRect bounds, DocumentData documentData,
-            bool background, bool debug)
+        internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug)
         {
+            var needAnotherPage = false;
             foreach (var element in _elementList)
             {
                 XRect bnd;
-                element.Render(page, bounds, documentData, out bnd, background, debug);
+                if (element is MultiPageElement)
+                {
+                    var needMore = ((MultiPageElement) element).Render(page, bounds, documentData, out bnd, background, debug);
+                    if (needMore)
+                        needAnotherPage = true;
+                }
+                else if (element is SinglePageElement)
+                {
+                    ((SinglePageElement)element).Render(page, bounds, documentData, out bnd, background, debug);
+                }
             }
+            return needAnotherPage;
         }
 
         internal virtual XmlElement AppendXml(ref XmlElement xmeSection)

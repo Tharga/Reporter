@@ -6,7 +6,7 @@ using PdfSharp.Pdf;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public sealed class Line : Element
+    public sealed class Line : SinglePageElement
     {
         private readonly Color _defaultBorderColor = Color.Black;
 

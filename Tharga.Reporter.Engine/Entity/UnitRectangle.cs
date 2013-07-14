@@ -17,7 +17,7 @@ namespace Tharga.Reporter.Engine.Entity
         #region Constructors
 
 
-        internal UnitRectangle()
+        public UnitRectangle()
         {
             //Default value if not set is 0% for top, bottom, left and right. (100% for height and width)
         }

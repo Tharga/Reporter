@@ -10,13 +10,14 @@ namespace Tharga.Reporter.Engine.Entity
         public Header Header { get; private set; }
         public Footer Footer { get; private set; }
         public Pane Pane { get; private set; }
+        public string Name { get; set; }
 
-        private Section()
+        public Section()
         {
-            Margin = new UnitRectangle();
-            Header = new Header();
+            Margin = Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")); // new UnitRectangle();
+            Header = new Header(UnitValue.Parse("0"));
             Pane = new Pane();
-            Footer = new Footer();
+            Footer = new Footer(UnitValue.Parse("0"));
         }
 
         private Section(Margins margin, UnitValue headerSize, UnitValue footerSize)
@@ -27,6 +28,7 @@ namespace Tharga.Reporter.Engine.Entity
             Footer = new Footer(footerSize);
         }
 
+        [Obsolete("Use default constructor and property setters instead.")]
         public static Section Create()
         {
             return new Section(Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")),
@@ -38,31 +40,31 @@ namespace Tharga.Reporter.Engine.Entity
             return new Section(margin, headerSize, footerSize);
         }
 
-        internal static Section Create(XmlElement xmlElement)
-        {
-            var section = new Section();
+        //internal static Section Create(XmlElement xmlElement)
+        //{
+        //    var section = new Section();
 
-            foreach(XmlElement xmlPane in xmlElement.ChildNodes)
-            {
-                switch(xmlPane.Name)
-                {
-                    case "Header":
-                        var header = new Header(xmlPane);
-                        section.Header = header;
-                        break;
-                    case "Footer":
-                        var footer = new Footer(xmlPane);
-                        section.Footer = footer;
-                        break;
-                    case "Pane":
-                        var pane = new Pane(xmlPane);
-                        section.Pane = pane;
-                        break;
-                }
-            }
+        //    foreach(XmlElement xmlPane in xmlElement.ChildNodes)
+        //    {
+        //        switch(xmlPane.Name)
+        //        {
+        //            case "Header":
+        //                var header = new Header(xmlPane);
+        //                section.Header = header;
+        //                break;
+        //            case "Footer":
+        //                var footer = new Footer(xmlPane);
+        //                section.Footer = footer;
+        //                break;
+        //            case "Pane":
+        //                var pane = new Pane(xmlPane);
+        //                section.Pane = pane;
+        //                break;
+        //        }
+        //    }
 
-            return section;
-        }
+        //    return section;
+        //}
 
         public void AppendXml(ref XmlElement xmeTemplate)
         {

@@ -5,7 +5,7 @@ using PdfSharp.Drawing;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public abstract class TextBase : Element
+    public abstract class TextBase : SinglePageElement
     {
         public enum Alignment { Left, Right }
 
@@ -20,30 +20,30 @@ namespace Tharga.Reporter.Engine.Entity.Element
             
         }
 
-        protected TextBase(XmlElement xmlElement)
-            :base(xmlElement)
-        {
-            if ( xmlElement.Attributes.GetNamedItem("FontClass") != null)
-                FontClass = xmlElement.Attributes.GetNamedItem("FontClass").Value;
+        //protected TextBase(XmlElement xmlElement)
+        //    :base(xmlElement)
+        //{
+        //    if ( xmlElement.Attributes.GetNamedItem("FontClass") != null)
+        //        FontClass = xmlElement.Attributes.GetNamedItem("FontClass").Value;
 
-            foreach(XmlElement subElement in xmlElement.ChildNodes)
-            {
-                switch(subElement.Name)
-                {
-                    case "Font":
-                        _font = new Font(subElement);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(string.Format("Unknown sub type {0} to TextBase.", subElement.Name));
-                }
-            }
-        }
+        //    foreach(XmlElement subElement in xmlElement.ChildNodes)
+        //    {
+        //        switch(subElement.Name)
+        //        {
+        //            case "Font":
+        //                _font = new Font(subElement);
+        //                break;
+        //            default:
+        //                throw new ArgumentOutOfRangeException(string.Format("Unknown sub type {0} to TextBase.", subElement.Name));
+        //        }
+        //    }
+        //}
 
-        protected TextBase(string fontClass, UnitRectangle relativeAlignment)
-            : base(relativeAlignment)
-        {
-            FontClass = fontClass;
-        }
+        //protected TextBase(string fontClass, UnitRectangle relativeAlignment)
+        //    : base(relativeAlignment)
+        //{
+        //    FontClass = fontClass;
+        //}
 
         protected TextBase(string fontClass)
         {

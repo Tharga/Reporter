@@ -81,80 +81,106 @@ namespace Tharga.Reporter.Engine
 
             foreach (var section in _template.SectionList)
             {
-                //Add a new page for the section
-                var page = pdfDocument.AddPage();
+                section.Pane.ClearRenderPointers();
 
-                //TODO: read page size from section
-                page.Size = PdfSharp.PageSize.A4;
-
-                //Create graphical rectangle
-                var sectionBounds = new XRect(section.Margin.GetLeft(page.Width.Value), section.Margin.GetTop(page.Height.Value),
-                    (page.Width.Value - section.Margin.GetLeft(page.Width.Value) - section.Margin.GetRight(page.Width.Value)),
-                    (page.Height.Value - section.Margin.GetTop(page.Height.Value) - section.Margin.GetBottom(page.Height.Value)));
-
-                var debugPen = new PdfSharp.Drawing.XPen(PdfSharp.Drawing.XColor.FromArgb(System.Drawing.Color.Blue), 0.1);
-                if (_debug)
+                var needAnotherPage = true;
+                while (needAnotherPage)
                 {
-                    using (var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(page))
-                    {
-                        //Margin markers
-                        gfx.DrawLine(debugPen, sectionBounds.Left, 0, sectionBounds.Left, page.Height);
+                    //Add a new page for the section
+                    var page = pdfDocument.AddPage();
 
-                        gfx.DrawLine(debugPen, sectionBounds.Right, 0, sectionBounds.Right, page.Height);
+                    //TODO: read page size from section
+                    //page.Size = PdfSharp.PageSize.Letter;
+                    page.Size = PdfSharp.PageSize.A4;
+                    //page.Rotate = 90;
 
-                        gfx.DrawLine(debugPen, 0, sectionBounds.Top, page.Width, sectionBounds.Top);
+                    var sectionBounds = new XRect(section.Margin.GetLeft(page.Width.Value), section.Margin.GetTop(page.Height.Value),
+                                                  section.Margin.GetWidht(page.Width.Value), section.Margin.GetHeight(page.Height.Value));
 
-                        gfx.DrawLine(debugPen, 0, sectionBounds.Bottom, page.Width, sectionBounds.Bottom);
-                    }
-                }
+                    var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.1);
+                    //debugPen.DashPattern = ;
+                    debugPen.DashStyle = XDashStyle.Dash;
+                    //debugPen.LineCap = XLineCap.Round;
+                    //debugPen.MiterLimit = 1;
+                    //debugPen.LineJoin = XLineJoin.Round;
+                    //debugPen.DashOffset 
+                    //debugPen.DashOffset = 1000;
 
-                //Pane
-                //var paneBounds = section.Pane.GetBounds(sectionBounds);
-                //TODO: Calculate using the header and footer sizes.
-                //var headerHeight = UnitValue.Parse(section.Header.Height).GetXUnitValue(sectionBounds.Height);
-                var headerHeight = section.Header.Height.GetXUnitValue(sectionBounds.Height);
-                //var footerHeight = UnitValue.Parse(section.Footer.Height).GetXUnitValue(sectionBounds.Height);
-                var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
-                var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
-                section.Pane.Render(page, paneBounds, _documentData,_background, _debug);
-
-                //Draw fingerprint
-                using (var gfx = XGraphics.FromPdfPage(page))
-                {
-                    gfx.RotateAtTransform(-90, paneBounds.BottomLeft);
-                    var font = new XFont("Verdana", 5);
-                    var brush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Black));
-                    gfx.DrawString("www.thargelion.se", font, brush, paneBounds.Left, paneBounds.Bottom - 3);
-                }
-
-                //TODO: Apply the header and footer for all pages in the section
-
-                //Header
-                if (section.Header != null)
-                {
-                    var bounds = new PdfSharp.Drawing.XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                    section.Header.Render(page, bounds, _documentData, _background, _debug);
+                    var debugFont = new XFont("Verdana", 10);
+                    var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Gray));
 
                     if (_debug)
                     {
-                        using (var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(page))
+                        using (var gfx = XGraphics.FromPdfPage(page))
                         {
-                            gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
+                            var sectionName = section.Name ?? "Unnamed section";
+                            var textSize = gfx.MeasureString(sectionName, debugFont);
+                            gfx.DrawString(sectionName, debugFont, debugBrush, 0, textSize.Height);
+
+                            //Left margin
+                            gfx.DrawLine(debugPen, sectionBounds.Left, 0, sectionBounds.Left, page.Height);
+
+                            //Right margin
+                            gfx.DrawLine(debugPen, sectionBounds.Right, 0, sectionBounds.Right, page.Height);
+
+                            //Top margin
+                            gfx.DrawLine(debugPen, 0, sectionBounds.Top, page.Width, sectionBounds.Top);
+
+                            //Bottom margin
+                            gfx.DrawLine(debugPen, 0, sectionBounds.Bottom, page.Width, sectionBounds.Bottom);
                         }
                     }
-                }
 
-                //Footer
-                if (section.Footer != null)
-                {
-                    var bounds = new PdfSharp.Drawing.XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                    section.Footer.Render(page, bounds, _documentData, _background, _debug);
+                    //Pane
+                    //var paneBounds = section.Pane.GetBounds(sectionBounds);
+                    //TODO: Calculate using the header and footer sizes.
+                    //var headerHeight = UnitValue.Parse(section.Header.Height).GetXUnitValue(sectionBounds.Height);
+                    var headerHeight = section.Header.Height.GetXUnitValue(sectionBounds.Height);
+                    //var footerHeight = UnitValue.Parse(section.Footer.Height).GetXUnitValue(sectionBounds.Height);
+                    var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
+                    var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
+                    
+                    needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug);
 
-                    if (_debug)
+
+                    ////Draw fingerprint
+                    //using (var gfx = XGraphics.FromPdfPage(page))
+                    //{
+                    //    gfx.RotateAtTransform(-90, paneBounds.BottomLeft);
+                    //    var font = new XFont("Verdana", 5);
+                    //    var brush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Black));
+                    //    gfx.DrawString("www.thargelion.se", font, brush, paneBounds.Left, paneBounds.Bottom - 3);
+                    //}
+
+                    //TODO: Apply the header and footer for all pages in the section
+
+                    //Header
+                    if (section.Header != null)
                     {
-                        using (var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(page))
+                        var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+                        section.Header.Render(page, bounds, _documentData, _background, _debug);
+
+                        if (_debug)
                         {
-                            gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
+                            using (var gfx = XGraphics.FromPdfPage(page))
+                            {
+                                gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
+                            }
+                        }
+                    }
+
+                    //Footer
+                    if (section.Footer != null)
+                    {
+                        var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+                        section.Footer.Render(page, bounds, _documentData, _background, _debug);
+
+                        if (_debug)
+                        {
+                            using (var gfx = XGraphics.FromPdfPage(page))
+                            {
+                                gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
+                            }
                         }
                     }
                 }

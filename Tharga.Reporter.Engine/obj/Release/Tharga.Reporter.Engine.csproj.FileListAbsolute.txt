@@ -19,3 +19,4 @@ C:\Dev\Tharga\tharga-reporter\Tharga.Reporter.Engine\obj\Release\Tharga.Reporter
 C:\Dev\Tharga\tharga-reporter\Tharga.Reporter.Engine\obj\Release\Tharga.Reporter.Engine.pdb
 C:\Dev\Tharga\tharga-reporter\Tharga.Reporter.Engine\bin\Release\PdfSharp.Charting.dll
 C:\Dev\Tharga\tharga-reporter\Tharga.Reporter.Engine\bin\Release\PdfSharp.dll
+C:\Dev\Tharga\tharga-reporter\Tharga.Reporter.Engine\obj\Release\Tharga.Reporter.Engine.csprojResolveAssemblyReference.cache

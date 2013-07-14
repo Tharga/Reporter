@@ -64,6 +64,7 @@
     <Compile Include="Entity\Element\TableColumn.cs" />
     <Compile Include="Entity\Element\Text.cs" />
     <Compile Include="Entity\Element\TextBase.cs" />
+    <Compile Include="Entity\Element\TextBox.cs" />
     <Compile Include="Entity\Font.cs" />
     <Compile Include="Printing.cs" />
     <Compile Include="Rendering.cs" />

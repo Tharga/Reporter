@@ -10,7 +10,7 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public class Image : Element
+    public class Image : SinglePageElement
     {
         public string Source { get; set; }
 

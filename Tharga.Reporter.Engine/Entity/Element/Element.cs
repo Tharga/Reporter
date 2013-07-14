@@ -6,6 +6,17 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
+    public abstract class MultiPageElement : Element
+    {
+        protected internal abstract void ClearRenderPointer();
+        protected internal abstract bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug);
+    }
+
+    public abstract class SinglePageElement : Element
+    {
+        protected internal abstract void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug);
+    }
+
     public abstract class Element
     {
         private readonly UnitRectangle _relativeAlignment;
@@ -45,8 +56,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (xmlElement.Attributes.GetNamedItem("Height") != null)
                 _relativeAlignment.Height = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Height").Value);
         }
-
-        protected internal abstract void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug);
+        
         protected internal abstract XmlElement AppendXml(ref XmlElement xmePane);
 
         protected XRect GetBounds(XRect parentBounds)

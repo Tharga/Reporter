@@ -4,11 +4,12 @@ using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
-    public class ReferencePoint : Element.Element, IElementContainer
+    public class ReferencePoint : SinglePageElement, IElementContainer
     {
         public enum StackMethod { None, Vertical }
         
@@ -22,12 +23,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         }
 
-        [Obsolete("Use default constructor and property setters instead.")]
-        public ReferencePoint(string left, string top = null, StackMethod stack = StackMethod.None)
-            : base(new UnitRectangle(left != null ? UnitValue.Parse(left) : null, top != null ? UnitValue.Parse(top) : null, null, null))
-        {
-            Stack = stack;
-        }
+        //[Obsolete("Use default constructor and property setters instead.")]
+        //public ReferencePoint(string left, string top = null, StackMethod stack = StackMethod.None)
+        //    : base(new UnitRectangle(left != null ? UnitValue.Parse(left) : null, top != null ? UnitValue.Parse(top) : null, null, null))
+        //{
+        //    Stack = stack;
+        //}
 
         public override UnitValue Bottom
         {
@@ -85,7 +86,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     element.Top = stackTop;
 
                 XRect elmBnd;
-                element.Render(page, bounds, documentData, out elmBnd, background, debug);
+                
+                if ( element is MultiPageElement)
+                    throw new NotImplementedException("Rendering multi page elements for reference points have not yet been implemented.");
+
+                ((SinglePageElement)element).Render(page, bounds, documentData, out elmBnd, background, debug);
 
                 stackTop.Value += elmBnd.Height;
             }

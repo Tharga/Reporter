@@ -25,11 +25,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             Value = value;
         }
 
-        internal Text(XmlElement xmlElement)
-            :base(xmlElement)
-        {
-            Value = xmlElement.Attributes.GetNamedItem("Value").Value;
-        }
+        //internal Text(XmlElement xmlElement)
+        //    :base(xmlElement)
+        //{
+        //    Value = xmlElement.Attributes.GetNamedItem("Value").Value;
+        //}
 
         //internal Text(string value, string fontClass)
         //    : base(fontClass)

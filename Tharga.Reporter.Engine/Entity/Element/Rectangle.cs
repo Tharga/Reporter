@@ -7,7 +7,7 @@ using PdfSharp.Pdf;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public sealed class Rectangle : Element
+    public sealed class Rectangle : SinglePageElement
     {
         private readonly Color _defaultBorderColor = Color.Black;
 
@@ -36,22 +36,22 @@ namespace Tharga.Reporter.Engine.Entity.Element
             BorderWidth = UnitValue.Parse(borderWidth);
         }
 
-        internal Rectangle(XmlElement xmlElement)
-            : base(xmlElement)
-        {
-            if ( xmlElement.Attributes.GetNamedItem("Color") != null)
-            {
-                int result;
-                var value = xmlElement.Attributes.GetNamedItem("Color").Value;
-                if ( !int.TryParse(value,out result))
-                    throw new InvalidOperationException(string.Format("Cannot parse {0} as an int.", value));
-                BorderColor = Color.FromArgb(result);
-            }
-            else
-            {
-                BorderColor = _defaultBorderColor;
-            }
-        }
+        //internal Rectangle(XmlElement xmlElement)
+        //    : base(xmlElement)
+        //{
+        //    if ( xmlElement.Attributes.GetNamedItem("Color") != null)
+        //    {
+        //        int result;
+        //        var value = xmlElement.Attributes.GetNamedItem("Color").Value;
+        //        if ( !int.TryParse(value,out result))
+        //            throw new InvalidOperationException(string.Format("Cannot parse {0} as an int.", value));
+        //        BorderColor = Color.FromArgb(result);
+        //    }
+        //    else
+        //    {
+        //        BorderColor = _defaultBorderColor;
+        //    }
+        //}
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
             out XRect elementBounds, bool includeBackground, bool debug)

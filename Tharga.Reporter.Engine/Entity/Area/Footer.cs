@@ -12,12 +12,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         }
 
-        internal Footer(XmlElement xmlPane)
-            : base(xmlPane)
-        {
-            if (xmlPane.Attributes.GetNamedItem("Height") != null)
-                Height = UnitValue.Parse(xmlPane.Attributes.GetNamedItem("Height").Value);
-        }
+        //internal Footer(XmlElement xmlPane)
+        //    : base(xmlPane)
+        //{
+        //    if (xmlPane.Attributes.GetNamedItem("Height") != null)
+        //        Height = UnitValue.Parse(xmlPane.Attributes.GetNamedItem("Height").Value);
+        //}
 
         internal Footer(UnitValue height)
         {
