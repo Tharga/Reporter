@@ -5,7 +5,7 @@ namespace Tharga.Reporter.Engine.Entity
 {
     public class UnitValue : IEquatable<UnitValue>
     {
-        public enum EUnit { Point, Inch, Millimeter, Centimeter, percentage };
+        public enum EUnit { Point, Inch, Millimeter, Centimeter, Percentage };
 
         #region Constructors
 
@@ -70,8 +70,8 @@ namespace Tharga.Reporter.Engine.Entity
 
         public bool Equals(UnitValue other)
         {
-            if (Unit == EUnit.percentage && other.Unit != EUnit.percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
-            if (Unit != EUnit.percentage && other.Unit == EUnit.percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
+            if (Unit == EUnit.Percentage && other.Unit != EUnit.Percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
+            if (Unit != EUnit.Percentage && other.Unit == EUnit.Percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
 
             var abs = Unit == other.Unit ? Math.Abs(Value - other.Value) : Math.Abs(GetXUnitValue(0) - other.GetXUnitValue(0));
             return abs < 0.0001;
@@ -99,7 +99,7 @@ namespace Tharga.Reporter.Engine.Entity
                 case EUnit.Inch:
                     value = new PdfSharp.Drawing.XUnit(Value, PdfSharp.Drawing.XGraphicsUnit.Inch);
                     break;
-                case EUnit.percentage:
+                case EUnit.Percentage:
                     //Calculate the actual value, using provided total value
                     return Value / 100 * totalValue;
                 case EUnit.Point:
@@ -117,8 +117,8 @@ namespace Tharga.Reporter.Engine.Entity
 
         public static UnitValue operator -(UnitValue a, UnitValue b)
         {
-            if (a.Unit == EUnit.percentage && b.Unit != EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
-            if (a.Unit != EUnit.percentage && b.Unit == EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+            if (a.Unit == EUnit.Percentage && b.Unit != EUnit.Percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+            if (a.Unit != EUnit.Percentage && b.Unit == EUnit.Percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
 
             if (a.Unit == b.Unit)
                 return new UnitValue(a.Value - b.Value, a.Unit);
@@ -127,8 +127,8 @@ namespace Tharga.Reporter.Engine.Entity
 
         public static UnitValue operator +(UnitValue a, UnitValue b)
         {
-            if (a.Unit == EUnit.percentage && b.Unit != EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
-            if (a.Unit != EUnit.percentage && b.Unit == EUnit.percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+            if (a.Unit == EUnit.Percentage && b.Unit != EUnit.Percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
+            if (a.Unit != EUnit.Percentage && b.Unit == EUnit.Percentage) throw new InvalidOperationException("Cannot use operators when the unit is in percentage, if not both values are in percentage.");
 
             if (a.Unit == b.Unit)
                 return new UnitValue(a.Value + b.Value, a.Unit);

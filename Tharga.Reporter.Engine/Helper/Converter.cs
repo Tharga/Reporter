@@ -14,7 +14,7 @@ namespace Tharga.Reporter.Engine.Helper
             {
                 case UnitValue.EUnit.Point:
                     return "";
-                case UnitValue.EUnit.percentage:
+                case UnitValue.EUnit.Percentage:
                     return "%";
                 case UnitValue.EUnit.Millimeter:
                     return "mm";
@@ -35,7 +35,7 @@ namespace Tharga.Reporter.Engine.Helper
                 case "px":
                     return UnitValue.EUnit.Point;
                 case "%": //Relative to parent area
-                    return UnitValue.EUnit.percentage;
+                    return UnitValue.EUnit.Percentage;
                 case "mm":
                     return UnitValue.EUnit.Millimeter;
                 case "cm":
