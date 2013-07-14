@@ -16,9 +16,13 @@ namespace Tharga.Reporter.Console
             //Basic_PDF_document_with_some_text_on_it();
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
+            Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
-            Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+
+            //What else do we want??
+            //- Serialize/unzerialize template to xml
         }
 
         private static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
@@ -153,20 +157,30 @@ namespace Tharga.Reporter.Console
             ExecuteFile(byteArray);
         }
 
+        public static void Multipage_PDF_by_spanning_text_using_a_reference_point()
+        {
+            var section = new Section { Name = "Content" };
+
+            var referencePoint = new ReferencePoint{ Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm")};
+            referencePoint.ElementList.Add(new TextBox{ Value = GetRandomText(), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("8cm")});
+            section.Pane.ElementList.Add(referencePoint);
+
+            var template = Template.Create(section);
+            
+            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
+            ExecuteFile(byteArray);
+
+            var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
+            ExecuteFile(byteArray2);
+        }
+
         private static void Multipage_PDF_by_spanning_text()
         {
             var section = new Section { Name = "First" };
             section.Margin = new UnitRectangle {Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm"), Right = UnitValue.Parse("1cm"), Bottom = UnitValue.Parse("1cm")};
 
-            var rng = new Random();
-            var sb = new StringBuilder();
-            for (var i = 0; i < 1000; i++)
-            {
-                var c = (char)(65 + rng.Next(0, 20));
-                var value = new string(c, rng.Next(1,10));
-                sb.AppendFormat("{0} ",value);
-            }
-            var text = new TextBox {Value = sb.ToString(), Left = UnitValue.Parse("5cm"), Top = UnitValue.Parse("10cm")};
+            var s = GetRandomText();
+            var text = new TextBox {Value = s, Left = UnitValue.Parse("5cm"), Top = UnitValue.Parse("10cm")};
             section.Pane.ElementList.Add(text);
 
             //var rectangle = new Rectangle { Left = UnitValue.Parse("5cm"), Top = UnitValue.Parse("10cm"), Width = UnitValue.Parse("10cm") };
@@ -180,6 +194,20 @@ namespace Tharga.Reporter.Console
             //Render again should cause the same result
             var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(byteArray2);
+        }
+
+        private static string GetRandomText()
+        {
+            var rng = new Random();
+            var sb = new StringBuilder();
+            for (var i = 0; i < 1000; i++)
+            {
+                var c = (char) (65 + rng.Next(0, 20));
+                var value = new string(c, rng.Next(1, 10));
+                sb.AppendFormat("{0} {{PageNumber}} ", value);
+            }
+            string s = sb.ToString();
+            return s;
         }
 
         private static void Multipage_PDF_document_by_section()

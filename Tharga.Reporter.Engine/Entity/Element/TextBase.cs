@@ -21,35 +21,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             
         }
 
-        //protected TextBase(XmlElement xmlElement)
-        //    :base(xmlElement)
-        //{
-        //    if ( xmlElement.Attributes.GetNamedItem("FontClass") != null)
-        //        FontClass = xmlElement.Attributes.GetNamedItem("FontClass").Value;
-
-        //    foreach(XmlElement subElement in xmlElement.ChildNodes)
-        //    {
-        //        switch(subElement.Name)
-        //        {
-        //            case "Font":
-        //                _font = new Font(subElement);
-        //                break;
-        //            default:
-        //                throw new ArgumentOutOfRangeException(string.Format("Unknown sub type {0} to TextBase.", subElement.Name));
-        //        }
-        //    }
-        //}
-
-        //protected TextBase(string fontClass, UnitRectangle relativeAlignment)
-        //    : base(relativeAlignment)
+        //protected TextBase(string fontClass)
         //{
         //    FontClass = fontClass;
         //}
-
-        protected TextBase(string fontClass)
-        {
-            FontClass = fontClass;
-        }
 
         protected internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
                                                 DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)

@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -9,7 +9,7 @@ using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
-    public class ReferencePoint : SinglePageElement, IElementContainer
+    public class ReferencePoint : MultiPageElement, IElementContainer
     {
         public enum StackMethod { None, Vertical }
         
@@ -54,12 +54,18 @@ namespace Tharga.Reporter.Engine.Entity.Area
             set { throw new NotSupportedException(); }
         }
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
+        protected internal override void ClearRenderPointer()
+        {
+            foreach (var element in _elementList.Where(x => x is MultiPageElement))
+                ((MultiPageElement)element).ClearRenderPointer();
+        }
+
+        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
             out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
         {
             var bounds = GetBounds(parentBounds);
 
-            RenderChildren(page, documentData, bounds, includeBackground, debug, pageNumberInfo);
+            var needMorePages = RenderChildren(page, documentData, bounds, includeBackground, debug, pageNumberInfo);
 
             if (debug)
             {
@@ -75,25 +81,32 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
             //TODO: Change the width and height to the actual area used
             elementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
+
+            return needMorePages;
         }
 
-        private void RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug, PageNumberInfo pageNumberInfo)
+        private bool RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug, PageNumberInfo pageNumberInfo)
         {
+            var needMorePages = false;
+
             var stackTop = UnitValue.Create();
             foreach (var element in _elementList)
             {
                 if (Stack == StackMethod.Vertical && element.Top == null)
                     element.Top = stackTop;
 
-                XRect elmBnd;
-                
-                if ( element is MultiPageElement)
-                    throw new NotImplementedException("Rendering multi page elements for reference points have not yet been implemented.");
-
-                ((SinglePageElement)element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo);
+                var elmBnd = new XRect();                
+                if (element is SinglePageElement)
+                    ((SinglePageElement)element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo);
+                else if (element is MultiPageElement)
+                {
+                    if (((MultiPageElement) element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo))
+                        needMorePages = true;
+                }
 
                 stackTop.Value += elmBnd.Height;
             }
+            return needMorePages;
         }
 
         protected internal override XmlElement AppendXml(ref XmlElement xmePane)
