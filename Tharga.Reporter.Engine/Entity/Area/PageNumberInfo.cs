@@ -4,12 +4,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
 {
     public class PageNumberInfo
     {
-        private readonly int _pageNumber;
+        public readonly int PageNumber;
         public static int? TotalPages;
 
         public PageNumberInfo(int pageNumber)
         {
-            _pageNumber = pageNumber;
+            PageNumber = pageNumber;
         }
 
         public string GetPageNumberInfo(string dataName)
@@ -17,7 +17,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             switch (dataName)
             {
                 case "PageNumber":
-                    return _pageNumber.ToString(CultureInfo.CurrentCulture);
+                    return PageNumber.ToString(CultureInfo.CurrentCulture);
                 case "TotalPages":
                     return TotalPages == null ? "N/A" : TotalPages.Value.ToString(CultureInfo.CurrentCulture);
                 default:

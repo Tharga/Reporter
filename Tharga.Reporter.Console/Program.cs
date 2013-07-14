@@ -16,7 +16,8 @@ namespace Tharga.Reporter.Console
             //Basic_PDF_document_with_some_text_on_it();
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
-            Multipage_PDF_by_spanning_text_using_a_reference_point();
+            //Multipage_PDF_by_spanning_text_using_a_reference_point();
+            Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
@@ -159,6 +160,27 @@ namespace Tharga.Reporter.Console
             var template = Template.Create(Section.Create());
             var byteArray = Rendering.CreatePDFDocument(template);
             ExecuteFile(byteArray);
+        }
+
+        public static void Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking()
+        {
+            var section = new Section { Name = "Content" };
+
+            var referencePoint = new ReferencePoint { Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm"), Stack = ReferencePoint.StackMethod.Vertical };
+
+            referencePoint.ElementList.Add(new TextBox { Value = GetRandomText(), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("8cm"), Name = "SpanText" });
+            section.Pane.ElementList.Add(referencePoint);
+
+            referencePoint.ElementList.Add(new TextBox { Value = "Tiny Text", Height = UnitValue.Parse("2cm"), Left= UnitValue.Parse("1cm"), Name ="SmallTextBox" });
+            referencePoint.ElementList.Add(new Text { Value = "Regular text", Name = "RegularText" });
+
+            var template = Template.Create(section);
+
+            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
+            ExecuteFile(byteArray);
+
+            var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
+            ExecuteFile(byteArray2);            
         }
 
         public static void Multipage_PDF_by_spanning_text_using_a_reference_point()

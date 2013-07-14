@@ -92,8 +92,21 @@ namespace Tharga.Reporter.Engine.Entity.Area
             var stackTop = UnitValue.Create();
             foreach (var element in _elementList)
             {
-                if (Stack == StackMethod.Vertical && element.Top == null)
-                    element.Top = stackTop;
+                //When using vertical stacking it should not be allowed to set the top value. Or can it be set as a offset?
+
+                var resetLocation = false;
+                if (Stack == StackMethod.Vertical)
+                {
+                    if (element.Top == null)
+                    {
+                        resetLocation = true;
+                        element.Top = stackTop;
+                    }
+                    //else
+                    //{
+                    //    System.Diagnostics.Debug.WriteLine("Element {0} has the top set to {1} on page {2}.", element.Name, element.Top.ToString(), pageNumberInfo.PageNumber);
+                    //}
+                }
 
                 var elmBnd = new XRect();                
                 if (element is SinglePageElement)
@@ -105,6 +118,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 }
 
                 stackTop.Value += elmBnd.Height;
+
+                if (resetLocation)
+                    element.Top = null;
             }
             return needMorePages;
         }
