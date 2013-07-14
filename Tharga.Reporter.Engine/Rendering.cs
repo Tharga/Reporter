@@ -1,5 +1,6 @@
 ﻿using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine
 {
@@ -78,7 +79,7 @@ namespace Tharga.Reporter.Engine
             pdfDocument.SecuritySettings.PermitPrint = true;
             //pdfDocument.SecuritySettings.UserPassword = "qwerty";
 
-
+            var pageNumber = 0;
             foreach (var section in _template.SectionList)
             {
                 section.Pane.ClearRenderPointers();
@@ -88,6 +89,7 @@ namespace Tharga.Reporter.Engine
                 {
                     //Add a new page for the section
                     var page = pdfDocument.AddPage();
+                    var pageNumberInfo = new PageNumberInfo(++pageNumber);
 
                     //TODO: read page size from section
                     //page.Size = PdfSharp.PageSize.Letter;
@@ -140,7 +142,7 @@ namespace Tharga.Reporter.Engine
                     var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
                     var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
                     
-                    needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug);
+                    needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug, pageNumberInfo);
 
 
                     ////Draw fingerprint
@@ -158,7 +160,7 @@ namespace Tharga.Reporter.Engine
                     if (section.Header != null)
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                        section.Header.Render(page, bounds, _documentData, _background, _debug);
+                        section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
 
                         if (_debug)
                         {
@@ -173,7 +175,7 @@ namespace Tharga.Reporter.Engine
                     if (section.Footer != null)
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                        section.Footer.Render(page, bounds, _documentData, _background, _debug);
+                        section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
 
                         if (_debug)
                         {

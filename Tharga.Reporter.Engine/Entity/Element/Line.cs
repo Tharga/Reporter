@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -31,7 +32,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             BorderWidth = borderWidth;
         }
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug)
+        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
         {
             elementBounds = GetBounds(parentBounds);
 

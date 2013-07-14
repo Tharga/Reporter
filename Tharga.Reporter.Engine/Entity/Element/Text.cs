@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Xml;
+using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
@@ -80,7 +81,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         #endregion
 
-        protected override string GetValue(DocumentData documentData)
+        protected override string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             if (!string.IsNullOrEmpty(HideValue))
             {
@@ -89,7 +90,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     return string.Empty;
             }
 
-            return Value.ParseValue(documentData);
+            return Value.ParseValue(documentData, pageNumberInfo);
         }
 
         protected internal override XmlElement AppendXml(ref XmlElement xmePane)

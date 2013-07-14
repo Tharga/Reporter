@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Helper
 {
@@ -78,7 +80,7 @@ namespace Tharga.Reporter.Engine.Helper
             return parsedValue;
         }
 
-        public static string ParseValue(this string value, DocumentData documentData, bool returnErrorMessage = true)
+        public static string ParseValue(this string value, DocumentData documentData, PageNumberInfo pageNumberInfo, bool returnErrorMessage = true)
         {
             if (string.IsNullOrEmpty(value))
                 return value;
@@ -92,7 +94,14 @@ namespace Tharga.Reporter.Engine.Helper
             {
                 var posE = parsedValue.IndexOf("}", pos, StringComparison.Ordinal);
                 var dataName = parsedValue.Substring(pos + 1, posE - pos - 1);
-                var dataValue = documentData.Get(dataName) ?? (returnErrorMessage ? string.Format("[Data '{0}' is missing]", dataName) : string.Empty);
+
+                string dataValue;
+                if (dataName == "PageNumber")
+                {
+                    dataValue = pageNumberInfo.PageNumber.ToString(CultureInfo.InvariantCulture);
+                }
+                else
+                    dataValue = documentData.Get(dataName) ?? (returnErrorMessage ? string.Format("[Data '{0}' is missing]", dataName) : string.Empty);
                 startIndex = pos + dataValue.Length;
                 parsedValue = string.Format("{0}{1}{2}", parsedValue.Substring(0, pos), dataValue, parsedValue.Substring(posE + 1));
 

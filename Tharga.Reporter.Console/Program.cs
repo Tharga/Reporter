@@ -48,7 +48,7 @@ namespace Tharga.Reporter.Console
             //content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. {PageNumber} of {TotalPages}" });
             //content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. {PageNumber} of {TotalPages}" });
             content.Header.ElementList.Add(new Text { Value = "Some text in the header." });
-            content.Footer.ElementList.Add(new Text { Value = "Some text in the footer." });
+            content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. Page {PageNumber}" });
             content.Pane.ElementList.Add(new Text { Value = "Some text in the pane." });
 
             var documentData = new DocumentData();

@@ -10,6 +10,16 @@ using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
+    public class PageNumberInfo
+    {
+        public readonly int PageNumber;
+
+        public PageNumberInfo(int pageNumber)
+        {
+            PageNumber = pageNumber;
+        }
+    }
+
     public class Pane : IElementContainer
     {
         protected const double HeightEpsilon = 0.01;
@@ -47,7 +57,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 ((MultiPageElement)element).ClearRenderPointer();
         }
 
-        internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug)
+        internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo)
         {
             var needAnotherPage = false;
             foreach (var element in _elementList)
@@ -55,13 +65,13 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 XRect bnd;
                 if (element is MultiPageElement)
                 {
-                    var needMore = ((MultiPageElement) element).Render(page, bounds, documentData, out bnd, background, debug);
+                    var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
                     if (needMore)
                         needAnotherPage = true;
                 }
                 else if (element is SinglePageElement)
                 {
-                    ((SinglePageElement)element).Render(page, bounds, documentData, out bnd, background, debug);
+                    ((SinglePageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
                 }
             }
             return needAnotherPage;

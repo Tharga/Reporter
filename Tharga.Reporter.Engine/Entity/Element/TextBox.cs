@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
@@ -27,7 +28,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             _wordPointer = 0;
         }
 
-        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug)
+        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
         {
             elementBounds = GetBounds(parentBounds);
 
@@ -44,7 +45,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var font = new XFont(GetFontName(), GetFontSize(), XFontStyle.Regular);
                 var brush = new XSolidBrush(XColor.FromArgb(GetColor()));
 
-                var text = GetValue(documentData);
+                var text = GetValue(documentData, pageNumberInfo);
                 var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
 
                 //Cut the string, so that it can fit within the rectangle
@@ -127,7 +128,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return Font.GetRenderColor(FontClass);
         }
 
-        private string GetValue(DocumentData documentData)
+        private string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             if (!string.IsNullOrEmpty(HideValue))
             {
@@ -136,7 +137,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     return string.Empty;
             }
 
-            return Value.ParseValue(documentData);
+            return Value.ParseValue(documentData,pageNumberInfo);
         }
 
         protected internal override XmlElement AppendXml(ref XmlElement xmePane)

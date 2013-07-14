@@ -54,12 +54,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
             set { throw new NotSupportedException(); }
         }
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, 
-            out XRect elementBounds, bool includeBackground, bool debug)
+        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
+            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
         {
             var bounds = GetBounds(parentBounds);
 
-            RenderChildren(page, documentData, bounds, includeBackground, debug);
+            RenderChildren(page, documentData, bounds, includeBackground, debug, pageNumberInfo);
 
             if (debug)
             {
@@ -77,7 +77,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             elementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
         }
 
-        private void RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug)
+        private void RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug, PageNumberInfo pageNumberInfo)
         {
             var stackTop = UnitValue.Create();
             foreach (var element in _elementList)
@@ -90,7 +90,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 if ( element is MultiPageElement)
                     throw new NotImplementedException("Rendering multi page elements for reference points have not yet been implemented.");
 
-                ((SinglePageElement)element).Render(page, bounds, documentData, out elmBnd, background, debug);
+                ((SinglePageElement)element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo);
 
                 stackTop.Value += elmBnd.Height;
             }
