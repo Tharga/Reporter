@@ -1,4 +1,6 @@
-﻿using PdfSharp.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 
@@ -78,6 +80,8 @@ namespace Tharga.Reporter.Engine
             pdfDocument.SecuritySettings.PermitModifyDocument = false;
             pdfDocument.SecuritySettings.PermitPrint = true;
             //pdfDocument.SecuritySettings.UserPassword = "qwerty";
+
+            var postRendering = new List<Action>();
 
             var pageNumber = 0;
             foreach (var section in _template.SectionList)
@@ -160,7 +164,8 @@ namespace Tharga.Reporter.Engine
                     if (section.Header != null)
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                        section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
+                        //section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
+                        postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo));
 
                         if (_debug)
                         {
@@ -175,7 +180,8 @@ namespace Tharga.Reporter.Engine
                     if (section.Footer != null)
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                        section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
+                        //section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
+                        postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo));
 
                         if (_debug)
                         {
@@ -186,6 +192,13 @@ namespace Tharga.Reporter.Engine
                         }
                     }
                 }
+            }
+
+            PageNumberInfo.TotalPages = pageNumber;
+
+            foreach (var action in postRendering)
+            {
+                action();
             }
 
             //Create stream to return

@@ -44,12 +44,9 @@ namespace Tharga.Reporter.Console
             content.Margin.Right = UnitValue.Parse("1cm");
 
             //Handling page numbers
-            //content.Header.ElementList.Add(new Text { Value = "Some text in the header. {PageNumber} of {TotalPages}" });
-            //content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. {PageNumber} of {TotalPages}" });
-            //content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. {PageNumber} of {TotalPages}" });
-            content.Header.ElementList.Add(new Text { Value = "Some text in the header." });
-            content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. Page {PageNumber}" });
-            content.Pane.ElementList.Add(new Text { Value = "Some text in the pane." });
+            content.Header.ElementList.Add(new Text { Value = "Some text in the header. Page {PageNumber} of {TotalPages}" });
+            content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. Page {PageNumber} of {TotalPages}" });
+            content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. Page {PageNumber} of {TotalPages}" });
 
             var documentData = new DocumentData();
             var tableData = documentData.GetDataTable("MyTable");

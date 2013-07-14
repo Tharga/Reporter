@@ -6,20 +6,9 @@ using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Helper;
 using Tharga.Reporter.Engine.Interface;
-using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
-    public class PageNumberInfo
-    {
-        public readonly int PageNumber;
-
-        public PageNumberInfo(int pageNumber)
-        {
-            PageNumber = pageNumber;
-        }
-    }
-
     public class Pane : IElementContainer
     {
         protected const double HeightEpsilon = 0.01;

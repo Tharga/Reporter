@@ -95,13 +95,13 @@ namespace Tharga.Reporter.Engine.Helper
                 var posE = parsedValue.IndexOf("}", pos, StringComparison.Ordinal);
                 var dataName = parsedValue.Substring(pos + 1, posE - pos - 1);
 
-                string dataValue;
-                if (dataName == "PageNumber")
-                {
-                    dataValue = pageNumberInfo.PageNumber.ToString(CultureInfo.InvariantCulture);
-                }
-                else
+                string dataValue = null;
+                if (pageNumberInfo != null)
+                    dataValue = pageNumberInfo.GetPageNumberInfo(dataName);
+
+                if ( dataValue == null)
                     dataValue = documentData.Get(dataName) ?? (returnErrorMessage ? string.Format("[Data '{0}' is missing]", dataName) : string.Empty);
+
                 startIndex = pos + dataValue.Length;
                 parsedValue = string.Format("{0}{1}{2}", parsedValue.Substring(0, pos), dataValue, parsedValue.Substring(posE + 1));
 
