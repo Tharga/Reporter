@@ -12,8 +12,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal bool Hide { get; set; }
 
-        public TableColumn(string displayName, UnitValue width, Table.WidthMode widthMode,
-            Table.Alignment align, string hideValue)
+        public TableColumn(string displayName, UnitValue width, Table.WidthMode widthMode, Table.Alignment align, string hideValue)
         {
             if (width == null && widthMode == Table.WidthMode.Specific) throw new InvalidOperationException("When not assigning a specific value for width the width mode cannot be set to specific.");
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -7,7 +6,7 @@ using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Console
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -18,14 +17,17 @@ namespace Tharga.Reporter.Console
 
             //Test 2. Create a basic PDF document with some text on it
             var section = Section.Create();
-            var refPoint = new ReferencePoint("0","0", ReferencePoint.Stack.Vertical);
-            refPoint.ElementList.Add(Text.Create("Hello world! {Data1}", hideValue: "Data1"));
-            refPoint.ElementList.Add(Text.Create("Hello world! {Data2}", hideValue: "Data2"));
-            refPoint.ElementList.Add(Text.Create("Hello world! {Data3}", hideValue: "Data3"));
-            refPoint.ElementList.Add(Text.Create("Hello world! {Data4}", hideValue: "Data4"));
-            refPoint.ElementList.Add(Text.Create("Hello world! {Data5}", hideValue: "Data5"));
-            refPoint.ElementList.Add(Text.Create("Data 2 have a value!", hideValue: "Data2"));
+            var refPoint = new ReferencePoint { Stack = ReferencePoint.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm") };
+            refPoint.ElementList.Add(new Text{ Value = "Hello world! {Data1}", HideValue = "Data1"});
+            refPoint.ElementList.Add(new Text{ Value = "Hello world! {Data2}", HideValue = "Data2"});
+            refPoint.ElementList.Add(new Text{ Value = "Hello world! {Data3}", HideValue = "Data3"});
+            refPoint.ElementList.Add(new Text{ Value = "Hello world! {Data4}", HideValue = "Data4"});
+            refPoint.ElementList.Add(new Text{ Value = "Hello world! {Data5}", HideValue = "Data5"});
+            refPoint.ElementList.Add(new Text{ Value = "Data 2 have a value!", HideValue = "Data2"});
             section.Pane.ElementList.Add(refPoint);
+
+            var elm = section.Pane.ElementList.Get<ReferencePoint>("SomeName");
+
             var template = Template.Create(section);
             var documentData = new DocumentData();
             documentData.Add("Data1","Bob");

@@ -12,10 +12,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private readonly Color _defaultBorderColor = Color.Black;
 
         public Color BorderColor { get; set; }
-        private string BorderWidth { get; set; }
+        //private string BorderWidth { get; set; }
+        public UnitValue BorderWidth { get; set; }
         public Color? BackgroundColor { get; set; }
 
 
+        public Rectangle()
+        {
+            BorderWidth = UnitValue.Parse("1px");
+        }
+
+        [Obsolete("Use default constructor and property setters instead.")]
         public Rectangle(string left = null, string top = null, string width = null, string height = null,
             Color? borderColor = null, string borderWidth = "1px", Color? backgroundColor = null)
         {
@@ -26,7 +33,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             BorderColor = borderColor ?? _defaultBorderColor;
             BackgroundColor = backgroundColor;
-            BorderWidth = borderWidth;
+            BorderWidth = UnitValue.Parse(borderWidth);
         }
 
         internal Rectangle(XmlElement xmlElement)
@@ -55,8 +62,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    var borderWidth = UnitValue.Parse(BorderWidth);
-                    var pen = new XPen(XColor.FromArgb(BorderColor), borderWidth.GetXUnitValue(0));
+                    //var borderWidth = UnitValue.Parse(BorderWidth);
+                    var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
 
                     if (BackgroundColor != null)
                     {

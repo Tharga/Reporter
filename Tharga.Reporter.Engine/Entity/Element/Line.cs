@@ -13,6 +13,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Color BorderColor { get; set; }
         private string BorderWidth { get; set; }
 
+        public Line()
+        {
+            
+        }
+
+        [Obsolete("Use default constructor and property setters instead.")]
         public Line(string left = null, string top = null, string width = null, string height = null,
                     Color? borderColor = null, string borderWidth = "1px")
         {

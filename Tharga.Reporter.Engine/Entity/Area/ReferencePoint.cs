@@ -10,23 +10,23 @@ namespace Tharga.Reporter.Engine.Entity.Area
 {
     public class ReferencePoint : Element.Element, IElementContainer
     {
-        public enum Stack { None, Vertical }
+        public enum StackMethod { None, Vertical }
         
-        private List<Element.Element> _elementList = new List<Element.Element>();
-        private readonly Stack _stack;
+        private readonly ElementList _elementList = new ElementList();
 
-        public List<Element.Element> ElementList { get { return _elementList; } set { _elementList = value; } }
+        public StackMethod Stack { get; set; }
+        public ElementList ElementList { get { return _elementList; } } 
 
         public ReferencePoint()
         {
 
         }
 
-        public ReferencePoint(string left, string top = null, Stack stack = Stack.None)
-            : base(new UnitRectangle(left != null ? UnitValue.Parse(left) : null, 
-                top != null ? UnitValue.Parse(top) : null, null, null))
+        [Obsolete("Use default constructor and property setters instead.")]
+        public ReferencePoint(string left, string top = null, StackMethod stack = StackMethod.None)
+            : base(new UnitRectangle(left != null ? UnitValue.Parse(left) : null, top != null ? UnitValue.Parse(top) : null, null, null))
         {
-            _stack = stack;
+            Stack = stack;
         }
 
         public override UnitValue Bottom
@@ -81,7 +81,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             var stackTop = UnitValue.Create();
             foreach (var element in _elementList)
             {
-                if (_stack == Stack.Vertical && element.Top == null)
+                if (Stack == StackMethod.Vertical && element.Top == null)
                     element.Top = stackTop;
 
                 XRect elmBnd;

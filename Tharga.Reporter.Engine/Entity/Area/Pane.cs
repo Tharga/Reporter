@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -14,9 +13,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
     {
         protected const double HeightEpsilon = 0.01;
 
-        private List<Element.Element> _elementList = new List<Element.Element>();
+        private readonly ElementList _elementList = new ElementList();
 
-        public List<Element.Element> ElementList { get { return _elementList; } set { _elementList = value; } }
+        public ElementList ElementList { get { return _elementList; } }
 
         internal Pane()
         {

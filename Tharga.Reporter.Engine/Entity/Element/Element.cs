@@ -10,6 +10,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
     {
         private readonly UnitRectangle _relativeAlignment;
 
+        public string Name { get; set; }
         public bool IsBackground { get; set; }
 
         protected Element()

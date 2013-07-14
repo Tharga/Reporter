@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entity\Area\ElementList.cs" />
     <Compile Include="Entity\Area\ReferencePoint.cs" />
     <Compile Include="Entity\DocumentData.cs" />
     <Compile Include="Entity\DocumentProperties.cs" />
