@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
@@ -10,31 +9,34 @@ namespace Tharga.Reporter.Engine.Entity.Element
     public sealed class Rectangle : SinglePageElement
     {
         private readonly Color _defaultBorderColor = Color.Black;
+        private readonly UnitValue _defaultBorderWidth = UnitValue.Parse("1px");
 
-        public Color BorderColor { get; set; }
-        //private string BorderWidth { get; set; }
-        public UnitValue BorderWidth { get; set; }
-        public Color? BackgroundColor { get; set; }
+        private Color? _borderColor;
+        private UnitValue? _borderWidth;
+        private Color? _backgroundColor;
 
+        public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
+        public UnitValue BorderWidth { get { return _borderWidth ?? _defaultBorderWidth; } set { _borderWidth = value; } }
+        public Color? BackgroundColor { get { return _backgroundColor; } set { _backgroundColor = value; } }
 
         public Rectangle()
         {
             BorderWidth = UnitValue.Parse("1px");
         }
 
-        [Obsolete("Use default constructor and property setters instead.")]
-        public Rectangle(string left = null, string top = null, string width = null, string height = null,
-            Color? borderColor = null, string borderWidth = "1px", Color? backgroundColor = null)
-        {
-            Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null;
-            Top = top != null ? UnitValue.Parse(top) : (UnitValue?)null;
-            Width = width != null ? UnitValue.Parse(width) : (UnitValue?)null;
-            Height = height != null ? UnitValue.Parse(height) : (UnitValue?)null;
+        //[Obsolete("Use default constructor and property setters instead.")]
+        //public Rectangle(string left = null, string top = null, string width = null, string height = null,
+        //    Color? borderColor = null, string borderWidth = "1px", Color? backgroundColor = null)
+        //{
+        //    Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null;
+        //    Top = top != null ? UnitValue.Parse(top) : (UnitValue?)null;
+        //    Width = width != null ? UnitValue.Parse(width) : (UnitValue?)null;
+        //    Height = height != null ? UnitValue.Parse(height) : (UnitValue?)null;
 
-            BorderColor = borderColor ?? _defaultBorderColor;
-            BackgroundColor = backgroundColor;
-            BorderWidth = UnitValue.Parse(borderWidth);
-        }
+        //    BorderColor = borderColor ?? _defaultBorderColor;
+        //    BackgroundColor = backgroundColor;
+        //    BorderWidth = UnitValue.Parse(borderWidth);
+        //}
 
         //internal Rectangle(XmlElement xmlElement)
         //    : base(xmlElement)
@@ -62,7 +64,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    //var borderWidth = UnitValue.Parse(BorderWidth);
                     var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
 
                     if (BackgroundColor != null)
@@ -74,6 +75,22 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         gfx.DrawRectangle(pen, elementBounds);
                 }
             }
+        }
+
+        internal override XmlElement ToXme()
+        {
+            var xme = base.ToXme();
+
+            if (_backgroundColor != null)
+                xme.SetAttribute("BackgroundColor", string.Format("{0}{1}{2}", _backgroundColor.Value.R.ToString("X2"), _backgroundColor.Value.G.ToString("X2"), _backgroundColor.Value.B.ToString("X2")));
+
+            if (_borderColor != null)
+                xme.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
+
+            if (_borderWidth != null)
+                xme.SetAttribute("BorderWidth", _borderWidth.Value.ToString());
+
+            return xme;
         }
 
         public static Rectangle Load(XmlElement xme)
@@ -90,6 +107,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (xmlBorderColor != null)
                 rectangle.BorderColor = ToColor(xmlBorderColor.Value);
 
+            var xmlBorderWidth = xme.Attributes["BorderWidth"];
+            if (xmlBorderWidth != null)
+                rectangle.BorderWidth = UnitValue.Parse(xmlBorderWidth.Value);
 
             return rectangle;
         }

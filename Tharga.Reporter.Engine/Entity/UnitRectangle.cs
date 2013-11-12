@@ -101,7 +101,8 @@ namespace Tharga.Reporter.Engine.Entity
             get { return _left; }
             set
             {
-                if (_right != null && _width != null) throw new InvalidOperationException(string.Format("Only two of the values left, right and width can be set, the third one is calculated. Right ({0}) and width {1} has already been set.", _right.ToString(), _width.ToString()));
+                if (_right != null && _width != null && value != null) 
+                    throw new InvalidOperationException(string.Format("Only two of the values left, right and width can be set, the third one is calculated. Right ({0}) and width {1} has already been set.", _right.ToString(), _width.ToString()));
                 _left = value;
             }
         }
@@ -111,7 +112,8 @@ namespace Tharga.Reporter.Engine.Entity
             get { return _top; }
             set
             {
-                if (_bottom != null && _height != null) throw new InvalidOperationException(string.Format("Only two of the values top, bottom and height can be set, the third one is calculated. Bottom ({0}) and height {1} has already been set.", _bottom.ToString(), _height.ToString()));
+                if (_bottom != null && _height != null && value != null) 
+                    throw new InvalidOperationException(string.Format("Only two of the values top, bottom and height can be set, the third one is calculated. Bottom ({0}) and height {1} has already been set.", _bottom.ToString(), _height.ToString()));
                 _top = value;
             }
         }
@@ -121,7 +123,8 @@ namespace Tharga.Reporter.Engine.Entity
             get { return _right; }
             set
             {
-                if (_left != null && _width != null) throw new InvalidOperationException(string.Format("Only two of the values left, right and width can be set, the third one is calculated. Left ({0}) and width {1} has already been set.", _left.ToString(), _width.ToString()));
+                if (_left != null && _width != null && value != null) 
+                    throw new InvalidOperationException(string.Format("Only two of the values left, right and width can be set, the third one is calculated. Left ({0}) and width {1} has already been set.", _left.ToString(), _width.ToString()));
                 _right = value;
             }
         }
@@ -131,7 +134,8 @@ namespace Tharga.Reporter.Engine.Entity
             get { return _bottom; }
             set
             {
-                if (_top != null && _height != null) throw new InvalidOperationException(string.Format("Only two of the values top, bottom and height can be set, the third one is calculated. Top ({0}) and height {1} has already been set.", _top.ToString(), _height.ToString()));
+                if (_top != null && _height != null && value != null) 
+                    throw new InvalidOperationException(string.Format("Only two of the values top, bottom and height can be set, the third one is calculated. Top ({0}) and height {1} has already been set.", _top.ToString(), _height.ToString()));
                 _bottom = value;
             }
         }
@@ -141,7 +145,8 @@ namespace Tharga.Reporter.Engine.Entity
             get { return _width; }
             set
             {
-                if (_left != null && _right != null) throw new InvalidOperationException(string.Format("Only two of the values left, right and width can be set, the third one is calculated. Left ({0}) and right {1} has already been set.", _left.ToString(), _right.ToString()));
+                if (_left != null && _right != null && value != null)
+                    throw new InvalidOperationException(string.Format("Only two of the values left, right and width can be set, the third one is calculated. Left ({0}) and right {1} has already been set.", _left.ToString(), _right.ToString()));
                 _width = value;
             }
         }
@@ -151,7 +156,8 @@ namespace Tharga.Reporter.Engine.Entity
             get { return _height; }
             set
             {
-                if (_top != null && _bottom != null) throw new InvalidOperationException(string.Format("Only two of the values top, bottom and height can be set, the third one is calculated. Top ({0}) and bottom {1} has already been set.", _top.ToString(), _bottom.ToString()));
+                if (_top != null && _bottom != null && value != null) 
+                    throw new InvalidOperationException(string.Format("Only two of the values top, bottom and height can be set, the third one is calculated. Top ({0}) and bottom {1} has already been set.", _top.ToString(), _bottom.ToString()));
                 _height = value;
             }
         }

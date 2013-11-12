@@ -52,18 +52,18 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override XmlElement ToXme()
         {
-            var data = base.ToXme();
+            var xme = base.ToXme();
 
             if (_borderColor != null)
-                data.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
+                xme.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
 
             if (_isBackground != null)
-                data.SetAttribute("IsBackground", IsBackground.ToString());
+                xme.SetAttribute("IsBackground", IsBackground.ToString());
 
             if (_name != null)
-                data.SetAttribute("Name", Name);
+                xme.SetAttribute("Name", Name);
 
-            return data;
+            return xme;
         }
 
         public static Line Load(XmlElement xme)
