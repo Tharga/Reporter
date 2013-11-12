@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
@@ -15,24 +14,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
         private string BorderWidth { get; set; } //TODO: Make this configurable
-
-        //public Line()
-        //{
-        //    //BorderColor = _defaultBorderColor;
-        //}
-
-        //[Obsolete("Use default constructor and property setters instead.")]
-        //public Line(string left = null, string top = null, string width = null, string height = null,
-        //            Color? borderColor = null, string borderWidth = "1px")
-        //{
-        //    Left = left != null ? UnitValue.Parse(left) : null;
-        //    Top = top != null ? UnitValue.Parse(top) : null;
-        //    Width = width != null ? UnitValue.Parse(width) : null;
-        //    Height = height != null ? UnitValue.Parse(height) : null;
-
-        //    BorderColor = borderColor ?? _defaultBorderColor;
-        //    BorderWidth = borderWidth;
-        //}
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
         {

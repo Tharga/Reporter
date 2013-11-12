@@ -13,11 +13,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         }
 
-        //internal Footer(UnitValue height)
-        //{
-        //    Height = height;
-        //}
-
         public override XmlElement ToXme()
         {
             var xmd = new XmlDocument();

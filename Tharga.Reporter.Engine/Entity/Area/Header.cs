@@ -10,13 +10,8 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         internal Header()
         {
-            //Height = null;
-        }
 
-        //internal Header(UnitValue height)
-        //{
-        //    Height = height;
-        //}
+        }
 
         public override XmlElement ToXme()
         {

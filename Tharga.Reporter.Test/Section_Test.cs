@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Test
 {
@@ -112,5 +113,24 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(template.SectionList.First().Pane.ElementList.First().Left, otherTemplate.SectionList.First().Pane.ElementList.First().Left);
             Assert.AreEqual(template.SectionList.First().Footer.ElementList.First().Left, otherTemplate.SectionList.First().Footer.ElementList.First().Left);
         }        
+
+        [TestMethod]
+        public void Section_with_all_types_of_elements()
+        {
+            //Arrange
+            var section = new Section();
+            section.Pane.ElementList.Add(new Line());
+            section.Pane.ElementList.Add(new Rectangle());
+
+            var template = new Template(section);
+            var xml = template.ToXml();
+
+            //Act
+            var otherTemplate = Template.Load(xml);
+
+            //Assert
+            Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        }
     }
 }
+

@@ -12,6 +12,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             PageNumber = pageNumber;
         }
 
+        //TODO: Write tests for this
         public string GetPageNumberInfo(string dataName)
         {
             switch (dataName)

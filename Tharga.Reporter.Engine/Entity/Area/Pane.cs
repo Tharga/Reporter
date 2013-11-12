@@ -11,8 +11,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
 {
     public class Pane : IElementContainer
     {
-        //protected const double HeightEpsilon = 0.01;
-
         private readonly ElementList _elementList = new ElementList();
 
         public ElementList ElementList { get { return _elementList; } }
@@ -70,44 +68,17 @@ namespace Tharga.Reporter.Engine.Entity.Area
             }
         }
 
-        //internal virtual XmlElement AppendXml(ref XmlElement xmeSection)
-        //{
-        //    if (xmeSection == null) throw new ArgumentNullException("xmeSection");
-        //    if (xmeSection.OwnerDocument == null) throw new ArgumentNullException("xmeSection", "xmeSection has no owner document.");
-
-        //    var xmePane = xmeSection.OwnerDocument.CreateElement(GetType().ToShortTypeName());
-        //    xmeSection.AppendChild(xmePane);
-
-        //    foreach(var element in ElementList)
-        //        element.AppendXml(ref xmePane);
-
-        //    return xmePane;
-        //}
-
         public static Pane Load(XmlElement xme)
         {
             var pane = new Pane();
 
             var elms = pane.GetElements(xme);
             pane.ElementList.AddRange(elms);
-            //foreach(XmlElement xmlElement in xme.ChildNodes)
-            //{
-            //    Element.Element element;
-            //    switch (xmlElement.Name)
-            //    {
-            //        case "Line":
-            //            element = Line.Load(xmlElement);                        
-            //            break;
-            //        default:
-            //            throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
-            //    }
-            //    //pane.ElementList.Add(element);
-            //}
 
             return pane;
         }
 
-        public IEnumerable<Element.Element> GetElements(XmlElement xme)
+        protected IEnumerable<Element.Element> GetElements(XmlElement xme)
         {
             foreach (XmlElement xmlElement in xme.ChildNodes)
             {
@@ -117,10 +88,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     case "Line":
                         element = Line.Load(xmlElement);
                         break;
+                    case"Rectangle":
+                        element = Rectangle.Load(xmlElement);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
                 }
-                //pane.ElementList.Add(element);
                 yield return element;
             }
         }

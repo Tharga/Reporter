@@ -6,6 +6,7 @@ namespace Tharga.Reporter.Engine
 {
     public class Printing
     {
+        //TODO: Remove adobe, place post-script printing here instead.
         //C:\Dev\Tharga\Florida\Dev\Main\Florida\Tharga.Florida.Client\bin\Debug\Resources
         //private Printing(string defaultPrinterName = null, string adobeReaderPath = @"Resources\AcroRd32.exe")
         private Printing(string defaultPrinterName = null, string adobeReaderPath = @"C:\Program Files (x86)\Adobe\Reader 10.0\Reader\AcroRd32.exe")
