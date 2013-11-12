@@ -58,6 +58,9 @@ Thumbs.db
  
 # below are rules added by me (@kmorcinek)
  
+#NuGet
+packages/
+
 # NCrunch
 *.crunchsolution.cache
 *.ncrunchsolution
