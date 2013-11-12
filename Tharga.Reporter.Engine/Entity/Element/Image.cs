@@ -13,7 +13,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public class Image : SinglePageElement
     {
-        public string Source { get; set; }
+        private string _source;
+
+        public string Source { get { return _source ?? string.Empty; } set { _source = value; } }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
             out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
@@ -115,9 +117,27 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return imageData;
         }
 
-        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        internal override XmlElement ToXme()
+        {
+            var xme = base.ToXme();
+
+            if (_source != null)
+                xme.SetAttribute("Source", _source);
+
+            return xme;
+        }
+
+        public static Image Load(XmlElement xme)
+        {
+            var image = new Image();
+            
+            image.AppendData(xme);
+
+            var xmlSource = xme.Attributes["Source"];
+            if (xmlSource != null)
+                image.Source = xmlSource.Value;
+
+            return image;
+        }
     }
 }

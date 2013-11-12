@@ -85,10 +85,13 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 Element.Element element;
                 switch (xmlElement.Name)
                 {
+                    case "Image":
+                        element = Image.Load(xmlElement);
+                        break;
                     case "Line":
                         element = Line.Load(xmlElement);
                         break;
-                    case"Rectangle":
+                    case "Rectangle":
                         element = Rectangle.Load(xmlElement);
                         break;
                     default:

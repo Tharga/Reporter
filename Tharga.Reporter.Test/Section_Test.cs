@@ -97,9 +97,9 @@ namespace Tharga.Reporter.Test
         {
             //Arrange
             var section = new Section();
-            section.Header.ElementList.Add(new Tharga.Reporter.Engine.Entity.Element.Line { Left = UnitValue.Parse("1cm") });
-            section.Pane.ElementList.Add(new Tharga.Reporter.Engine.Entity.Element.Line { Left = UnitValue.Parse("2cm") });
-            section.Footer.ElementList.Add(new Tharga.Reporter.Engine.Entity.Element.Line { Left = UnitValue.Parse("3cm") });
+            section.Header.ElementList.Add(new Line { Left = UnitValue.Parse("1cm") });
+            section.Pane.ElementList.Add(new Line { Left = UnitValue.Parse("2cm") });
+            section.Footer.ElementList.Add(new Line { Left = UnitValue.Parse("3cm") });
 
             var template = new Template(section);
             var xml = template.ToXml();
@@ -119,6 +119,7 @@ namespace Tharga.Reporter.Test
         {
             //Arrange
             var section = new Section();
+            section.Pane.ElementList.Add(new Image());
             section.Pane.ElementList.Add(new Line());
             section.Pane.ElementList.Add(new Rectangle());
 
