@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
+    //TODO: Hide List inside this class
     public class ElementList : List<Element.Element>
     {
         public T Get<T>(string elementName)

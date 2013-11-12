@@ -141,9 +141,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return Value.ParseValue(documentData,pageNumberInfo);
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        {
-            throw new NotImplementedException();
-        }
+        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

@@ -65,7 +65,7 @@ namespace Tharga.Reporter.Console
                 row.Add("Col1", string.Format("some data for row {0}", i));
                 row.Add("Col2", "some oter data");
             }
-            var template = Template.Create(coverPage);
+            var template = new Template(coverPage);
             template.SectionList.Add(content);
             template.SectionList.Add(index);
             var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: true);
@@ -75,7 +75,7 @@ namespace Tharga.Reporter.Console
 
         private static void Create_PDF_document_with_basic_template()
         {
-            var section = Section.Create();
+            var section = new Section();
 
             var tableTemplate = new Table("MyTable") {BorderColor = System.Drawing.Color.Blue};
             section.Pane.ElementList.Add(tableTemplate);
@@ -92,7 +92,7 @@ namespace Tharga.Reporter.Console
             row2.Add("Col1", "some data for row 2");
             row2.Add("Col2", "some oter data");
 
-            var template = Template.Create(section);
+            var template = new Template(section);
             var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
             ExecuteFile(byteArray);
 
@@ -157,7 +157,7 @@ namespace Tharga.Reporter.Console
 
         private static void Blank_default_PDF_document()
         {
-            var template = Template.Create(Section.Create());
+            var template = new Template(new Section());
             var byteArray = Rendering.CreatePDFDocument(template);
             ExecuteFile(byteArray);
         }
@@ -171,7 +171,7 @@ namespace Tharga.Reporter.Console
 
             section.Pane.ElementList.Add(new TextBox { Value = data, Top = UnitValue.Parse("1cm"), Left=UnitValue.Parse("1cm"), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("4cm"), Name = "SpanText" });
 
-            var template = Template.Create(section);
+            var template = new Template(section);
 
             var byteArray = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(byteArray);
@@ -189,7 +189,7 @@ namespace Tharga.Reporter.Console
             referencePoint.ElementList.Add(new TextBox { Value = "Tiny Text", Height = UnitValue.Parse("2cm"), Left= UnitValue.Parse("1cm"), Name ="SmallTextBox" });
             referencePoint.ElementList.Add(new Text { Value = "Regular text", Name = "RegularText" });
 
-            var template = Template.Create(section);
+            var template = new Template(section);
 
             var byteArray = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(byteArray);
@@ -209,7 +209,7 @@ namespace Tharga.Reporter.Console
             referencePoint.ElementList.Add(new TextBox { Value = "Tiny Text", Left = UnitValue.Parse("8cm") });
             referencePoint.ElementList.Add(new Text { Value = "Regular text", Top = UnitValue.Parse("10cm") });
 
-            var template = Template.Create(section);
+            var template = new Template(section);
             
             var byteArray = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(byteArray);
@@ -230,7 +230,7 @@ namespace Tharga.Reporter.Console
             //var rectangle = new Rectangle { Left = UnitValue.Parse("5cm"), Top = UnitValue.Parse("10cm"), Width = UnitValue.Parse("10cm") };
             //section.Pane.ElementList.Add(rectangle);
 
-            var template = Template.Create(section);
+            var template = new Template(section);
 
             var byteArray = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(byteArray);
@@ -261,7 +261,7 @@ namespace Tharga.Reporter.Console
             refPoint.ElementList.Add(new Text { Value = "Hello world! {Data1}", HideValue = "Data1" });
             section.Pane.ElementList.Add(refPoint);            
 
-            var template = Template.Create(section);
+            var template = new Template(section);
             var documentData = new DocumentData();
             documentData.Add("Data1", "Bob");
 
@@ -277,7 +277,7 @@ namespace Tharga.Reporter.Console
 
         private static void Basic_PDF_document_with_some_text_on_it()
         {
-            var section = Section.Create();
+            var section = new Section();
             var refPoint = new ReferencePoint {Stack = ReferencePoint.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm")};
             refPoint.ElementList.Add(new Text {Value = "Hello world! {Data1}", HideValue = "Data1"});
             refPoint.ElementList.Add(new Text {Value = "Hello world! {Data2}", HideValue = "Data2"});
@@ -289,7 +289,7 @@ namespace Tharga.Reporter.Console
 
             var elm = section.Pane.ElementList.Get<ReferencePoint>("SomeName");
 
-            var template = Template.Create(section);
+            var template = new Template(section);
             var documentData = new DocumentData();
             documentData.Add("Data1", "Bob");
             documentData.Add("Data2", "");

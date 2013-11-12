@@ -1,64 +1,62 @@
 using System;
-using System.Collections.Generic;
 using System.Xml;
 
 namespace Tharga.Reporter.Engine.Entity
 {
     public class Template
     {
-        public List<Section> SectionList = new List<Section>();
-        internal List<FontClass> FontClassList = new List<FontClass>();
+        public readonly SectionList SectionList = new SectionList();
 
         private Template()
         {
-
+            
         }
 
-        public static Template Create(Section section)
+        public Template(Section section)
+        {
+            if (section == null) throw new ArgumentNullException("section");
+
+            SectionList.Add(section);
+        }
+
+        public static Template Load(XmlDocument document)
         {
             var template = new Template();
-            template.SectionList.Add(section);
+
+            if ( document.ChildNodes.Count == 0 ) throw new InvalidOperationException("There are no child nodes on the root document.");
+            if ( document.ChildNodes.Count > 1) throw new InvalidOperationException("There are more than one child node on the root document.");
+
+            var xmlTemplate = document.FirstChild;
+
+            if (xmlTemplate.Name != "Template") throw new InvalidOperationException(string.Format("Template level cannot be parsed as element of type {0}.", xmlTemplate.Name));
+            if (xmlTemplate.ChildNodes.Count == 0) throw new InvalidOperationException("There have to be at least one section in the template.");
+            foreach (XmlElement xmlSection in xmlTemplate.ChildNodes)
+            {
+                if (xmlSection.Name != "Section") throw new InvalidOperationException(string.Format("Section level cannot parsed as element of type {0}.", xmlSection.Name));
+                var sec = Section.Load(xmlSection);
+                template.SectionList.Add(sec);
+            }
+            
             return template;
         }
 
-        //public static Template Create(XmlDocument xmlDocument)
-        //{
-        //    var template = new Template();
-
-        //    foreach (XmlElement element in xmlDocument)
-        //    {
-        //        if (element.Name != "Template") throw new InvalidOperationException(string.Format("Template cannot parse element of type {0}.", element.Name));
-        //        //var version = element.GetAttribute("Version");
-        //        //switch (version)
-        //        //{
-        //        //    case "1":
-        //                foreach (XmlElement xmlSection in element.ChildNodes)
-        //                {
-        //                    if (xmlSection.Name != "Section") throw new InvalidOperationException(string.Format("section cannot parse element of type {0}.", xmlSection.Name));
-        //                    var section = Section.Create(xmlSection);
-        //                    template.SectionList.Add(section);
-        //                }
-        //        //        break;
-        //        //    default:
-        //        //        throw new ArgumentOutOfRangeException(string.Format("Cannot handle templates of version {0}.", version));
-        //        //}
-        //    }
-
-        //    return template;
-        //}
-
         public XmlDocument ToXml()
         {
-            var xmd = new XmlDocument();
+            var document = new XmlDocument();
 
-            var xmeTemplate = xmd.CreateElement("Template");
-            //xmeTemplate.SetAttribute("Version", "1");
-            xmd.AppendChild(xmeTemplate);
+            var template = document.CreateElement("Template");
+            document.AppendChild(template);
+
+            if (SectionList.Count == 0) throw new InvalidOperationException("There have to be at least one section in the template.");
 
             foreach (var section in SectionList)
-                section.AppendXml(ref xmeTemplate);
+            {
+                var xmeSection = section.ToXme();
+                var imported = document.ImportNode(xmeSection, true);
+                template.AppendChild(imported);
+            }
 
-            return xmd;
+            return document;
         }
     }
 }

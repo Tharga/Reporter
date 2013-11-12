@@ -3,16 +3,25 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
-    public class UnitValue : IEquatable<UnitValue>
+    //TODO: Move stuff to extensions
+    //TODO: Perhaps an immutable class is better after all...
+    public struct UnitValue : IEquatable<UnitValue>
     {
         public enum EUnit { Point, Inch, Millimeter, Centimeter, Percentage };
 
+        private readonly double _value;
+        private readonly EUnit _unit;
+
+        internal double Value { get { return _value; } }
+        internal EUnit Unit { get { return _unit; } }        
+
         #region Constructors
 
-        private UnitValue(double value, EUnit unit)
+
+        internal UnitValue(double value, EUnit unit)
         {
-            Value = value;
-            Unit = unit;
+            _value = value;
+            _unit = unit;
         }
 
         private UnitValue(string s)
@@ -29,10 +38,10 @@ namespace Tharga.Reporter.Engine.Entity
             double d;
             value = value.Replace(".", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
             if (!double.TryParse(value, out d)) throw new InvalidOperationException(string.Format("Cannot parse {0} to a double.", value));
-            Value = d;
+            _value = d;
 
             //Get the unit part
-            Unit = s.Substring(collection[0].Length).ToUnit();
+            _unit = s.Substring(collection[0].Length).ToUnit();
         }
 
 
@@ -42,7 +51,7 @@ namespace Tharga.Reporter.Engine.Entity
 
         public static bool TryParse(string s, out UnitValue result)
         {
-            result = null;
+            result = new UnitValue(0, EUnit.Point);
             try
             {
                 result = new UnitValue(s);
@@ -60,30 +69,37 @@ namespace Tharga.Reporter.Engine.Entity
             return new UnitValue(s);
         }
 
-        internal static UnitValue Create()
-        {
-            return new UnitValue("0");
-        }
+        //internal static UnitValue Create()
+        //{
+        //    return new UnitValue("0");
+        //}
 
 
         #endregion
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is UnitValue && Equals((UnitValue)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (_value.GetHashCode() * 397) ^ (int)_unit;
+            }
+        }
+
         public bool Equals(UnitValue other)
         {
-            if (Unit == EUnit.Percentage && other.Unit != EUnit.Percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
-            if (Unit != EUnit.Percentage && other.Unit == EUnit.Percentage) throw new InvalidOperationException("Cannot compare UnitValues when the unit is in percentage, if not both values are in percentage.");
-
-            var abs = Unit == other.Unit ? Math.Abs(Value - other.Value) : Math.Abs(GetXUnitValue(0) - other.GetXUnitValue(0));
-            return abs < 0.0001;
+            return _value.Equals(other._value) && _unit == other._unit;
         }
 
         new public string ToString()
         {
             return string.Format("{0}{1}", Value.ToString("0.####").Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator, "."), Unit.ToShortString());
         }
-
-        internal double Value { get; set; }
-        internal EUnit Unit { get; set; }
 
         internal double GetXUnitValue(double totalValue)
         {
@@ -139,7 +155,6 @@ namespace Tharga.Reporter.Engine.Entity
         {
             if (((object)a) == ((object)b)) return true;
             if (((object)a) == null || ((object)b) == null) return false;
-
             return a.Equals(b);
         }
 

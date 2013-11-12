@@ -56,9 +56,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var text = new Text
                 {
                     Value = value,
-                    Left = left != null ? UnitValue.Parse(left) : null,
-                    Top = top != null ? UnitValue.Parse(top) : null,
-                    Width = width != null ? UnitValue.Parse(width) : null,
+                    Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null,
+                    Top = top != null ? UnitValue.Parse(top) : (UnitValue?)null,
+                    Width = width != null ? UnitValue.Parse(width) : (UnitValue?)null,
                     TextAlignment = textAlignment,
                     FontSize = fontSize,
                     HideValue = hideValue,
@@ -71,7 +71,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             var text = new Text(value)
                            {
-                               Left = left != null ? UnitValue.Parse(left) : null,
+                               Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null,
                                FontColor = fontColor,
                                FontSize = fontSize
                            };
@@ -93,13 +93,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return Value.ParseValue(documentData, pageNumberInfo);
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        {
-            var xmeElement = base.AppendXml(ref xmePane);
+        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
+        //{
+        //    var xmeElement = base.AppendXml(ref xmePane);
 
-            xmeElement.SetAttribute("Value", Value);
+        //    xmeElement.SetAttribute("Value", Value);
 
-            return xmeElement;
-        }
+        //    return xmeElement;
+        //}
     }
 }

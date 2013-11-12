@@ -115,7 +115,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 {
                     var stringSize = gfx.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
 
-                    if (stringSize.Width > column.Value.Width.GetXUnitValue(elementBounds.Width))
+                    if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(elementBounds.Width))
                         column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
 
                     if (column.Value.HideValue != null)
@@ -125,7 +125,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     {
                         var cellData = GetValue(column.Key, row);
                         stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                        if (stringSize.Width > column.Value.Width.GetXUnitValue(elementBounds.Width))
+                        if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(elementBounds.Width))
                             column.Value.Width = UnitValue.Parse((stringSize.Width + (padding*2)).ToString(CultureInfo.InvariantCulture) + "px");
 
                         var parsedHideValue = GetValue(column.Value.HideValue, row);
@@ -134,11 +134,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     }
 
                     if (column.Value.Hide)
-                        column.Value.Width.Value = 0;
+                        //column.Value.Width.Value = 0;
+                        column.Value.Width = new UnitValue();
                 }
 
                 var totalWidth = elementBounds.Width;
-                var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetXUnitValue(totalWidth));
+                var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.Value.GetXUnitValue(totalWidth));
 
                 if (springCount > 0)
                 {
@@ -157,12 +158,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     if (column.Align == Alignment.Right)
                     {
                         var stringSize = gfx.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
-                        alignmentJusttification = column.Width.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
+                        alignmentJusttification = column.Width.Value.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
                     }
                     else
                         alignmentJusttification += padding;
                     gfx.DrawString(column.DisplayName, headerFont, headerBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top, XStringFormats.TopLeft);
-                    left += column.Width.GetXUnitValue(elementBounds.Width);
+                    left += column.Width.Value.GetXUnitValue(elementBounds.Width);
 
                     if (debug)
                         gfx.DrawLine(debugPen, elementBounds.Left + left, elementBounds.Top, elementBounds.Left + left, elementBounds.Bottom);
@@ -184,7 +185,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         if (column.Value.Align == Alignment.Right)
                         {
                             var stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            alignmentJusttification = column.Value.Width.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
+                            alignmentJusttification = column.Value.Width.Value.GetXUnitValue(elementBounds.Width) - stringSize.Width - padding;
                         }
                         else
                             alignmentJusttification += padding;
@@ -194,7 +195,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                             cellData = "";
 
                         gfx.DrawString(cellData, lineFont, lineBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top + top, XStringFormats.TopLeft);
-                        left += column.Value.Width.GetXUnitValue(elementBounds.Width);
+                        left += column.Value.Width.Value.GetXUnitValue(elementBounds.Width);
                     }
                     top += lineSize.Height;
 
@@ -267,10 +268,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return LineFont.GetRenderColor(LineFontClass);
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        {
-            throw new NotImplementedException();
-        }
+        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         /// <summary>
         /// 
@@ -281,7 +282,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         /// <param name="widthMode"></param>
         /// <param name="alignment"></param>
         /// <param name="hideValue"></param>
-        public void AddColumn(string displayFormat, string displayName,  UnitValue width = null,
+        public void AddColumn(string displayFormat, string displayName,  UnitValue? width = null,
             WidthMode widthMode = WidthMode.Auto, Alignment alignment = Alignment.Left,
             string hideValue = null)
         {

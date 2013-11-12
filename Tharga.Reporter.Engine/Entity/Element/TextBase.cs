@@ -98,21 +98,21 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return Font.GetRenderColor(FontClass);
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        {
-            if (xmePane == null) throw new ArgumentNullException("xmePane");
+        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
+        //{
+        //    if (xmePane == null) throw new ArgumentNullException("xmePane");
 
-            var xmeElement = AppendXmlBase(ref xmePane);
+        //    var xmeElement = AppendXmlBase(ref xmePane);
 
-            if (!string.IsNullOrEmpty(FontClass))
-                xmeElement.SetAttribute("FontClass", FontClass);
+        //    if (!string.IsNullOrEmpty(FontClass))
+        //        xmeElement.SetAttribute("FontClass", FontClass);
 
-            if (xmePane.OwnerDocument == null) throw new ArgumentNullException("xmePane", "xmeSection has no owner document.");
+        //    if (xmePane.OwnerDocument == null) throw new ArgumentNullException("xmePane", "xmeSection has no owner document.");
 
-            if (_font != null)
-                xmeElement.AppendChild(xmePane.OwnerDocument.ImportNode(_font.ToXml(), true));
+        //    if (_font != null)
+        //        xmeElement.AppendChild(xmePane.OwnerDocument.ImportNode(_font.ToXml(), true));
 
-            return xmeElement;
-        }
+        //    return xmeElement;
+        //}
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -22,8 +23,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
     {
         private readonly UnitRectangle _relativeAlignment;
 
-        public string Name { get; set; }
-        public bool IsBackground { get; set; }
+        protected bool? _isBackground;
+        protected string _name;
+
+        public string Name { get { return _name ?? string.Empty; } set { _name = value; } }
+        public bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
 
         protected Element()
         {
@@ -35,30 +39,30 @@ namespace Tharga.Reporter.Engine.Entity.Element
             _relativeAlignment = relativeAlignment;
         }
 
-        protected Element(XmlElement xmlElement)
-        {
-            _relativeAlignment = new UnitRectangle();
+        //protected Element(XmlElement xmlElement)
+        //{
+        //    _relativeAlignment = new UnitRectangle();
 
-            if (xmlElement.Attributes.GetNamedItem("Left") != null)
-                _relativeAlignment.Left = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Left").Value);
+        //    if (xmlElement.Attributes.GetNamedItem("Left") != null)
+        //        _relativeAlignment.Left = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Left").Value);
 
-            if (xmlElement.Attributes.GetNamedItem("Top") != null)
-                _relativeAlignment.Top = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Top").Value);
+        //    if (xmlElement.Attributes.GetNamedItem("Top") != null)
+        //        _relativeAlignment.Top = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Top").Value);
 
-            if (xmlElement.Attributes.GetNamedItem("Right") != null)
-                _relativeAlignment.Right = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Right").Value);
+        //    if (xmlElement.Attributes.GetNamedItem("Right") != null)
+        //        _relativeAlignment.Right = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Right").Value);
 
-            if (xmlElement.Attributes.GetNamedItem("Bottom") != null)
-                _relativeAlignment.Bottom = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Bottom").Value);
+        //    if (xmlElement.Attributes.GetNamedItem("Bottom") != null)
+        //        _relativeAlignment.Bottom = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Bottom").Value);
 
-            if (xmlElement.Attributes.GetNamedItem("Width") != null)
-                _relativeAlignment.Width = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Width").Value);
+        //    if (xmlElement.Attributes.GetNamedItem("Width") != null)
+        //        _relativeAlignment.Width = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Width").Value);
 
-            if (xmlElement.Attributes.GetNamedItem("Height") != null)
-                _relativeAlignment.Height = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Height").Value);
-        }
+        //    if (xmlElement.Attributes.GetNamedItem("Height") != null)
+        //        _relativeAlignment.Height = UnitValue.Parse(xmlElement.Attributes.GetNamedItem("Height").Value);
+        //}
         
-        protected internal abstract XmlElement AppendXml(ref XmlElement xmePane);
+        //protected internal abstract XmlElement AppendXml(ref XmlElement xmePane);
 
         protected XRect GetBounds(XRect parentBounds)
         {
@@ -82,29 +86,89 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return new XRect(left, top, width, height);
         }
 
-        protected XmlElement AppendXmlBase(ref XmlElement xmePane)
+        //protected XmlElement AppendXmlBase(ref XmlElement xmePane)
+        //{
+        //    if (xmePane == null) throw new ArgumentNullException("xmePane");
+        //    if (xmePane.OwnerDocument == null) throw new ArgumentNullException("xmePane", "xmePane has no owner document.");
+
+        //    var xmeElement = xmePane.OwnerDocument.CreateElement(GetType().ToShortTypeName());
+        //    xmePane.AppendChild(xmeElement);
+
+        //    if (Left != null) xmeElement.SetAttribute("Left", Left.ToString());
+        //    if (Top != null) xmeElement.SetAttribute("Top", Top.ToString());
+        //    if (Right != null) xmeElement.SetAttribute("Right", Right.ToString());
+        //    if (Bottom != null) xmeElement.SetAttribute("Bottom", Bottom.ToString());
+        //    if (Width != null) xmeElement.SetAttribute("Width", Width.ToString());
+        //    if (Height != null) xmeElement.SetAttribute("Height", Height.ToString());
+
+        //    return xmeElement;
+        //}
+
+        public UnitValue? Top { get { return _relativeAlignment.Top; } set { _relativeAlignment.Top = value; } }
+        public virtual UnitValue? Bottom { get { return _relativeAlignment.Bottom; } set { _relativeAlignment.Bottom = value; } }
+        public virtual UnitValue? Height { get { return _relativeAlignment.Height; } set { _relativeAlignment.Height = value; } }
+        public UnitValue? Left { get { return _relativeAlignment.Left; } set { _relativeAlignment.Left = value; } }
+        public virtual UnitValue? Right { get { return _relativeAlignment.Right; } set { _relativeAlignment.Right = value; } }
+        public virtual UnitValue? Width { get { return _relativeAlignment.Width; } set { _relativeAlignment.Width = value; } }
+
+        internal virtual XmlElement ToXme()
         {
-            if (xmePane == null) throw new ArgumentNullException("xmePane");
-            if (xmePane.OwnerDocument == null) throw new ArgumentNullException("xmePane", "xmePane has no owner document.");
+            var xmd = new XmlDocument();
+            var xme = xmd.CreateElement(GetType().ToShortTypeName());
 
-            var xmeElement = xmePane.OwnerDocument.CreateElement(GetType().ToShortTypeName());
-            xmePane.AppendChild(xmeElement);
+            if (Left != null)
+                xme.SetAttribute("Left", Left.Value.ToString());
 
-            if (Left != null) xmeElement.SetAttribute("Left", Left.ToString());
-            if (Top != null) xmeElement.SetAttribute("Top", Top.ToString());
-            if (Right != null) xmeElement.SetAttribute("Right", Right.ToString());
-            if (Bottom != null) xmeElement.SetAttribute("Bottom", Bottom.ToString());
-            if (Width != null) xmeElement.SetAttribute("Width", Width.ToString());
-            if (Height != null) xmeElement.SetAttribute("Height", Height.ToString());
+            if (Top != null)
+                xme.SetAttribute("Top", Top.Value.ToString());
 
-            return xmeElement;
+            if (Right != null)
+                xme.SetAttribute("Right", Right.Value.ToString());
+
+            if (Bottom != null)
+                xme.SetAttribute("Bottom", Bottom.Value.ToString());
+
+            if (Width != null)
+                xme.SetAttribute("Width", Width.Value.ToString());
+
+            if (Height != null)
+                xme.SetAttribute("Height", Height.Value.ToString());
+
+            return xme;
         }
 
-        public UnitValue Top { get { return _relativeAlignment.Top; } set { _relativeAlignment.Top = value; } }
-        public virtual UnitValue Bottom { get { return _relativeAlignment.Bottom; } set { _relativeAlignment.Bottom = value; } }
-        public virtual UnitValue Height { get { return _relativeAlignment.Height; } set { _relativeAlignment.Height = value; } }
-        public UnitValue Left { get { return _relativeAlignment.Left; } set { _relativeAlignment.Left = value; } }
-        public virtual UnitValue Right { get { return _relativeAlignment.Right; } set { _relativeAlignment.Right = value; } }
-        public virtual UnitValue Width { get { return _relativeAlignment.Width; } set { _relativeAlignment.Width = value; } }
+        protected virtual void AppendData(XmlElement xme)
+        {
+            Left = GetValue(xme, "Left");
+            Top = GetValue(xme, "Top");
+            Right = GetValue(xme, "Right");
+            Bottom = GetValue(xme, "Bottom");
+            Width = GetValue(xme, "Width");
+            Height = GetValue(xme, "Height");
+        }
+
+        private UnitValue? GetValue(XmlElement xme, string name)
+        {
+            var val = xme.Attributes[name];
+            if (val != null)
+                return UnitValue.Parse(val.Value);
+            return null;
+        }
+
+        //TODO: Move to extension method
+        protected static Color ToColor(string value)
+        {
+            var rs = value.Substring(0, 2);
+            var gs = value.Substring(2, 2);
+            var bs = value.Substring(4, 2);
+
+            var r = Int32.Parse(rs, System.Globalization.NumberStyles.HexNumber);
+            var g = Int32.Parse(gs, System.Globalization.NumberStyles.HexNumber);
+            var b = Int32.Parse(bs, System.Globalization.NumberStyles.HexNumber);
+
+            var color = Color.FromArgb(r, g, b);
+            return color;
+        }
+
     }
 }

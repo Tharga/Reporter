@@ -115,9 +115,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return imageData;
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        {
-            throw new NotImplementedException();
-        }
+        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

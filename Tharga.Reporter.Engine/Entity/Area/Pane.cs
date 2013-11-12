@@ -1,17 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Helper;
 using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
     public class Pane : IElementContainer
     {
-        protected const double HeightEpsilon = 0.01;
+        //protected const double HeightEpsilon = 0.01;
 
         private readonly ElementList _elementList = new ElementList();
 
@@ -21,24 +21,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
 
         }
-
-        //internal Pane(XmlElement xmlPane)
-        //{
-        //    foreach(XmlElement xmlElement in xmlPane.ChildNodes)
-        //    {
-        //        switch(xmlElement.Name)
-        //        {
-        //            case "Text":
-        //                ElementList.Add(new Text(xmlElement));
-        //                break;
-        //            case "Rectangle":
-        //                ElementList.Add(new Rectangle(xmlElement));
-        //                break;
-        //            default:
-        //                throw new ArgumentOutOfRangeException(string.Format("Cannot parse {0} as an element.", xmlElement.Name));
-        //        }
-        //    }
-        //}
 
         internal void ClearRenderPointers()
         {
@@ -66,18 +48,81 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return needAnotherPage;
         }
 
-        internal virtual XmlElement AppendXml(ref XmlElement xmeSection)
+        public virtual XmlElement ToXme()
         {
-            if (xmeSection == null) throw new ArgumentNullException("xmeSection");
-            if (xmeSection.OwnerDocument == null) throw new ArgumentNullException("xmeSection", "xmeSection has no owner document.");
+            var xmd = new XmlDocument();
+            var header = xmd.CreateElement("Pane");
 
-            var xmePane = xmeSection.OwnerDocument.CreateElement(GetType().ToShortTypeName());
-            xmeSection.AppendChild(xmePane);
+            var elms = GetElements(xmd);
+            foreach (var elm in elms)
+                header.AppendChild(elm);
 
-            foreach(var element in ElementList)
-                element.AppendXml(ref xmePane);
+            return header;
+        }
 
-            return xmePane;
+        protected IEnumerable<XmlNode> GetElements(XmlDocument xmd)
+        {
+            foreach (var element in ElementList)
+            {
+                var xmeElement = element.ToXme();
+                var importedElement = xmd.ImportNode(xmeElement, true);
+                yield return importedElement;
+            }
+        }
+
+        //internal virtual XmlElement AppendXml(ref XmlElement xmeSection)
+        //{
+        //    if (xmeSection == null) throw new ArgumentNullException("xmeSection");
+        //    if (xmeSection.OwnerDocument == null) throw new ArgumentNullException("xmeSection", "xmeSection has no owner document.");
+
+        //    var xmePane = xmeSection.OwnerDocument.CreateElement(GetType().ToShortTypeName());
+        //    xmeSection.AppendChild(xmePane);
+
+        //    foreach(var element in ElementList)
+        //        element.AppendXml(ref xmePane);
+
+        //    return xmePane;
+        //}
+
+        public static Pane Load(XmlElement xme)
+        {
+            var pane = new Pane();
+
+            var elms = pane.GetElements(xme);
+            pane.ElementList.AddRange(elms);
+            //foreach(XmlElement xmlElement in xme.ChildNodes)
+            //{
+            //    Element.Element element;
+            //    switch (xmlElement.Name)
+            //    {
+            //        case "Line":
+            //            element = Line.Load(xmlElement);                        
+            //            break;
+            //        default:
+            //            throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
+            //    }
+            //    //pane.ElementList.Add(element);
+            //}
+
+            return pane;
+        }
+
+        public IEnumerable<Element.Element> GetElements(XmlElement xme)
+        {
+            foreach (XmlElement xmlElement in xme.ChildNodes)
+            {
+                Element.Element element;
+                switch (xmlElement.Name)
+                {
+                    case "Line":
+                        element = Line.Load(xmlElement);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
+                }
+                //pane.ElementList.Add(element);
+                yield return element;
+            }
         }
     }
 }

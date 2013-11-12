@@ -6,77 +6,85 @@ namespace Tharga.Reporter.Engine.Entity
 {
     public class Section
     {
-        public UnitRectangle Margin { get; set; }
+        private UnitRectangle _margin;
+        private string _name;
+
+        public UnitRectangle Margin { get { return _margin ?? Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")); } set { _margin = value; } }
         public Header Header { get; private set; }
         public Footer Footer { get; private set; }
         public Pane Pane { get; private set; }
-        public string Name { get; set; }
+        public string Name { get { return _name ?? string.Empty; } set { _name = value; } }
 
         public Section()
         {
-            Margin = Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")); // new UnitRectangle();
-            Header = new Header(UnitValue.Parse("0"));
+            Header = new Header();
             Pane = new Pane();
-            Footer = new Footer(UnitValue.Parse("0"));
+            Footer = new Footer();
         }
 
-        private Section(Margins margin, UnitValue headerSize, UnitValue footerSize)
+        internal XmlElement ToXme()
         {
-            Margin = margin;
-            Header = new Header(headerSize);
-            Pane = new Pane();
-            Footer = new Footer(footerSize);
+            var xmd = new XmlDocument();
+            var section = xmd.CreateElement("Section");
+
+            var ownerDocument = section.OwnerDocument;
+            if (ownerDocument == null) throw new NullReferenceException("ownerDocument");
+
+            if (_name != null)
+                section.SetAttribute("Name", Name);
+
+            if (_margin != null)
+            {
+                var xmeMargin = Margin.ToXme("Margin");
+                var importedSection = ownerDocument.ImportNode(xmeMargin, true);
+                section.AppendChild(importedSection);
+            }
+
+            var header = Header.ToXme();
+            var importedHeader = ownerDocument.ImportNode(header, true);
+            section.AppendChild(importedHeader);
+
+            var pane = Pane.ToXme();
+            var importedPane = ownerDocument.ImportNode(pane, true);
+            section.AppendChild(importedPane);
+
+            var footer = Footer.ToXme();
+            var importedFooter = ownerDocument.ImportNode(footer, true);
+            section.AppendChild(importedFooter);
+
+            return section;
         }
 
-        [Obsolete("Use default constructor and property setters instead.")]
-        public static Section Create()
+        internal static Section Load(XmlElement xmlSection)
         {
-            return new Section(Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")),
-                UnitValue.Parse("0"), UnitValue.Parse("0"));
-        }
+            var section = new Section();
 
-        public static Section Create(Margins margin, UnitValue headerSize, UnitValue footerSize)
-        {
-            return new Section(margin, headerSize, footerSize);
-        }
+            var name = xmlSection.Attributes["Name"];
+            if (name != null)
+                section.Name = name.Value;
 
-        //internal static Section Create(XmlElement xmlElement)
-        //{
-        //    var section = new Section();
+            foreach (XmlElement child in xmlSection)
+            {
+                switch (child.Name)
+                {
+                    case "Margin":
+                        section.Margin = UnitRectangle.Load(child);                         
+                        break;
+                    case "Header":
+                        section.Header = Header.Load(child);
+                        break;
+                    case "Footer":
+                        section.Footer = Footer.Load(child);
+                        break;
+                    case "Pane":
+                        section.Pane = Pane.Load(child);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to section.", child.Name));
+                }
+            }
 
-        //    foreach(XmlElement xmlPane in xmlElement.ChildNodes)
-        //    {
-        //        switch(xmlPane.Name)
-        //        {
-        //            case "Header":
-        //                var header = new Header(xmlPane);
-        //                section.Header = header;
-        //                break;
-        //            case "Footer":
-        //                var footer = new Footer(xmlPane);
-        //                section.Footer = footer;
-        //                break;
-        //            case "Pane":
-        //                var pane = new Pane(xmlPane);
-        //                section.Pane = pane;
-        //                break;
-        //        }
-        //    }
-
-        //    return section;
-        //}
-
-        public void AppendXml(ref XmlElement xmeTemplate)
-        {
-            if (xmeTemplate == null) throw new ArgumentNullException("xmeTemplate");
-            if (xmeTemplate.OwnerDocument == null) throw new ArgumentNullException("xmeTemplate", "xmeTemplate has no owner document.");
-
-            var xmeSection = xmeTemplate.OwnerDocument.CreateElement("Section");
-            xmeTemplate.AppendChild(xmeSection);
-
-            Header.AppendXml(ref xmeSection);
-            Pane.AppendXml(ref xmeSection);
-            Footer.AppendXml(ref xmeSection);
+            return section;
         }
     }
 }

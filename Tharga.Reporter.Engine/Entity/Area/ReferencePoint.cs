@@ -30,25 +30,25 @@ namespace Tharga.Reporter.Engine.Entity.Area
         //    Stack = stack;
         //}
 
-        public override UnitValue Bottom
+        public override UnitValue? Bottom
         {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }
 
-        public override UnitValue Height
+        public override UnitValue? Height
         {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }
 
-        public override UnitValue Width
+        public override UnitValue? Width
         {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }
 
-        public override UnitValue Right
+        public override UnitValue? Right
         {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
@@ -89,7 +89,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var needMorePages = false;
 
-            var stackTop = UnitValue.Create();
+            var stackTop = new UnitValue();
             foreach (var element in _elementList)
             {
                 //When using vertical stacking it should not be allowed to set the top value. Or can it be set as a offset?
@@ -117,7 +117,8 @@ namespace Tharga.Reporter.Engine.Entity.Area
                         needMorePages = true;
                 }
 
-                stackTop.Value += elmBnd.Height;
+                stackTop = new UnitValue(stackTop.Value + elmBnd.Height, stackTop.Unit);
+                //stackTop.Value += elmBnd.Height;
 
                 if (resetLocation)
                     element.Top = null;
@@ -125,9 +126,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return needMorePages;
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        {
-            throw new NotImplementedException();
-        }
+        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

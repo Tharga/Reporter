@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Globalization;
 using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -27,10 +26,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Rectangle(string left = null, string top = null, string width = null, string height = null,
             Color? borderColor = null, string borderWidth = "1px", Color? backgroundColor = null)
         {
-            Left = left != null ? UnitValue.Parse(left) : null;
-            Top = top != null ? UnitValue.Parse(top) : null;
-            Width = width != null ? UnitValue.Parse(width) : null;
-            Height = height != null ? UnitValue.Parse(height) : null;
+            Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null;
+            Top = top != null ? UnitValue.Parse(top) : (UnitValue?)null;
+            Width = width != null ? UnitValue.Parse(width) : (UnitValue?)null;
+            Height = height != null ? UnitValue.Parse(height) : (UnitValue?)null;
 
             BorderColor = borderColor ?? _defaultBorderColor;
             BackgroundColor = backgroundColor;
@@ -77,13 +76,22 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        protected internal override XmlElement AppendXml(ref XmlElement xmeSection)
+        public static Rectangle Load(XmlElement xme)
         {
-            var xmeElement = AppendXmlBase(ref xmeSection);
+            var rectangle = new Rectangle();
 
-            xmeElement.SetAttribute("Color", BorderColor.ToArgb().ToString(CultureInfo.InvariantCulture));
+            rectangle.AppendData(xme);
 
-            return xmeElement;
+            var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
+            if (xmlBackgroundColor != null)
+                rectangle.BackgroundColor = ToColor(xmlBackgroundColor.Value);
+
+            var xmlBorderColor = xme.Attributes["BorderColor"];
+            if (xmlBorderColor != null)
+                rectangle.BorderColor = ToColor(xmlBorderColor.Value);
+
+
+            return rectangle;
         }
     }
 }

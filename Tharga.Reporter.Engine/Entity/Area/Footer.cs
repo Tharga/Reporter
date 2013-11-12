@@ -1,38 +1,50 @@
-using System;
 using System.Xml;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
     public class Footer : Pane
     {
-        public UnitValue Height { get; set; }
+        private UnitValue? _height;
+
+        public UnitValue Height { get { return _height ?? UnitValue.Parse("0"); } set { _height = value; } }
 
         internal Footer()
         {
 
         }
 
-        //internal Footer(XmlElement xmlPane)
-        //    : base(xmlPane)
+        //internal Footer(UnitValue height)
         //{
-        //    if (xmlPane.Attributes.GetNamedItem("Height") != null)
-        //        Height = UnitValue.Parse(xmlPane.Attributes.GetNamedItem("Height").Value);
+        //    Height = height;
         //}
 
-        internal Footer(UnitValue height)
+        public override XmlElement ToXme()
         {
-            Height = height;
+            var xmd = new XmlDocument();
+            var header = xmd.CreateElement("Footer");
+
+            if (_height != null)
+                header.SetAttribute("Height", Height.ToString());
+
+            var elms = GetElements(xmd);
+            foreach (var elm in elms)
+                header.AppendChild(elm);
+
+            return header;
         }
 
-        internal override XmlElement AppendXml(ref XmlElement xmeSection)
+        public new static Footer Load(XmlElement xme)
         {
-            var xmePane = base.AppendXml(ref xmeSection);
+            var pane = new Footer();
 
-            if (Height != null && Math.Abs(Height.Value - 0) > HeightEpsilon) 
-                xmePane.SetAttribute("Height", Height.ToString());
+            var xmeHeight = xme.Attributes["Height"];
+            if (xmeHeight != null)
+                pane.Height = UnitValue.Parse(xmeHeight.Value);
 
-            return xmePane;
+            var elms = pane.GetElements(xme);
+            pane.ElementList.AddRange(elms);
+
+            return pane;
         }
-
     }
 }

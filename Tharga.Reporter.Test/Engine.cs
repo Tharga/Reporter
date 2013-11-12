@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Test
 {
@@ -12,45 +12,45 @@ namespace Tharga.Reporter.Test
         public void Create_template_with_default_section()
         {
             //Arrange
-            var section = Section.Create();
+            var section = new Section();
 
             //Act
-            var template = Template.Create(section);
+            var template = new Template(section);
 
             //Assert
             Assert.AreEqual(1, template.SectionList.Count);
 
-            Assert.IsNotNull(template.SectionList[0].Header);
-            Assert.AreEqual(0, template.SectionList[0].Header.ElementList.Count);
-            Assert.AreEqual(0, template.SectionList[0].Header.Height.Value);
-            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList[0].Header.Height.Unit);
+            Assert.IsNotNull(template.SectionList.First().Header);
+            Assert.AreEqual(0, template.SectionList.First().Header.ElementList.Count);
+            Assert.AreEqual(0, template.SectionList.First().Header.Height.Value);
+            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Header.Height.Unit);
 
-            Assert.IsNotNull(template.SectionList[0].Footer);
-            Assert.AreEqual(0, template.SectionList[0].Footer.ElementList.Count);
-            Assert.AreEqual(0, template.SectionList[0].Footer.Height.Value);
-            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList[0].Footer.Height.Unit);
+            Assert.IsNotNull(template.SectionList.First().Footer);
+            Assert.AreEqual(0, template.SectionList.First().Footer.ElementList.Count);
+            Assert.AreEqual(0, template.SectionList.First().Footer.Height.Value);
+            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Footer.Height.Unit);
 
-            Assert.IsNotNull(template.SectionList[0].Pane);
-            Assert.AreEqual(0, template.SectionList[0].Pane.ElementList.Count);
+            Assert.IsNotNull(template.SectionList.First().Pane);
+            Assert.AreEqual(0, template.SectionList.First().Pane.ElementList.Count);
 
-            Assert.IsNotNull(template.SectionList[0].Margin);
-            Assert.AreEqual(0, template.SectionList[0].Margin.Left.Value);
-            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList[0].Margin.Left.Unit);
-            Assert.AreEqual(0, template.SectionList[0].Margin.Right.Value);
-            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList[0].Margin.Right.Unit);
-            Assert.AreEqual(0, template.SectionList[0].Margin.Top.Value);
-            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList[0].Margin.Top.Unit);
-            Assert.AreEqual(0, template.SectionList[0].Margin.Bottom.Value);
-            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList[0].Margin.Bottom.Unit);
-            Assert.IsNull(template.SectionList[0].Margin.Height);
-            Assert.IsNull(template.SectionList[0].Margin.Width);
+            Assert.IsNotNull(template.SectionList.First().Margin);
+            Assert.AreEqual(0, template.SectionList.First().Margin.Left.Value.Value);
+            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Left.Value.Unit);
+            Assert.AreEqual(0, template.SectionList.First().Margin.Right.Value.Value);
+            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Right.Value.Unit);
+            Assert.AreEqual(0, template.SectionList.First().Margin.Top.Value.Value);
+            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Top.Value.Unit);
+            Assert.AreEqual(0, template.SectionList.First().Margin.Bottom.Value.Value);
+            Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Bottom.Value.Unit);
+            Assert.IsNull(template.SectionList.First().Margin.Height);
+            Assert.IsNull(template.SectionList.First().Margin.Width);
         }
 
         [TestMethod]
         public void Create_pdf_document()
         {
             //Arrange
-            var template = Template.Create(Section.Create());
+            var template = new Template(new Section());
 
             //Act
             var byteArray = Rendering.CreatePDFDocument(template);
