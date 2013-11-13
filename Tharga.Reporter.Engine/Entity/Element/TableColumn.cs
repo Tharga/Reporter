@@ -1,4 +1,6 @@
 using System;
+using System.Xml;
+using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -12,7 +14,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal bool Hide { get; set; }
 
-        public TableColumn(string displayName, UnitValue? width, Table.WidthMode widthMode, Table.Alignment align, string hideValue)
+        //TODO: Have an empty default constructor here as well. And set values later on. As for all other classes.
+        internal TableColumn(string displayName, UnitValue? width, Table.WidthMode widthMode, Table.Alignment align, string hideValue)
         {
             if (width == null && widthMode == Table.WidthMode.Specific) throw new InvalidOperationException("When not assigning a specific value for width the width mode cannot be set to specific.");
 
@@ -23,6 +26,37 @@ namespace Tharga.Reporter.Engine.Entity.Element
             HideValue = hideValue;
 
             Hide = false;
+        }
+
+        internal XmlElement ToXme()
+        {
+            var xmd = new XmlDocument();
+            var xme = xmd.CreateElement(GetType().ToShortTypeName());
+
+            xme.SetAttribute("DisplayName", DisplayName);
+            xme.SetAttribute("Align", Align.ToString());
+            xme.SetAttribute("HideValue", HideValue);
+            xme.SetAttribute("Width", Width.Value.ToString());
+            xme.SetAttribute("WidthMode", WidthMode.ToString());
+
+            return xme;
+        }
+
+        internal static TableColumn Load(XmlElement xme)
+        {
+            var displayName = xme.Attributes["DisplayName"].Value;
+            var align = (Table.Alignment)Enum.Parse(typeof(Table.Alignment), xme.Attributes["Align"].Value);
+
+            var hideValue = xme.Attributes["HideValue"].Value;
+
+            UnitValue? width = null;
+            if (xme.Attributes["Width"] != null)
+                width = UnitValue.Parse(xme.Attributes["Width"].Value);
+
+            var widthMode = (Table.WidthMode)Enum.Parse(typeof(Table.WidthMode), xme.Attributes["WidthMode"].Value);
+
+            var tableColumn = new TableColumn(displayName,width,widthMode,align,hideValue);
+            return tableColumn;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
@@ -54,6 +55,7 @@ namespace Tharga.Reporter.Test
                     Name = "Bob",
                     LineFontClass = "C"                    
                 };
+            table.AddColumn("A", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
             var xme = table.ToXme();
 
             //Act
@@ -75,6 +77,18 @@ namespace Tharga.Reporter.Test
             //Assert.AreEqual(table.LineFont.FontName, otherLine.LineFont.FontName);
             Assert.AreEqual(table.LineFontClass, otherLine.LineFontClass);
             Assert.AreEqual(table.ToString(), otherLine.ToString());
+            
+            Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
+            var colA = table.Columns.First();
+            var colB = otherLine.Columns.First();
+            Assert.AreEqual(colA.Key, colB.Key);
+            Assert.AreEqual(colA.Value.Align, colB.Value.Align);
+            Assert.AreEqual(colA.Value.DisplayName, colB.Value.DisplayName);
+            Assert.AreEqual(colA.Value.Hide, colB.Value.Hide);
+            Assert.AreEqual(colA.Value.HideValue, colB.Value.HideValue);
+            Assert.AreEqual(colA.Value.Width, colB.Value.Width);
+            Assert.AreEqual(colA.Value.WidthMode, colB.Value.WidthMode);
+
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
     }

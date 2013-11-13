@@ -18,14 +18,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public enum Alignment { Left, Right };
         public enum WidthMode { Specific, Auto, Spring }
 
-        private readonly Dictionary<string, TableColumn> _columns = new Dictionary<string, TableColumn>();
-
         private Color? _borderColor;
         private Color? _backgroundColor;
         private Font _headerFont;
         private string _headerFontClass;
         private Font _lineFont;
         private string _lineFontClass;
+        private readonly Dictionary<string, TableColumn> _columns = new Dictionary<string, TableColumn>();
 
         public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
         public Color? BackgroundColor { get { return _backgroundColor; } set { _backgroundColor = value; } }
@@ -66,6 +65,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _lineFontClass = value;
             }
         }
+        internal Dictionary<string, TableColumn> Columns { get { return _columns; } }
 
         private int _rowPointer; //Rememgers the row possition between pages
 
@@ -236,32 +236,32 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return result;
         }
 
-        internal string GetHeaderName()
+        private string GetHeaderName()
         {
             return HeaderFont.GetRenderName(HeaderFontClass);
         }
 
-        internal double GetHeaderSize()
+        private double GetHeaderSize()
         {
             return HeaderFont.GetRenderSize(HeaderFontClass);
         }
 
-        internal Color GetHeaderColor()
+        private Color GetHeaderColor()
         {
             return HeaderFont.GetRenderColor(HeaderFontClass);
         }
 
-        internal string GetLineName()
+        private string GetLineName()
         {
             return LineFont.GetRenderName(LineFontClass);
         }
 
-        internal double GetLineSize()
+        private double GetLineSize()
         {
             return LineFont.GetRenderSize(LineFontClass);
         }
 
-        internal Color GetLineColor()
+        private Color GetLineColor()
         {
             return LineFont.GetRenderColor(LineFontClass);
         }
@@ -289,32 +289,56 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (_lineFontClass != null)
                 xme.SetAttribute("LineFontClass", _lineFontClass);
 
+            var columns = xme.OwnerDocument.CreateElement("Columns");
+            xme.AppendChild(columns);
+            foreach (var column in Columns)
+            {
+                var xmeColumn = column.Value.ToXme();
+
+                xmeColumn.SetAttribute("Key", column.Key);
+
+                var col = columns.OwnerDocument.ImportNode(xmeColumn, true);
+                columns.AppendChild(col);
+            }
+
             return xme;
         }
 
-        public static Table Load(XmlElement xme)
+        internal static Table Load(XmlElement xme)
         {
-            var rectangle = new Table();
+            var table = new Table();
 
-            rectangle.AppendData(xme);
+            table.AppendData(xme);
 
             var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
             if (xmlBackgroundColor != null)
-                rectangle.BackgroundColor = xmlBackgroundColor.Value.ToColor();
+                table.BackgroundColor = xmlBackgroundColor.Value.ToColor();
 
             var xmlBorderColor = xme.Attributes["BorderColor"];
             if (xmlBorderColor != null)
-                rectangle.BorderColor = xmlBorderColor.Value.ToColor();
+                table.BorderColor = xmlBorderColor.Value.ToColor();
 
             var xmlHeaderFontClass = xme.Attributes["HeaderFontClass"];
             if (xmlHeaderFontClass != null)
-                rectangle.HeaderFontClass = xmlHeaderFontClass.Value;
+                table.HeaderFontClass = xmlHeaderFontClass.Value;
 
             var xmlLineFontClass = xme.Attributes["LineFontClass"];
             if (xmlLineFontClass != null)
-                rectangle.LineFontClass = xmlLineFontClass.Value;
+                table.LineFontClass = xmlLineFontClass.Value;
 
-            return rectangle;
+            var xmlTemplate = xme.FirstChild;
+
+            if (xmlTemplate.Name != "Columns") throw new InvalidOperationException(string.Format("Columns level cannot be parsed as element of type {0}.", xmlTemplate.Name));
+            foreach (XmlElement xmlColumn in xmlTemplate.ChildNodes)
+            {
+                var name = xmlColumn.Attributes["Key"].Value;
+
+                var col = TableColumn.Load(xmlColumn);
+
+                table.AddColumn(name, col.DisplayName, col.Width, col.WidthMode, col.Align, col.HideValue);
+            }
+
+            return table;
         }
     }
 }
