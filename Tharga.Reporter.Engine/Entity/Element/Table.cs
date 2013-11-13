@@ -13,21 +13,31 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public class Table : MultiPageElement
     {
+        private readonly Color _defaultBorderColor = Color.Black;
+
         public enum Alignment { Left, Right };
         public enum WidthMode { Specific, Auto, Spring }
 
         private readonly Dictionary<string, TableColumn> _columns = new Dictionary<string, TableColumn>();
 
-        public Color? BorderColor { get; set; }
-        public Color? BackgroundColor { get; set; }
-
+        private Color? _borderColor;
+        private Color? _backgroundColor;
         private Font _headerFont;
         private string _headerFontClass;
         private Font _lineFont;
         private string _lineFontClass;
-        
-        private int _rowPointer; //Rememgers the row possition between pages
 
+        public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
+        public Color? BackgroundColor { get { return _backgroundColor; } set { _backgroundColor = value; } }
+        internal Font HeaderFont
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_headerFontClass)) 
+                    throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFontClass has already been set.");
+                return _headerFont ?? (_headerFont = new Font());
+            }
+        }
         public string HeaderFontClass
         {
             get { return _headerFontClass; }
@@ -37,47 +47,35 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _headerFontClass = value;
             }
         }
-
-        public Font HeaderFont
+        internal Font LineFont
         {
             get
             {
-                if (!string.IsNullOrEmpty(_headerFontClass)) throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFontClass has already been set.");
-                return _headerFont ?? (_headerFont = new Font());
+                if (!string.IsNullOrEmpty(_lineFontClass))
+                    throw new InvalidOperationException("Cannot set both LineFont and LineFontClass. LineFontClass has already been set.");
+                return _lineFont ?? (_lineFont = new Font());
             }
         }
-
         public string LineFontClass
         {
             get { return _lineFontClass; }
             set
             {
-                if (_lineFont != null) throw new InvalidOperationException("Cannot set both LineFont and LineFontClass. LineFont has already been set.");
+                if (_lineFont != null)
+                    throw new InvalidOperationException("Cannot set both LineFont and LineFontClass. LineFont has already been set.");
                 _lineFontClass = value;
             }
         }
 
-        public Font LineFont
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(_lineFontClass)) throw new InvalidOperationException("Cannot set both LineFont and LineFontClass. LineFontClass has already been set.");
-                return _lineFont ?? (_lineFont = new Font());
-            }
-        }
+        private int _rowPointer; //Rememgers the row possition between pages
 
-        public string Name { get; private set; }
 
-        public Table(string name)
-        {
-            Name = name;
-        }
 
-        //[Obsolete("Use simple constructor and property setters instead.")]
-        //public Table(string name, UnitValue left = null, UnitValue top = null, UnitValue right = null, UnitValue bottom = null)
-        //    : base(new UnitRectangle(left, top, right, bottom))
+        //public string Name { get { return _name ?? string.Empty; } set { _name = value; } }
+
+        //public Table() //string name)
         //{
-        //    Name = name;
+        //    //Name = name;
         //}
 
         protected internal override void ClearRenderPointer()
@@ -216,7 +214,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             if (BorderColor != null)
             {
-                var borderPen = new XPen(BorderColor.Value);
+                var borderPen = new XPen(BorderColor);
 
                 //Rectangle around the entire table
                 gfx.DrawRectangle(borderPen, elementBounds);
@@ -268,25 +266,55 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return LineFont.GetRenderColor(LineFontClass);
         }
 
-        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="displayFormat">A static text, or a text with variables; "text {Data} text"</param>
-        /// <param name="displayName"></param>
-        /// <param name="width"></param>
-        /// <param name="widthMode"></param>
-        /// <param name="alignment"></param>
-        /// <param name="hideValue"></param>
         public void AddColumn(string displayFormat, string displayName,  UnitValue? width = null,
             WidthMode widthMode = WidthMode.Auto, Alignment alignment = Alignment.Left,
             string hideValue = null)
         {
             _columns.Add(displayFormat, new TableColumn(displayName, width, widthMode, alignment, hideValue));
+        }
+
+        internal override XmlElement ToXme()
+        {
+            var xme = base.ToXme();
+
+            if (_backgroundColor != null)
+                xme.SetAttribute("BackgroundColor", string.Format("{0}{1}{2}", _backgroundColor.Value.R.ToString("X2"), _backgroundColor.Value.G.ToString("X2"), _backgroundColor.Value.B.ToString("X2")));
+
+            if (_borderColor != null)
+                xme.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
+
+            if (_headerFontClass != null)
+                xme.SetAttribute("HeaderFontClass", _headerFontClass);
+
+            if (_lineFontClass != null)
+                xme.SetAttribute("LineFontClass", _lineFontClass);
+
+            return xme;
+        }
+
+        public static Table Load(XmlElement xme)
+        {
+            var rectangle = new Table();
+
+            rectangle.AppendData(xme);
+
+            var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
+            if (xmlBackgroundColor != null)
+                rectangle.BackgroundColor = xmlBackgroundColor.Value.ToColor();
+
+            var xmlBorderColor = xme.Attributes["BorderColor"];
+            if (xmlBorderColor != null)
+                rectangle.BorderColor = xmlBorderColor.Value.ToColor();
+
+            var xmlHeaderFontClass = xme.Attributes["HeaderFontClass"];
+            if (xmlHeaderFontClass != null)
+                rectangle.HeaderFontClass = xmlHeaderFontClass.Value;
+
+            var xmlLineFontClass = xme.Attributes["LineFontClass"];
+            if (xmlLineFontClass != null)
+                rectangle.LineFontClass = xmlLineFontClass.Value;
+
+            return rectangle;
         }
     }
 }

@@ -51,11 +51,14 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Font_Tests.cs" />
+    <Compile Include="Image_Tests.cs" />
     <Compile Include="Line_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Rectangle_Tests.cs" />
     <Compile Include="Section_Test.cs" />
+    <Compile Include="Table_Tests.cs" />
     <Compile Include="Template_Tests.cs" />
   </ItemGroup>
   <ItemGroup>

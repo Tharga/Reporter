@@ -70,11 +70,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
             if (xmlBackgroundColor != null)
-                rectangle.BackgroundColor = ToColor(xmlBackgroundColor.Value);
+                rectangle.BackgroundColor = xmlBackgroundColor.Value.ToColor();
 
             var xmlBorderColor = xme.Attributes["BorderColor"];
             if (xmlBorderColor != null)
-                rectangle.BorderColor = ToColor(xmlBorderColor.Value);
+                rectangle.BorderColor = xmlBorderColor.Value.ToColor();
 
             var xmlBorderWidth = xme.Attributes["BorderWidth"];
             if (xmlBorderWidth != null)

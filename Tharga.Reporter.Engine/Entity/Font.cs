@@ -1,6 +1,7 @@
 using System;
-using System.Globalization;
 using System.Xml;
+using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
@@ -8,32 +9,17 @@ namespace Tharga.Reporter.Engine.Entity
     {
         private const double SizeEpsilon = 0.01;
 
+        private string _fontName;
+        private double? _size;
         private System.Drawing.Color? _color;
 
-        public string FontName { get; set; }
-        public double Size { get; set; }
+        public string FontName { get { return _fontName ?? string.Empty; } set { _fontName = value; } }
+        public double Size { get { return _size ?? 10; } set { _size = value; } }
+        public System.Drawing.Color? Color { get { return _color == null ? (System.Drawing.Color?)null : _color.Value; } set { _color = value; } }
 
         internal Font()
         {
             
-        }
-
-        internal Font(XmlElement xmeFont)
-        {
-            if (xmeFont.Attributes.GetNamedItem("FontName") != null)
-                FontName = xmeFont.Attributes.GetNamedItem("FontName").Value;
-
-            if (xmeFont.Attributes.GetNamedItem("Size") != null)
-                Size = double.Parse(xmeFont.Attributes.GetNamedItem("Size").Value);
-
-            if (xmeFont.Attributes.GetNamedItem("Color") != null)
-                _color = System.Drawing.Color.FromArgb(int.Parse(xmeFont.Attributes.GetNamedItem("Color").Value));
-        }
-
-        public System.Drawing.Color? Color
-        {
-            get { return _color == null ? (System.Drawing.Color?)null : _color.Value; }
-            set { _color = value; }
         }
 
         internal string GetRenderName(string defaultClass)
@@ -83,22 +69,40 @@ namespace Tharga.Reporter.Engine.Entity
             return Color.Value;
         }
 
-        public XmlNode ToXml()
+        internal XmlElement ToXme()
         {
             var xmd = new XmlDocument();
-            var xme = xmd.CreateElement("Font");
-            xmd.AppendChild(xme);
+            var xme = xmd.CreateElement(GetType().ToShortTypeName());
 
-            if (!string.IsNullOrEmpty(FontName))
-                xme.SetAttribute("FontName", FontName);
+            if (_color != null)
+                xme.SetAttribute("Color", string.Format("{0}{1}{2}", _color.Value.R.ToString("X2"), _color.Value.G.ToString("X2"), _color.Value.B.ToString("X2")));
 
-            if (Math.Abs(Size - 0) > SizeEpsilon)
-                xme.SetAttribute("Size", Size.ToString(CultureInfo.InvariantCulture));
+            if (_fontName != null)
+                xme.SetAttribute("FontName", _fontName);
 
-            if (_color != null) 
-                xme.SetAttribute("Color", _color.Value.ToArgb().ToString(CultureInfo.InvariantCulture));
+            if (_size != null)
+                xme.SetAttribute("Size", _size.ToString());
 
             return xme;
         }
+
+        public static Font Load(XmlElement xme)
+        {
+            var line = new Font();
+
+            var xmlBorderColor = xme.Attributes["Color"];
+            if (xmlBorderColor != null)
+                line.Color = xmlBorderColor.Value.ToColor();
+
+            var xmlFontName = xme.Attributes["FontName"];
+            if (xmlFontName != null)
+                line.FontName = xmlFontName.Value;
+
+            var xmlSize = xme.Attributes["Size"];
+            if (xmlSize != null)
+                line.Size = double.Parse(xmlSize.Value);
+
+            return line;
+        }        
     }
 }

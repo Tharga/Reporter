@@ -40,7 +40,7 @@ namespace Tharga.Reporter.Console
 
             var content = new Section{Name = "Content"};
 
-            var tableTemplate = new Table("MyTable") { BorderColor = System.Drawing.Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
+            var tableTemplate = new Table { Name ="MyTable", BorderColor = System.Drawing.Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
             content.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("A {Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("B {Col2}", "Column 2", UnitValue.Parse("5cm"));
@@ -77,7 +77,7 @@ namespace Tharga.Reporter.Console
         {
             var section = new Section();
 
-            var tableTemplate = new Table("MyTable") {BorderColor = System.Drawing.Color.Blue};
+            var tableTemplate = new Table {Name = "MyTable", BorderColor = System.Drawing.Color.Blue};
             section.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("{Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("{Col2}", "Column 2", UnitValue.Parse("5cm"));

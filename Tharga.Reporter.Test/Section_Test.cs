@@ -122,6 +122,7 @@ namespace Tharga.Reporter.Test
             section.Pane.ElementList.Add(new Image());
             section.Pane.ElementList.Add(new Line());
             section.Pane.ElementList.Add(new Rectangle());
+            section.Pane.ElementList.Add(new Table());
 
             var template = new Template(section);
             var xml = template.ToXml();

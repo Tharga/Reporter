@@ -55,7 +55,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             var xmlBorderColor = xme.Attributes["BorderColor"];
             if (xmlBorderColor != null)
-                line.BorderColor = ToColor(xmlBorderColor.Value);
+                line.BorderColor = xmlBorderColor.Value.ToColor();
 
             var xmlAttribute = xme.Attributes["IsBackground"];
             if (xmlAttribute != null)
