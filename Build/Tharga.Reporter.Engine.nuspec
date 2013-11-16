@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>$id$</id>
+    <id>Tharga.Reporter</id>
     <version>$version$</version>
     <title>Tharga Reporter</title>
     <authors>$author$</authors>
