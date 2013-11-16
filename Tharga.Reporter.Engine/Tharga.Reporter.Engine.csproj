@@ -57,10 +57,14 @@
     <Compile Include="Entity\Area\PageNumberInfo.cs" />
     <Compile Include="Entity\Area\ReferencePoint.cs" />
     <Compile Include="Entity\DocumentData.cs" />
+    <Compile Include="Entity\DocumentDataTable.cs" />
     <Compile Include="Entity\DocumentProperties.cs" />
+    <Compile Include="Entity\Element\Extensions\ElementExtensions.cs" />
     <Compile Include="Entity\Element\Image.cs" />
     <Compile Include="Entity\Element\Line.cs" />
+    <Compile Include="Entity\Element\Base\MultiPageElement.cs" />
     <Compile Include="Entity\Element\Rectangle.cs" />
+    <Compile Include="Entity\Element\Base\SinglePageElement.cs" />
     <Compile Include="Entity\Element\Table.cs" />
     <Compile Include="Entity\Element\TableColumn.cs" />
     <Compile Include="Entity\Element\Text.cs" />
@@ -70,8 +74,7 @@
     <Compile Include="Entity\SectionList.cs" />
     <Compile Include="Printing.cs" />
     <Compile Include="Rendering.cs" />
-    <Compile Include="Entity\Element\Element.cs" />
-    <Compile Include="Entity\FontClass.cs" />
+    <Compile Include="Entity\Element\Base\Element.cs" />
     <Compile Include="Entity\Area\Footer.cs" />
     <Compile Include="Entity\Area\Header.cs" />
     <Compile Include="Entity\Margins.cs" />
