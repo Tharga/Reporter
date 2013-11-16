@@ -10,7 +10,7 @@ using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
-    public class ReferenceElement : MultiPageElement, IElementContainer
+    public class ReferencePoint : MultiPageElement, IElementContainer
     {
         private const StackMethod _defaultStack = StackMethod.None;
 
@@ -160,9 +160,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return xme;
         }
 
-        public static ReferenceElement Load(XmlElement xme)
+        public static ReferencePoint Load(XmlElement xme)
         {
-            var referencePoint = new ReferenceElement();
+            var referencePoint = new ReferencePoint();
             referencePoint.AppendData(xme);
 
             referencePoint.Left = referencePoint.GetValue(xme, "Left");

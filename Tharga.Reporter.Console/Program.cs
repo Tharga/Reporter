@@ -36,11 +36,11 @@ namespace Tharga.Reporter.Console
             section.Header.ElementList.Add(new Image { Source = "{Company.Logotype}", Height = UnitValue.Parse("3,5cm"), Top = UnitValue.Parse("0cm"), IsBackground = true });
 
             //Customer
-            var customerArea = new ReferenceElement()
+            var customerArea = new ReferencePoint()
             {
                 Left = UnitValue.Parse("10cm"),
                 Top = UnitValue.Parse("2,5cm"),
-                Stack = ReferenceElement.StackMethod.Vertical,
+                Stack = ReferencePoint.StackMethod.Vertical,
                 Name = "CustomerArea"
             };
             section.Header.ElementList.Add(customerArea);
@@ -52,7 +52,7 @@ namespace Tharga.Reporter.Console
             customerArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.PostalCode} {Customer.DeliveryAddress.City}" });
             customerArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.Country}" });
 
-            var refArea = new ReferenceElement { Left = UnitValue.Parse("3cm"), Top = UnitValue.Parse("2,5cm"), Stack = ReferenceElement.StackMethod.Vertical };
+            var refArea = new ReferencePoint { Left = UnitValue.Parse("3cm"), Top = UnitValue.Parse("2,5cm"), Stack = ReferencePoint.StackMethod.Vertical };
             section.Header.ElementList.Add(refArea);
             refArea.ElementList.Add(new Text { Value = "Vår Referens" });
             refArea.ElementList.Add(new Text { Value = "{User.Name}" });
@@ -67,26 +67,26 @@ namespace Tharga.Reporter.Console
 
             const string top = "3px";
             section.Footer.Height = UnitValue.Parse("2cm");
-            var addressRefPoint = new ReferenceElement { Top = UnitValue.Parse(top), Stack = ReferenceElement.StackMethod.Vertical };
+            var addressRefPoint = new ReferencePoint { Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
             section.Footer.ElementList.Add(addressRefPoint);
             addressRefPoint.ElementList.Add(new Text { Value = "Postadress", Font = { Color = backFieldColor, Size = 6 } });
             addressRefPoint.ElementList.Add(new Text { Value = "{Company.StreetName}", Font = { Color = backLineColor, Size = 8 } });
             addressRefPoint.ElementList.Add(new Text { Value = "{Company.PostalCode} {Company.City}", Font = { Color = backLineColor, Size = 8 } });
 
-            var hallRefPoint = new ReferenceElement { Left = UnitValue.Parse("4cm"), Top = UnitValue.Parse(top), Stack = ReferenceElement.StackMethod.Vertical };
+            var hallRefPoint = new ReferencePoint { Left = UnitValue.Parse("4cm"), Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
             section.Footer.ElementList.Add(hallRefPoint);
             hallRefPoint.ElementList.Add(new Text { Value = "Telefon", Font = { Color = backLineColor, Size = 6 } });
             hallRefPoint.ElementList.Add(new Text { Value = "{Company.Phone}", Font = { Color = backLineColor, Size = 8 } });
             hallRefPoint.ElementList.Add(new Text { Value = "Fax", Font = { Color = backLineColor, Size = 6 } });
             hallRefPoint.ElementList.Add(new Text { Value = "{Company.Fax}", Font = { Color = backLineColor, Size = 8 } });
 
-            var tradRefPoint = new ReferenceElement { Left = UnitValue.Parse("8,5cm"), Top = UnitValue.Parse(top), Stack = ReferenceElement.StackMethod.Vertical };
+            var tradRefPoint = new ReferencePoint { Left = UnitValue.Parse("8,5cm"), Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
             section.Footer.ElementList.Add(tradRefPoint);
             tradRefPoint.ElementList.Add(new Text { Value = "{EMail1}", Font = { Color = backLineColor, Size = 8 } });
             tradRefPoint.ElementList.Add(new Text { Value = "{EMail2}", Font = { Color = backLineColor, Size = 8 } });
             tradRefPoint.ElementList.Add(new Text { Value = "{EMail3}", Font = { Color = backLineColor, Size = 8 } });
 
-            var bg = new ReferenceElement { Left = UnitValue.Parse("16cm"), Top = UnitValue.Parse(top), Stack = ReferenceElement.StackMethod.Vertical };
+            var bg = new ReferencePoint { Left = UnitValue.Parse("16cm"), Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
             section.Footer.ElementList.Add(bg);
             bg.ElementList.Add(new Text { Value = "Bankgiro", Font = { Color = backLineColor, Size = 6 } });
             bg.ElementList.Add(new Text { Value = "{Bankgiro}", Font = { Color = backLineColor, Size = 8 } });
@@ -113,7 +113,7 @@ namespace Tharga.Reporter.Console
             //orderItemTable.AddColumn("{NetSaleTotalPrice}", "Belopp", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
 
             //Order summary
-            var orderSummaryBv = new ReferenceElement { Top = SumTop };
+            var orderSummaryBv = new ReferencePoint { Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryBv);
             orderSummaryBv.ElementList.Add(new Line { Width = UnitValue.Parse("100%"), BorderColor = backLineColor });
             //orderSummaryBv.ElementList.Add(new Rectangle("0cm", "0cm", "100%", "999cm", backLineColor));
@@ -121,12 +121,12 @@ namespace Tharga.Reporter.Console
             orderSummaryBv.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), Width = UnitValue.Parse("100%"), BorderColor = backLineColor });
             //orderSummaryBv.ElementList.Add(Text.Create("Betalningsvillkor", backLineColor, 6));
 
-            //var orderSummaryDt = new ReferenceElement("7cm", sumTop);
+            //var orderSummaryDt = new ReferencePoint("7cm", sumTop);
             //section.Pane.ElementList.Add(orderSummaryDt);
             ////orderSummaryDt.ElementList.Add(new Line("0cm", "0cm", "0cm", "1cm", backLineColor));
             ////orderSummaryDt.ElementList.Add(Text.Create("Förfallodag", backLineColor, 6));
 
-            //var orderSummaryOcr = new ReferenceElement("0cm", SumTop);
+            //var orderSummaryOcr = new ReferencePoint("0cm", SumTop);
             //section.Pane.ElementList.Add(orderSummaryOcr);
             //var ocrTitle = Text.Create("OCR", backLineColor, 6);
             //ocrTitle.Left = UnitValue.Parse("2px");
@@ -137,7 +137,7 @@ namespace Tharga.Reporter.Console
             //ocrText.Left = UnitValue.Parse("2px"); 
             //orderSummaryOcr.ElementList.Add(ocrText);
 
-            var orderSummaryPe = new ReferenceElement { Left = UnitValue.Parse("10cm"), Top = SumTop };
+            var orderSummaryPe = new ReferencePoint { Left = UnitValue.Parse("10cm"), Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryPe);
             orderSummaryPe.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), BorderColor = backLineColor });
             var peTitle = new Text { Value = "Summa exkl. moms", Font = { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
@@ -145,7 +145,7 @@ namespace Tharga.Reporter.Console
             var netSaleTotalPriceText = new Text { Value = "{NetSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,45cm"), TextAlignment = TextBase.Alignment.Right };
             orderSummaryPe.ElementList.Add(netSaleTotalPriceText);
 
-            var orderSummaryVat = new ReferenceElement { Left = UnitValue.Parse("12,5cm"), Top = SumTop };
+            var orderSummaryVat = new ReferencePoint { Left = UnitValue.Parse("12,5cm"), Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryVat);
             orderSummaryVat.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), BorderColor = backLineColor });
             var vatTiel = new Text { Value = "Moms", Font = { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
@@ -153,7 +153,7 @@ namespace Tharga.Reporter.Console
             var vatSaleTotalPriceText = new Text { Value = "{VatSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,45cm"), TextAlignment = TextBase.Alignment.Right };
             orderSummaryVat.ElementList.Add(vatSaleTotalPriceText);
 
-            var orderSummaryGross = new ReferenceElement { Left = UnitValue.Parse("15cm"), Top = SumTop };
+            var orderSummaryGross = new ReferencePoint { Left = UnitValue.Parse("15cm"), Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryGross);
             orderSummaryGross.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), BorderColor = backLineColor });
             var grossTitle = new Text { Value = "Att betala", Font = { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
@@ -162,7 +162,7 @@ namespace Tharga.Reporter.Console
             orderSummaryGross.ElementList.Add(grossSaleTotalPriceText);
 
             //Extra info
-            var vatInfoReference = new ReferenceElement { Left = UnitValue.Parse("0"), Top = SumTop };
+            var vatInfoReference = new ReferencePoint { Left = UnitValue.Parse("0"), Top = SumTop };
             var vatInfoText = new Text { Value = "Org.nr {Company.OrgNo}. Innehar F-skattsedel. Vat nr {Company.VatNo}.", Left = UnitValue.Parse("2px"), Top = UnitValue.Parse("1cm"), Font = { Size = 6, Color = backLineColor } };
             vatInfoReference.ElementList.Add(vatInfoText);
             //var lateInfoText = new Text { Value = "Vid betalning efter förfallodagen debiteras 18%", Left = UnitValue.Parse("2px"), Top = UnitValue.Parse("1,5cm"), FontSize = 10, FontColor = backLineColor };
@@ -234,7 +234,7 @@ namespace Tharga.Reporter.Console
 
 
             ////Signature for the representative
-            //var signRefPoint = new ReferenceElement("1cm", "18cm");
+            //var signRefPoint = new ReferencePoint("1cm", "18cm");
             //section.Pane.ElementList.Add(signRefPoint);
             //signRefPoint.ElementList.Add(new Line("0cm", "0cm", "8cm", "0cm", backLineColor, "1px"));
             //signRefPoint.ElementList.Add(Text.Create("{Representative.Name}", "0", "0cm"));
@@ -459,7 +459,7 @@ namespace Tharga.Reporter.Console
         {
             var section = new Section { Name = "Content" };
 
-            var referencePoint = new ReferenceElement { Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm"), Stack = ReferenceElement.StackMethod.Vertical };
+            var referencePoint = new ReferencePoint { Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm"), Stack = ReferencePoint.StackMethod.Vertical };
 
             referencePoint.ElementList.Add(new TextBox { Value = GetRandomText(), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("8cm"), Name = "SpanText" });
             section.Pane.ElementList.Add(referencePoint);
@@ -480,7 +480,7 @@ namespace Tharga.Reporter.Console
         {
             var section = new Section { Name = "Content" };
 
-            var referencePoint = new ReferenceElement{ Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm")};
+            var referencePoint = new ReferencePoint{ Top = UnitValue.Parse("5cm"), Left = UnitValue.Parse("4cm")};
             referencePoint.ElementList.Add(new TextBox{ Value = GetRandomText(), Width = UnitValue.Parse("5cm"), Height = UnitValue.Parse("8cm")});
             section.Pane.ElementList.Add(referencePoint);
 
@@ -535,7 +535,7 @@ namespace Tharga.Reporter.Console
         private static void Multipage_PDF_document_by_section()
         {
             var section = new Section { Name = "First"};
-            var refPoint = new ReferenceElement { Stack = ReferenceElement.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm") };
+            var refPoint = new ReferencePoint { Stack = ReferencePoint.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm") };
             refPoint.ElementList.Add(new Text { Value = "Hello world! {Data1}", HideValue = "Data1" });
             section.Pane.ElementList.Add(refPoint);            
 
@@ -556,7 +556,7 @@ namespace Tharga.Reporter.Console
         private static void Basic_PDF_document_with_some_text_on_it()
         {
             var section = new Section();
-            var refPoint = new ReferenceElement {Stack = ReferenceElement.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm")};
+            var refPoint = new ReferencePoint {Stack = ReferencePoint.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm")};
             refPoint.ElementList.Add(new Text {Value = "Hello world! {Data1}", HideValue = "Data1"});
             refPoint.ElementList.Add(new Text {Value = "Hello world! {Data2}", HideValue = "Data2"});
             refPoint.ElementList.Add(new Text {Value = "Hello world! {Data3}", HideValue = "Data3"});
@@ -565,7 +565,7 @@ namespace Tharga.Reporter.Console
             refPoint.ElementList.Add(new Text {Value = "Data 2 have a value!", HideValue = "Data2"});
             section.Pane.ElementList.Add(refPoint);
 
-            var elm = section.Pane.ElementList.Get<ReferenceElement>("SomeName");
+            var elm = section.Pane.ElementList.Get<ReferencePoint>("SomeName");
 
             var template = new Template(section);
             var documentData = new DocumentData();

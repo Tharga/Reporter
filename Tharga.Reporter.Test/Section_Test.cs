@@ -8,75 +8,6 @@ using Text = Tharga.Reporter.Engine.Entity.Element.Text;
 namespace Tharga.Reporter.Test
 {
     [TestFixture]
-    class ReferencePoint_Test
-    {
-        [Test]
-        public void Default_ReferencePoint()
-        {
-            //Arrange
-            var referencePoint = new ReferenceElement();
-            var xme = referencePoint.ToXme();
-
-            //Act
-            var other = ReferenceElement.Load(xme);
-
-            //Assert
-            Assert.AreEqual(referencePoint.Left, other.Left);
-            //Assert.AreEqual(referencePoint.Right, other.Right);
-            //Assert.AreEqual(referencePoint.Width, other.Width);
-            Assert.AreEqual(referencePoint.Top, other.Top);
-            //Assert.AreEqual(referencePoint.Bottom, other.Bottom);
-            //Assert.AreEqual(referencePoint.Height, other.Height);
-            Assert.AreEqual(referencePoint.Stack, other.Stack);
-            Assert.AreEqual(referencePoint.ElementList, other.ElementList);
-            Assert.AreEqual(referencePoint.Name, other.Name);
-            Assert.AreEqual(referencePoint.IsBackground, other.IsBackground);
-            Assert.AreEqual(referencePoint.Name, other.Name);
-            Assert.AreEqual(referencePoint.ToString(), other.ToString());
-            Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
-        }
-
-        [Test]
-        public void Text_with_all_propreties_set()
-        {
-            //Arrange
-            var referencePoint = new ReferenceElement
-                {
-                    IsBackground = true,
-                    Name = "Rea Padda",
-                    Left = UnitValue.Parse("10cm"),
-                    Top = UnitValue.Parse("3px"),
-                    Stack = ReferenceElement.StackMethod.Vertical,
-                    //TODO: Assign element list
-                    //ElementList = new ElementList
-                    //    {
-
-                    //    },
-                };
-            var xme = referencePoint.ToXme();
-
-            //Act
-            var other = ReferenceElement.Load(xme);
-
-            //Assert
-            Assert.AreEqual(referencePoint.Left, other.Left);
-            //Assert.AreEqual(referencePoint.Right, other.Right);
-            //Assert.AreEqual(referencePoint.Width, other.Width);
-            Assert.AreEqual(referencePoint.Top, other.Top);
-            //Assert.AreEqual(referencePoint.Bottom, other.Bottom);
-            //Assert.AreEqual(referencePoint.Height, other.Height);
-            Assert.AreEqual(referencePoint.Stack, other.Stack);
-            Assert.AreEqual(referencePoint.ElementList, other.ElementList);
-            Assert.AreEqual(referencePoint.Name, other.Name);
-            Assert.AreEqual(referencePoint.IsBackground, other.IsBackground);
-            Assert.AreEqual(referencePoint.Name, other.Name);
-            Assert.AreEqual(referencePoint.ToString(), other.ToString());
-            Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
-        }
-    
-    }
-
-    [TestFixture]
     class Section_Test
     {        
         [Test]
@@ -196,7 +127,7 @@ namespace Tharga.Reporter.Test
             section.Pane.ElementList.Add(new Table());
             section.Pane.ElementList.Add(new Text());
             section.Pane.ElementList.Add(new TextBox());
-            section.Pane.ElementList.Add(new ReferenceElement());
+            section.Pane.ElementList.Add(new ReferencePoint());
 
             var template = new Template(section);
             var xml = template.ToXml();

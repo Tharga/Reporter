@@ -4,7 +4,7 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>Tharga Reporter</title>
-    <authors>Daniel Bohlin</authors>
+    <authors>Thargelion AB</authors>
     <description>Tharga Reporter creates pdf reports.</description>
     <projectUrl>http://www.thargelion.se</projectUrl>
     <iconUrl>http://support.thargelion.se/Images/ThargelionIcon.png</iconUrl>
