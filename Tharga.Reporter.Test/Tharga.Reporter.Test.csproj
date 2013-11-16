@@ -60,6 +60,7 @@
     <Compile Include="Section_Test.cs" />
     <Compile Include="Table_Tests.cs" />
     <Compile Include="Template_Tests.cs" />
+    <Compile Include="Text_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tharga.Reporter.Engine\Tharga.Reporter.Engine.csproj">
