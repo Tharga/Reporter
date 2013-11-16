@@ -14,17 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Console", "Tharga.Reporter.Console\Tharga.Reporter.Console.csproj", "{211A0915-64AF-4482-B669-DDE864AFE9E3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{0F2230EF-00D4-4A3D-AD7F-F8724554D75A}"
-	ProjectSection(SolutionItems) = preProject
-		Build\CreateNuGetPackage.bat = Build\CreateNuGetPackage.bat
-		Build\Tharga.Reporter.Engine.nuspec = Build\Tharga.Reporter.Engine.nuspec
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3D410DA1-E8E9-4430-978C-905387F880A8}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
+		.nuget\Tharga.Reporter.Engine.nuspec = .nuget\Tharga.Reporter.Engine.nuspec
 	EndProjectSection
 EndProject
 Global
