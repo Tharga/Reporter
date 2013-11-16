@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>Tharga.Reporter</id>
+    <id>$id$</id>
     <version>$version$</version>
     <title>Tharga Reporter</title>
-    <authors>Daniel Bohlin</authors>
-    <description>Tharga Reporter manages templates for PDFSharp.</description>
+    <authors>$author$</authors>
+    <description>Tharga Reporter creates pdf reports.</description>
     <projectUrl>http://www.thargelion.se</projectUrl>
     <iconUrl>http://support.thargelion.se/Images/ThargelionIcon.png</iconUrl>
     <language>en-US</language>
