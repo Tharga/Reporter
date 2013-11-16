@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Image = Tharga.Reporter.Engine.Entity.Element.Image;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Image_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_Image()
         {
             //Arrange
@@ -31,7 +31,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Image_with_all_propreties_set()
         {
             //Arrange

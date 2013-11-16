@@ -1,14 +1,14 @@
 ﻿using System.Drawing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Line_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_line()
         {
             //Arrange
@@ -32,7 +32,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Line_with_all_propreties_set()
         {
             //Arrange

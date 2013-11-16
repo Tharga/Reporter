@@ -1,15 +1,15 @@
 ﻿using System.Drawing;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Table_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_Table()
         {
             //Arrange
@@ -38,7 +38,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Table_with_all_properties_set()
         {
             //Arrange

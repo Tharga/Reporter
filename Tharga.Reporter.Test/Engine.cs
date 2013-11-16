@@ -1,14 +1,14 @@
 ﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Engine
     {
-        [TestMethod]
+        [Test]
         public void Create_template_with_default_section()
         {
             //Arrange
@@ -46,7 +46,7 @@ namespace Tharga.Reporter.Test
             Assert.IsNull(template.SectionList.First().Margin.Width);
         }
 
-        [TestMethod]
+        [Test]
         public void Create_pdf_document()
         {
             //Arrange
@@ -59,7 +59,7 @@ namespace Tharga.Reporter.Test
             Assert.IsTrue(byteArray.Length > 0);
         }
 
-        [TestMethod]
+        [Test]
         public void Serialize_to_xml()
         {
             //Arrange

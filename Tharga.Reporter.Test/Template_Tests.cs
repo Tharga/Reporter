@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Template_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_template()
         {
             //Arrange

@@ -1,15 +1,15 @@
 ﻿using System.Drawing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
 using Font = Tharga.Reporter.Engine.Entity.Font;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class TextBox_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_Text()
         {
             //Arrange
@@ -39,7 +39,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Text_with_fontclass()
         {
             //Arrange
@@ -72,7 +72,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Text_with_all_propreties_set()
         {
             //Arrange

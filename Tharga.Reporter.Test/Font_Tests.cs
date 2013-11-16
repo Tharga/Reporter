@@ -1,13 +1,13 @@
 ﻿using System.Drawing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Font = Tharga.Reporter.Engine.Entity.Font;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Font_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_Font()
         {
             //Arrange
@@ -25,7 +25,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Font_with_all_properties_set()
         {
             //Arrange

@@ -1,14 +1,15 @@
 ﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
+using Text = Tharga.Reporter.Engine.Entity.Element.Text;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     class Section_Test
     {        
-        [TestMethod]
+        [Test]
         public void Section_with_a_name()
         {
             //Arrange
@@ -28,7 +29,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(name, otherTemplate.SectionList.First().Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Section_with_a_margin()
         {
             //Arrange
@@ -54,7 +55,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(margin, otherTemplate.SectionList.First().Margin);
         }
 
-        [TestMethod]
+        [Test]
         public void Section_with_header_margin()
         {
             //Arrange
@@ -74,7 +75,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(template.SectionList.First().Header.Height, otherTemplate.SectionList.First().Header.Height);
         }
 
-        [TestMethod]
+        [Test]
         public void Section_with_footer_margin()
         {
             //Arrange
@@ -92,7 +93,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(template.SectionList.First().Footer.Height, otherTemplate.SectionList.First().Footer.Height);
         }
 
-        [TestMethod]
+        [Test]
         public void Section_with_panes_with_element()
         {
             //Arrange
@@ -112,9 +113,9 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(template.SectionList.First().Header.ElementList.First().Left, otherTemplate.SectionList.First().Header.ElementList.First().Left);
             Assert.AreEqual(template.SectionList.First().Pane.ElementList.First().Left, otherTemplate.SectionList.First().Pane.ElementList.First().Left);
             Assert.AreEqual(template.SectionList.First().Footer.ElementList.First().Left, otherTemplate.SectionList.First().Footer.ElementList.First().Left);
-        }        
+        }
 
-        [TestMethod]
+        [Test]
         public void Section_with_all_types_of_elements()
         {
             //Arrange

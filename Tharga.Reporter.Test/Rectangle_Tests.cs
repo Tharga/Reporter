@@ -1,14 +1,14 @@
 ﻿using System.Drawing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Test
 {
-    [TestClass]
+    [TestFixture]
     public class Rectangle_Tests
     {
-        [TestMethod]
+        [Test]
         public void Default_Rectangle()
         {
             //Arrange
@@ -33,7 +33,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
         }
 
-        [TestMethod]
+        [Test]
         public void Rectangle_with_all_propreties_set()
         {
             //Arrange
