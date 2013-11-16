@@ -6,7 +6,7 @@ namespace Tharga.Reporter.Engine.Interface
 {
     internal interface IElementContainer
     {
-        //List<Element> ElementList { get; }
+        //List<AreaElement> ElementList { get; }
         ElementList ElementList { get; }
     }
 }

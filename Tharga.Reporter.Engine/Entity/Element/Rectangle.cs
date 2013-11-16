@@ -6,7 +6,7 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public sealed class Rectangle : SinglePageElement
+    public sealed class Rectangle : SinglePageAreaElement
     {
         private readonly Color _defaultBorderColor = Color.Black;
         private readonly UnitValue _defaultBorderWidth = UnitValue.Parse("1px");

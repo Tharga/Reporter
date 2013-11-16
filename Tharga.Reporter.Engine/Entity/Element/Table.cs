@@ -11,7 +11,7 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public class Table : MultiPageElement
+    public class Table : MultiPageAreaElement
     {
         private readonly Color _defaultBorderColor = Color.Black;
 

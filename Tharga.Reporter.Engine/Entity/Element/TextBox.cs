@@ -9,7 +9,7 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public class TextBox : MultiPageElement
+    public class TextBox : MultiPageAreaElement
     {
         private readonly Font _defaultFont = new Font();
 

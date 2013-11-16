@@ -1,58 +1,21 @@
-using System;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
+    //TODO: Rename to AreaElement
     public abstract class Element
     {
-        private readonly UnitRectangle _relativeAlignment;
+        private UnitValue? _left;
+        private UnitValue? _top;
+        private string _name;
+        private bool? _isBackground;
 
-        protected bool? _isBackground;
-        protected string _name;
-
-        public string Name { get { return _name ?? string.Empty; } set { _name = value; } }
-        public bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
-
-        protected Element()
-        {
-            _relativeAlignment = new UnitRectangle();
-        }
-
-        protected Element(UnitRectangle relativeAlignment)
-        {
-            _relativeAlignment = relativeAlignment;
-        }
-
-        protected XRect GetBounds(XRect parentBounds)
-        {
-            if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
-            var relativeAlignment = _relativeAlignment;
-
-            var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
-            //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
-            var width = _relativeAlignment.GetWidht(parentBounds.Width);
-
-            var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
-            //var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);
-            var height = relativeAlignment.GetHeight(parentBounds.Height);
-
-            if (height < 0)
-            {
-                System.Diagnostics.Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
-                height = 0;
-            }
-
-            return new XRect(left, top, width, height);
-        }
-
-        public UnitValue? Top { get { return _relativeAlignment.Top; } set { _relativeAlignment.Top = value; } }
-        public virtual UnitValue? Bottom { get { return _relativeAlignment.Bottom; } set { _relativeAlignment.Bottom = value; } }
-        public virtual UnitValue? Height { get { return _relativeAlignment.Height; } set { _relativeAlignment.Height = value; } }
-        public UnitValue? Left { get { return _relativeAlignment.Left; } set { _relativeAlignment.Left = value; } }
-        public virtual UnitValue? Right { get { return _relativeAlignment.Right; } set { _relativeAlignment.Right = value; } }
-        public virtual UnitValue? Width { get { return _relativeAlignment.Width; } set { _relativeAlignment.Width = value; } }
+        public virtual UnitValue? Top { get { return _top; } set { _top = value; } }
+        public virtual UnitValue? Left { get { return _left; } set { _left = value; } }
+        public virtual string Name { get { return _name ?? string.Empty; } set { _name = value; } }
+        public virtual bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
 
         internal virtual XmlElement ToXme()
         {
@@ -62,43 +25,21 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (_name != null)
                 xme.SetAttribute("Name", _name);
 
-            if (Left != null)
-                xme.SetAttribute("Left", Left.Value.ToString());
-
-            if (Top != null)
-                xme.SetAttribute("Top", Top.Value.ToString());
-
-            if (Right != null)
-                xme.SetAttribute("Right", Right.Value.ToString());
-
-            if (Bottom != null)
-                xme.SetAttribute("Bottom", Bottom.Value.ToString());
-
-            if (Width != null)
-                xme.SetAttribute("Width", Width.Value.ToString());
-
-            if (Height != null)
-                xme.SetAttribute("Height", Height.Value.ToString());
-
             if (_isBackground != null)
-                xme.SetAttribute("IsBackground", _isBackground.Value.ToString());
+                xme.SetAttribute("IsBackground", _isBackground.ToString());
 
             return xme;
         }
 
-        protected virtual void AppendData(XmlElement xme)
+        protected void AppendData(XmlElement xme)
         {
             _name = GetString(xme, "Name");
-            Left = GetValue(xme, "Left");
-            Top = GetValue(xme, "Top");
-            Right = GetValue(xme, "Right");
-            Bottom = GetValue(xme, "Bottom");
-            Width = GetValue(xme, "Width");
-            Height = GetValue(xme, "Height");
             _isBackground = GetBool(xme, "IsBackground");
         }
 
-        private string GetString(XmlElement xme, string name)
+        protected abstract XRect GetBounds(XRect parentBounds);
+
+        protected string GetString(XmlElement xme, string name)
         {
             var val = xme.Attributes[name];
             if (val != null)
@@ -106,7 +47,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return null;
         }
 
-        private bool? GetBool(XmlElement xme, string name)
+        protected bool? GetBool(XmlElement xme, string name)
         {
             var val = xme.Attributes[name];
             if (val != null)
@@ -114,7 +55,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return null;
         }
 
-        private UnitValue? GetValue(XmlElement xme, string name)
+        protected UnitValue? GetValue(XmlElement xme, string name)
         {
             var val = xme.Attributes[name];
             if (val != null)

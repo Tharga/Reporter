@@ -1,0 +1,101 @@
+using System;
+using System.Xml;
+using PdfSharp.Drawing;
+using Tharga.Reporter.Engine.Helper;
+
+namespace Tharga.Reporter.Engine.Entity.Element
+{
+    public abstract class AreaElement : Element
+    {
+        private readonly UnitRectangle _relativeAlignment;
+
+        protected bool? _isBackground;
+        protected string _name;
+
+        public override string Name { get { return _name ?? string.Empty; } set { _name = value; } }
+        public override bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
+
+        protected AreaElement()
+        {
+            _relativeAlignment = new UnitRectangle();
+        }
+
+        //protected AreaElement(UnitRectangle relativeAlignment)
+        //{
+        //    _relativeAlignment = relativeAlignment;
+        //}
+
+        protected override XRect GetBounds(XRect parentBounds)
+        {
+            if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
+            var relativeAlignment = _relativeAlignment;
+
+            var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
+            //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
+            var width = _relativeAlignment.GetWidht(parentBounds.Width);
+
+            var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
+            //var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);
+            var height = relativeAlignment.GetHeight(parentBounds.Height);
+
+            if (height < 0)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
+                height = 0;
+            }
+
+            return new XRect(left, top, width, height);
+        }
+
+        public override UnitValue? Top { get { return _relativeAlignment.Top; } set { _relativeAlignment.Top = value; } }
+        public virtual UnitValue? Bottom { get { return _relativeAlignment.Bottom; } set { _relativeAlignment.Bottom = value; } }
+        public virtual UnitValue? Height { get { return _relativeAlignment.Height; } set { _relativeAlignment.Height = value; } }
+        public override UnitValue? Left { get { return _relativeAlignment.Left; } set { _relativeAlignment.Left = value; } }
+        public virtual UnitValue? Right { get { return _relativeAlignment.Right; } set { _relativeAlignment.Right = value; } }
+        public virtual UnitValue? Width { get { return _relativeAlignment.Width; } set { _relativeAlignment.Width = value; } }
+
+        internal override XmlElement ToXme()
+        {
+            var xmd = new XmlDocument();
+            var xme = xmd.CreateElement(GetType().ToShortTypeName());
+
+            if (_name != null)
+                xme.SetAttribute("Name", _name);
+
+            if (Left != null)
+                xme.SetAttribute("Left", Left.Value.ToString());
+
+            if (Top != null)
+                xme.SetAttribute("Top", Top.Value.ToString());
+
+            if (Right != null)
+                xme.SetAttribute("Right", Right.Value.ToString());
+
+            if (Bottom != null)
+                xme.SetAttribute("Bottom", Bottom.Value.ToString());
+
+            if (Width != null)
+                xme.SetAttribute("Width", Width.Value.ToString());
+
+            if (Height != null)
+                xme.SetAttribute("Height", Height.Value.ToString());
+
+            if (_isBackground != null)
+                xme.SetAttribute("IsBackground", _isBackground.Value.ToString());
+
+            return xme;
+        }
+
+        protected virtual void AppendData(XmlElement xme)
+        {
+            _name = GetString(xme, "Name");
+            Left = GetValue(xme, "Left");
+            Top = GetValue(xme, "Top");
+            Right = GetValue(xme, "Right");
+            Bottom = GetValue(xme, "Bottom");
+            Width = GetValue(xme, "Width");
+            Height = GetValue(xme, "Height");
+            _isBackground = GetBool(xme, "IsBackground");
+        }
+    }
+}

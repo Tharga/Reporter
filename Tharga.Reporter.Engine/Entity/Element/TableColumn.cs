@@ -36,7 +36,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             xme.SetAttribute("DisplayName", DisplayName);
             xme.SetAttribute("Align", Align.ToString());
             xme.SetAttribute("HideValue", HideValue);
-            xme.SetAttribute("Width", Width.Value.ToString());
+            if (Width != null)
+                xme.SetAttribute("Width", Width.Value.ToString());
             xme.SetAttribute("WidthMode", WidthMode.ToString());
 
             return xme;

@@ -11,7 +11,7 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public class Image : SinglePageElement
+    public class Image : SinglePageAreaElement
     {
         private string _source;
 

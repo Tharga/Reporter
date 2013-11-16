@@ -22,8 +22,8 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         internal void ClearRenderPointers()
         {
-            foreach (var element in _elementList.Where(x => x is MultiPageElement))
-                ((MultiPageElement)element).ClearRenderPointer();
+            foreach (var element in _elementList.Where(x => x is MultiPageAreaElement))
+                ((MultiPageAreaElement)element).ClearRenderPointer();
         }
 
         internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo)
@@ -32,15 +32,15 @@ namespace Tharga.Reporter.Engine.Entity.Area
             foreach (var element in _elementList)
             {
                 XRect bnd;
-                if (element is MultiPageElement)
+                if (element is MultiPageAreaElement)
                 {
-                    var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
                     if (needMore)
                         needAnotherPage = true;
                 }
-                else if (element is SinglePageElement)
+                else if (element is SinglePageAreaElement)
                 {
-                    ((SinglePageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    ((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
                 }
             }
             return needAnotherPage;
@@ -78,10 +78,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return pane;
         }
 
+        //protected IEnumerable<AreaElement.AreaElement> GetElements(XmlElement xme)
         protected IEnumerable<Element.Element> GetElements(XmlElement xme)
         {
             foreach (XmlElement xmlElement in xme.ChildNodes)
             {
+                //AreaElement.AreaElement element;
                 Element.Element element;
                 switch (xmlElement.Name)
                 {
@@ -102,6 +104,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
                         break;
                     case "TextBox":
                         element = TextBox.Load(xmlElement);
+                        break;
+                    case "ReferenceElement":
+                        element = ReferenceElement.Load(xmlElement);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));

@@ -6,7 +6,7 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public abstract class TextBase : SinglePageElement
+    public abstract class TextBase : SinglePageAreaElement
     {
         private readonly Font _defaultFont = new Font();
         private const Alignment _defaultTextAlignmen = Alignment.Left;

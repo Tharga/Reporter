@@ -6,7 +6,7 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public sealed class Line : SinglePageElement
+    public sealed class Line : SinglePageAreaElement
     {
         private readonly Color _defaultBorderColor = Color.Black;
 
