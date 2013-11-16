@@ -1,5 +1,3 @@
-using System;
-using System.Drawing;
 using System.Xml;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Helper;
@@ -8,79 +6,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public class Text : TextBase
     {
-        public string Value { get; set; }
-        public string HideValue { get; set; }
-        public double FontSize { get { return Font.Size; } set { Font.Size = value; } }
-        public Color? FontColor { get { return Font.Color; } set { Font.Color = value; } }
+        private string _value;
+        private string _hideValue;
 
-        #region Constructors
-
-
-        public Text()
-        {
-            
-        }
-
-        internal Text(string value)
-        {
-            Value = value;
-        }
-
-        //internal Text(XmlElement xmlElement)
-        //    :base(xmlElement)
-        //{
-        //    Value = xmlElement.Attributes.GetNamedItem("Value").Value;
-        //}
-
-        //internal Text(string value, string fontClass)
-        //    : base(fontClass)
-        //{
-        //    Value = value;
-        //}
-
-        //internal Text(string value, string fontClass, UnitRectangle relativeAlignment)
-        //    : base(fontClass, relativeAlignment)
-        //{
-        //    Value = value;
-        //}
-
-
-        #endregion
-        #region Factory
-
-
-        [Obsolete("Use default constructor and property setters instead.")]
-        public static Text Create(string value, string left = null, string top = null, string width = null,
-            Alignment textAlignment = Alignment.Left, double fontSize = 10, string hideValue = null)
-        {
-            var text = new Text
-                {
-                    Value = value,
-                    Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null,
-                    Top = top != null ? UnitValue.Parse(top) : (UnitValue?)null,
-                    Width = width != null ? UnitValue.Parse(width) : (UnitValue?)null,
-                    TextAlignment = textAlignment,
-                    FontSize = fontSize,
-                    HideValue = hideValue,
-                };
-            return text;
-        }
-
-        [Obsolete("Use default constructor and property setters instead.")]
-        public static Text Create(string value, Color fontColor, double fontSize, string left = null)
-        {
-            var text = new Text(value)
-                           {
-                               Left = left != null ? UnitValue.Parse(left) : (UnitValue?)null,
-                               FontColor = fontColor,
-                               FontSize = fontSize
-                           };
-            return text;
-        }
-
-
-        #endregion
-
+        public string Value { get { return _value ?? string.Empty; } set { _value = value; } }
+        public string HideValue { get { return _hideValue ?? string.Empty; } set { _hideValue = value; } }
+        
         protected override string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             if (!string.IsNullOrEmpty(HideValue))
@@ -93,13 +24,34 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return Value.ParseValue(documentData, pageNumberInfo);
         }
 
-        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        //{
-        //    var xmeElement = base.AppendXml(ref xmePane);
+        internal override XmlElement ToXme()
+        {
+            var xme = base.ToXme();
 
-        //    xmeElement.SetAttribute("Value", Value);
+            if (_hideValue != null)
+                xme.SetAttribute("HideValue", _hideValue);
 
-        //    return xmeElement;
-        //}
+            if (_value != null)
+                xme.SetAttribute("Value", _value);
+
+            return xme;
+        }
+
+        public static Text Load(XmlElement xme)
+        {
+            var text = new Text();
+
+            text.AppendData(xme);
+
+            var xmlHideValue = xme.Attributes["HideValue"];
+            if (xmlHideValue != null)
+                text.HideValue = xmlHideValue.Value;
+
+            var xmlValue = xme.Attributes["Value"];
+            if (xmlValue != null)
+                text.Value = xmlValue.Value;
+
+            return text;
+        }
     }
 }

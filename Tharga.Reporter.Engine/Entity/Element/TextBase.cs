@@ -8,23 +8,36 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public abstract class TextBase : SinglePageElement
     {
+        private readonly Font _defaultFont = new Font();
+        private const Alignment _defaultTextAlignmen = Alignment.Left;
+
         public enum Alignment { Left, Right }
 
         private Font _font;
         private string _fontClass;
+        private Alignment? _textAlignment;
 
-
-        public Alignment TextAlignment { get; set; }
-
-        internal TextBase()
+        public Font Font
         {
-            
+            get { return _font ?? _defaultFont; }
+            set
+            {
+                if (!string.IsNullOrEmpty(_fontClass)) throw new InvalidOperationException("Cannot set both Font and FontClass. FontClass has already been set.");
+                _font = value;
+            }
         }
 
-        //protected TextBase(string fontClass)
-        //{
-        //    FontClass = fontClass;
-        //}
+        public string FontClass
+        {
+            get { return _fontClass ?? string.Empty; }
+            set
+            {
+                if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
+                _fontClass = value;
+            }
+        }
+
+        public Alignment TextAlignment { get { return _textAlignment ?? _defaultTextAlignmen; } set { _textAlignment = value; } }
 
         protected internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
                                                 DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
@@ -64,55 +77,64 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected abstract string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo);
 
-        public string FontClass
-        {
-            get { return _fontClass; }
-            set
-            {
-                if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
-                _fontClass = value;
-            }
-        }
-
-        public Font Font
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(_fontClass)) throw new InvalidOperationException("Cannot set both Font and FontClass. FontClass has already been set.");
-                return _font ?? (_font = new Font());
-            }
-        }
-
-        internal string GetName()
+        private string GetName()
         {
             return Font.GetRenderName(FontClass);
         }
 
-        internal double GetSize()
+        private double GetSize()
         {
             return Font.GetRenderSize(FontClass);
         }
 
-        internal Color GetColor()
+        private Color GetColor()
         {
             return Font.GetRenderColor(FontClass);
         }
 
-        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        //{
-        //    if (xmePane == null) throw new ArgumentNullException("xmePane");
+        protected override void AppendData(XmlElement xme)
+        {
+            base.AppendData(xme);
 
-        //    var xmeElement = AppendXmlBase(ref xmePane);
+            var xmlAlignment = xme.Attributes["Alignment"];
+            if (xmlAlignment != null)
+                TextAlignment = (Alignment)Enum.Parse(typeof(Alignment), xmlAlignment.Value);
 
-        //    if (!string.IsNullOrEmpty(FontClass))
-        //        xmeElement.SetAttribute("FontClass", FontClass);
+            foreach (XmlElement child in xme)
+            {
+                switch (child.Name)
+                {
+                    case "Font":
+                        _font = Font.Load(child);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to text base.", child.Name));
+                }
+            }
 
-        //    if (xmePane.OwnerDocument == null) throw new ArgumentNullException("xmePane", "xmeSection has no owner document.");
+            var xmlFontClass = xme.Attributes["FontClass"];
+            if (xmlFontClass != null)
+                FontClass = xmlFontClass.Value;
+        }
 
-        //    if (_font != null)
-        //        xmeElement.AppendChild(xmePane.OwnerDocument.ImportNode(_font.ToXml(), true));
+        internal override XmlElement ToXme()
+        {
+            var xme = base.ToXme();
 
-        //    return xmeElement;
-        //}
+            if (_textAlignment != null)
+                xme.SetAttribute("Alignment", _textAlignment.ToString());
+
+            if (_font != null)
+            {
+                var fontXme = _font.ToXme();
+                var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
+                xme.AppendChild(importedFont);
+            }
+
+            if (_fontClass != null)
+                xme.SetAttribute("FontClass", _fontClass);
+
+            return xme;
+        }
     }
 }

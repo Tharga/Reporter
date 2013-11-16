@@ -41,7 +41,7 @@ namespace Tharga.Reporter.Test
             var otherLine = Font.Load(xme);
 
             //Assert
-            Assert.AreEqual(font.Color.Value.ToArgb(), otherLine.Color.Value.ToArgb());
+            Assert.AreEqual(font.Color.ToArgb(), otherLine.Color.ToArgb());
             Assert.AreEqual(font.FontName, otherLine.FontName);
             Assert.AreEqual(font.Size, otherLine.Size);
             Assert.AreEqual(font.ToString(), otherLine.ToString());

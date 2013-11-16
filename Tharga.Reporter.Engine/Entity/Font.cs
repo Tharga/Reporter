@@ -1,26 +1,23 @@
 using System;
+using System.Drawing;
 using System.Xml;
 using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
-    public class Font
+    public class Font : IEquatable<Font>
     {
+        private readonly Color _defaultColor = Color.Black;
         private const double SizeEpsilon = 0.01;
 
         private string _fontName;
         private double? _size;
-        private System.Drawing.Color? _color;
+        private Color? _color;
 
         public string FontName { get { return _fontName ?? string.Empty; } set { _fontName = value; } }
         public double Size { get { return _size ?? 10; } set { _size = value; } }
-        public System.Drawing.Color? Color { get { return _color == null ? (System.Drawing.Color?)null : _color.Value; } set { _color = value; } }
-
-        internal Font()
-        {
-            
-        }
+        public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
 
         internal string GetRenderName(string defaultClass)
         {
@@ -53,7 +50,7 @@ namespace Tharga.Reporter.Engine.Entity
 
         internal System.Drawing.Color GetRenderColor(string defaultClass)
         {
-            if (Color == null)
+            if (_color == null)
             {
                 var result = System.Drawing.Color.Black;
                 if (!string.IsNullOrEmpty(defaultClass))
@@ -66,7 +63,7 @@ namespace Tharga.Reporter.Engine.Entity
                 }
                 return result;
             }
-            return Color.Value;
+            return Color;
         }
 
         internal XmlElement ToXme()
@@ -103,6 +100,11 @@ namespace Tharga.Reporter.Engine.Entity
                 line.Size = double.Parse(xmlSize.Value);
 
             return line;
-        }        
+        }
+
+        public bool Equals(Font other)
+        {
+            return true;
+        }
     }
 }
