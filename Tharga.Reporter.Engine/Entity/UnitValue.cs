@@ -167,5 +167,15 @@ namespace Tharga.Reporter.Engine.Entity
 
 
         #endregion
+
+        static public implicit operator string(UnitValue item)
+        {
+            return item.ToString();
+        }
+
+        static public implicit operator UnitValue(string item)
+        {
+            return UnitValue.Parse(item);
+        }
     }
 }
