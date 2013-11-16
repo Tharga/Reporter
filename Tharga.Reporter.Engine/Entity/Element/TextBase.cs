@@ -116,7 +116,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (xmlFontClass != null)
                 FontClass = xmlFontClass.Value;
         }
-
+                
         internal override XmlElement ToXme()
         {
             var xme = base.ToXme();

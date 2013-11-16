@@ -62,7 +62,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return xme;
         }
 
-        public static Rectangle Load(XmlElement xme)
+        internal static Rectangle Load(XmlElement xme)
         {
             var rectangle = new Rectangle();
 

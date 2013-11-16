@@ -6,7 +6,7 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
-    public class Font : IEquatable<Font>
+    public class Font
     {
         private readonly Color _defaultColor = Color.Black;
         private const double SizeEpsilon = 0.01;
@@ -83,7 +83,7 @@ namespace Tharga.Reporter.Engine.Entity
             return xme;
         }
 
-        public static Font Load(XmlElement xme)
+        internal static Font Load(XmlElement xme)
         {
             var line = new Font();
 
@@ -100,11 +100,6 @@ namespace Tharga.Reporter.Engine.Entity
                 line.Size = double.Parse(xmlSize.Value);
 
             return line;
-        }
-
-        public bool Equals(Font other)
-        {
-            return true;
-        }
+        }        
     }
 }

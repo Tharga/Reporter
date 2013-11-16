@@ -127,7 +127,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return xme;
         }
 
-        public static Image Load(XmlElement xme)
+        internal static Image Load(XmlElement xme)
         {
             var image = new Image();
             

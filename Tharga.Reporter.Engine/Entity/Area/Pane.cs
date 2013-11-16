@@ -100,6 +100,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     case "Text":
                         element = Text.Load(xmlElement);
                         break;
+                    case "TextBox":
+                        element = TextBox.Load(xmlElement);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
                 }

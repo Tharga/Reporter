@@ -11,14 +11,36 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public class TextBox : MultiPageElement
     {
+        private readonly Font _defaultFont = new Font();
+
         private Font _font;
         private string _fontClass;
-
-        public string Value { get; set; }
-        public string HideValue { get; set; }
-
+        private string _value;
+        private string _hideValue;
         private string[] _words;
         private int _wordPointer;
+
+        public string Value { get { return _value ?? string.Empty; } set { _value = value; } }
+        public string HideValue { get { return _hideValue ?? string.Empty; } set { _hideValue = value; } }
+        public Font Font
+        {
+            get { return _font ?? _defaultFont; }
+            set
+            {
+                if (!string.IsNullOrEmpty(_fontClass)) throw new InvalidOperationException("Cannot set both Font and FontClass. FontClass has already been set.");
+                _font = value;
+            }
+        }
+
+        public string FontClass
+        {
+            get { return _fontClass ?? string.Empty; }
+            set
+            {
+                if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
+                _fontClass = value;
+            }
+        }
 
         protected internal override void ClearRenderPointer()
         {
@@ -95,36 +117,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
-        public string FontClass
-        {
-            get { return _fontClass; }
-            set
-            {
-                if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
-                _fontClass = value;
-            }
-        }
-
-        public Font Font
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(_fontClass)) throw new InvalidOperationException("Cannot set both Font and FontClass. FontClass has already been set.");
-                return _font ?? (_font = new Font());
-            }
-        }
-
-        internal string GetFontName()
+        private string GetFontName()
         {
             return Font.GetRenderName(FontClass);
         }
 
-        internal double GetFontSize()
+        private double GetFontSize()
         {
             return Font.GetRenderSize(FontClass);
         }
 
-        internal Color GetColor()
+        private Color GetColor()
         {
             return Font.GetRenderColor(FontClass);
         }
@@ -141,9 +144,60 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return Value.ParseValue(documentData,pageNumberInfo);
         }
 
-        //protected internal override XmlElement AppendXml(ref XmlElement xmePane)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        internal override XmlElement ToXme()
+        {
+            var xme = base.ToXme();
+
+            if (_font != null)
+            {
+                var fontXme = _font.ToXme();
+                var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
+                xme.AppendChild(importedFont);
+            }
+
+            if (_fontClass != null)
+                xme.SetAttribute("FontClass", _fontClass);
+
+            if (_hideValue != null)
+                xme.SetAttribute("HideValue", _hideValue);
+
+            if (_value != null)
+                xme.SetAttribute("Value", _value);
+
+            return xme;
+        }
+
+        internal static TextBox Load(XmlElement xme)
+        {
+            var text = new TextBox();
+
+            text.AppendData(xme);
+
+            foreach (XmlElement child in xme)
+            {
+                switch (child.Name)
+                {
+                    case "Font":
+                        text.Font = Font.Load(child);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to text base.", child.Name));
+                }
+            }
+
+            var xmlFontClass = xme.Attributes["FontClass"];
+            if (xmlFontClass != null)
+                text.FontClass = xmlFontClass.Value;
+
+            var xmlHideValue = xme.Attributes["HideValue"];
+            if (xmlHideValue != null)
+                text.HideValue = xmlHideValue.Value;
+
+            var xmlValue = xme.Attributes["Value"];
+            if (xmlValue != null)
+                text.Value = xmlValue.Value;
+
+            return text;
+        }
     }
 }

@@ -67,16 +67,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
         internal Dictionary<string, TableColumn> Columns { get { return _columns; } }
 
-        private int _rowPointer; //Rememgers the row possition between pages
-
-
-
-        //public string Name { get { return _name ?? string.Empty; } set { _name = value; } }
-
-        //public Table() //string name)
-        //{
-        //    //Name = name;
-        //}
+        private int _rowPointer;
 
         protected internal override void ClearRenderPointer()
         {
@@ -132,7 +123,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     }
 
                     if (column.Value.Hide)
-                        //column.Value.Width.Value = 0;
                         column.Value.Width = new UnitValue();
                 }
 
@@ -146,7 +136,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         column.Value.Width = UnitValue.Parse(((elementBounds.Width - nonSpringWidth)/springCount).ToString(CultureInfo.InvariantCulture));
                     }
                 }
-
 
                 //Create header
                 double left = 0;
@@ -169,7 +158,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
 
                 var top = headerSize.Height;
-                //foreach (var row in dataTable.Rows)
                 for (var i = _rowPointer; i < dataTable.Rows.Count; i++)
                 {
                     var row = dataTable.Rows[i];

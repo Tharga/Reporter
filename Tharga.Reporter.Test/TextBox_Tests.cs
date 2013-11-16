@@ -7,17 +7,17 @@ using Font = Tharga.Reporter.Engine.Entity.Font;
 namespace Tharga.Reporter.Test
 {
     [TestClass]
-    public class Text_Tests
+    public class TextBox_Tests
     {
         [TestMethod]
         public void Default_Text()
         {
             //Arrange
-            var text = new Text();
+            var text = new TextBox();
             var xme = text.ToXme();
 
             //Act
-            var otherLine = Text.Load(xme);
+            var otherLine = TextBox.Load(xme);
 
             //Assert
             Assert.AreEqual(text.Left, otherLine.Left);
@@ -32,7 +32,6 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.FontClass, otherLine.FontClass);
             Assert.AreEqual(text.HideValue, otherLine.HideValue);
             Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.TextAlignment, otherLine.TextAlignment);
             Assert.AreEqual(text.Value, otherLine.Value);
             Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(text.Name, otherLine.Name);
@@ -44,14 +43,14 @@ namespace Tharga.Reporter.Test
         public void Text_with_fontclass()
         {
             //Arrange
-            var text = new Text
-                {
-                    FontClass = "Yahoo",
-                };
+            var text = new TextBox
+            {
+                FontClass = "Yahoo",
+            };
             var xme = text.ToXme();
 
             //Act
-            var otherLine = Text.Load(xme);
+            var otherLine = TextBox.Load(xme);
 
             //Assert
             Assert.AreEqual(text.Left, otherLine.Left);
@@ -66,7 +65,6 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.FontClass, otherLine.FontClass);
             Assert.AreEqual(text.HideValue, otherLine.HideValue);
             Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.TextAlignment, otherLine.TextAlignment);
             Assert.AreEqual(text.Value, otherLine.Value);
             Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(text.Name, otherLine.Name);
@@ -78,28 +76,28 @@ namespace Tharga.Reporter.Test
         public void Text_with_all_propreties_set()
         {
             //Arrange
-            var text = new Text
+            var text = new TextBox
                 {
-                    IsBackground =true,
-                    Name ="Rea Padda",
+                    IsBackground = true,
+                    Name = "Rea Padda",
                     Right = UnitValue.Parse("1px"),
                     Width = UnitValue.Parse("10cm"),
                     Bottom = UnitValue.Parse("2px"),
                     Top = UnitValue.Parse("3px"),
                     HideValue = "ABC",
-                    TextAlignment = TextBase.Alignment.Right,
+                    //TextAlignment = TextBase.Alignment.Right,
                     Value = "Bob Loblaw",
                     Font = new Font
                         {
                             FontName = "Verdana",
                             Color = Color.MistyRose,
                             Size = 13,
-                        }
+                        },                        
                 };
             var xme = text.ToXme();
 
             //Act
-            var otherLine = Text.Load(xme);
+            var otherLine = TextBox.Load(xme);
 
             //Assert
             Assert.AreEqual(text.Left, otherLine.Left);
@@ -114,7 +112,6 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.FontClass, otherLine.FontClass);
             Assert.AreEqual(text.HideValue, otherLine.HideValue);
             Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.TextAlignment, otherLine.TextAlignment);
             Assert.AreEqual(text.Value, otherLine.Value);
             Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(text.Name, otherLine.Name);

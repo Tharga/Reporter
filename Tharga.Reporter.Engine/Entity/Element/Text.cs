@@ -37,7 +37,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return xme;
         }
 
-        public static Text Load(XmlElement xme)
+        internal static Text Load(XmlElement xme)
         {
             var text = new Text();
 
