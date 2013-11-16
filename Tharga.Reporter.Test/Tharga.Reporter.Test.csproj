@@ -67,6 +67,7 @@
     <Compile Include="Template_Tests.cs" />
     <Compile Include="TextBox_Tests.cs" />
     <Compile Include="Text_Tests.cs" />
+    <Compile Include="UnitValue_implicit_string_parse.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tharga.Reporter.Engine\Tharga.Reporter.Engine.csproj">
