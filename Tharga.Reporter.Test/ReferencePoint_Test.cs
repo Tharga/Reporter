@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Engine.Entity.Element;
+using Text = Tharga.Reporter.Engine.Entity.Element.Text;
 
 namespace Tharga.Reporter.Test
 {
@@ -98,11 +100,15 @@ namespace Tharga.Reporter.Test
                     Left = UnitValue.Parse("10cm"),
                     Top = UnitValue.Parse("3px"),
                     Stack = ReferencePoint.StackMethod.Vertical,
-                    //TODO: Assign element list
-                    //ElementList = new ElementList
-                    //    {
-
-                    //    },
+                    ElementList = new ElementList
+                        {
+                            new Image(),
+                            new Line(),
+                            new Rectangle(),
+                            new Table(),
+                            new Text(),
+                            new TextBox(),
+                        },
                 };
             var xme = referencePoint.ToXme();
 
@@ -113,7 +119,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(referencePoint.Left, other.Left);
             Assert.AreEqual(referencePoint.Top, other.Top);
             Assert.AreEqual(referencePoint.Stack, other.Stack);
-            Assert.AreEqual(referencePoint.ElementList, other.ElementList);
+            Assert.AreEqual(referencePoint.ElementList.Count, other.ElementList.Count);
             Assert.AreEqual(referencePoint.Name, other.Name);
             Assert.AreEqual(referencePoint.IsBackground, other.IsBackground);
             Assert.AreEqual(referencePoint.Name, other.Name);

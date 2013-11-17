@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Xml;
 using PdfSharp.Drawing;
+using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
@@ -12,8 +15,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private string _name;
         private bool? _isBackground;
 
-        public virtual UnitValue? Top { get { return _top; } set { _top = value; } }
-        public virtual UnitValue? Left { get { return _left; } set { _left = value; } }
+        public virtual UnitValue? Top { get { return _top ?? "0"; } set { _top = value; } }
+        public virtual UnitValue? Left { get { return _left ?? "0"; } set { _left = value; } }
         public virtual string Name { get { return _name ?? string.Empty; } set { _name = value; } }
         public virtual bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
 
@@ -62,5 +65,41 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 return UnitValue.Parse(val.Value);
             return null;
         }
+
+        protected IEnumerable<Element> GetElements(XmlElement xme)
+        {
+            foreach (XmlElement xmlElement in xme.ChildNodes)
+            {
+                Element element;
+                switch (xmlElement.Name)
+                {
+                    case "Image":
+                        element = Image.Load(xmlElement);
+                        break;
+                    case "Line":
+                        element = Line.Load(xmlElement);
+                        break;
+                    case "Rectangle":
+                        element = Rectangle.Load(xmlElement);
+                        break;
+                    case "Table":
+                        element = Table.Load(xmlElement);
+                        break;
+                    case "Text":
+                        element = Text.Load(xmlElement);
+                        break;
+                    case "TextBox":
+                        element = TextBox.Load(xmlElement);
+                        break;
+                    case "ReferencePoint":
+                        element = ReferencePoint.Load(xmlElement);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
+                }
+                yield return element;
+            }
+        }
+
     }
 }

@@ -32,9 +32,10 @@ namespace Tharga.Reporter.Engine.Entity.Area
             foreach (var element in _elementList)
             {
                 XRect bnd;
-                if (element is MultiPageAreaElement)
+                //if (element is MultiPageAreaElement)
+                if (element is MultiPageElement)
                 {
-                    var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
                     if (needMore)
                         needAnotherPage = true;
                 }
@@ -72,18 +73,16 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var pane = new Pane();
 
-            var elms = pane.GetElements(xme);
+            var elms = GetElements(xme);
             pane.ElementList.AddRange(elms);
 
             return pane;
         }
 
-        //protected IEnumerable<AreaElement.AreaElement> GetElements(XmlElement xme)
-        protected IEnumerable<Element.Element> GetElements(XmlElement xme)
+        internal static IEnumerable<Element.Element> GetElements(XmlElement xme)
         {
             foreach (XmlElement xmlElement in xme.ChildNodes)
             {
-                //AreaElement.AreaElement element;
                 Element.Element element;
                 switch (xmlElement.Name)
                 {

@@ -71,7 +71,7 @@
     <Compile Include="Entity\Element\Table.cs" />
     <Compile Include="Entity\Element\TableColumn.cs" />
     <Compile Include="Entity\Element\Text.cs" />
-    <Compile Include="Entity\Element\TextBase.cs" />
+    <Compile Include="Entity\Element\Base\TextBase.cs" />
     <Compile Include="Entity\Element\TextBox.cs" />
     <Compile Include="Entity\Font.cs" />
     <Compile Include="Entity\SectionList.cs" />

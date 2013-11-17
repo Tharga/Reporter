@@ -5,7 +5,6 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Helper;
 using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
@@ -15,12 +14,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
         private const StackMethod _defaultStack = StackMethod.None;
 
         public enum StackMethod { None, Vertical }
-        
-        private readonly ElementList _elementList = new ElementList();
+
+        private ElementList _elementList; // = new ElementList();
         private StackMethod? _stack;
 
         public StackMethod Stack { get { return _stack ?? _defaultStack; } set { _stack = value; } }
-        public ElementList ElementList { get { return _elementList; } } 
+        public ElementList ElementList { get { return _elementList ?? (_elementList = new ElementList()); } set { _elementList = value; } } 
 
         //TODO: Overriding theese is not a good idea. They should not even be here in the first place
         //public override UnitValue? Bottom
@@ -121,32 +120,31 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         protected override XRect GetBounds(XRect parentBounds)
         {
-            throw new NotImplementedException();
             //if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
             //var relativeAlignment = _relativeAlignment;
+            var relativeAlignment = new UnitRectangle(Left.Value, Top.Value, "0", "0");
 
-            //var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
-            ////var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
-            //var width = _relativeAlignment.GetWidht(parentBounds.Width);
+            var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
+            //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
+            var width = relativeAlignment.GetWidht(parentBounds.Width);
 
-            //var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
-            ////var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);
-            //var height = relativeAlignment.GetHeight(parentBounds.Height);
+            var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
+            //var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);
+            var height = relativeAlignment.GetHeight(parentBounds.Height);
 
-            //if (height < 0)
-            //{
-            //    System.Diagnostics.Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
-            //    height = 0;
-            //}
+            if (height < 0)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
+                height = 0;
+            }
 
-            //return new XRect(left, top, width, height);
+            return new XRect(left, top, width, height);
         }
 
         //TODO: Write tests for this
         internal override XmlElement ToXme()
         {
             var xme = base.ToXme();
-
 
             if (Left != null)
                 xme.SetAttribute("Left", Left.Value.ToString());
@@ -156,6 +154,13 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
             if (_stack != null)
                 xme.SetAttribute("Stack", _stack.ToString());
+
+            foreach (var element in ElementList)
+            {
+                var xmeElement = element.ToXme();
+                var importedElement = xme.OwnerDocument.ImportNode(xmeElement, true);
+                xme.AppendChild(importedElement);
+            }
 
             return xme;
         }
@@ -171,7 +176,14 @@ namespace Tharga.Reporter.Engine.Entity.Area
             var xmeStack = xme.Attributes["Stack"];
             if (xmeStack != null)
                 referencePoint.Stack = (StackMethod)Enum.Parse(typeof(StackMethod), xmeStack.Value);
-            
+
+            //TODO: Add range
+            var elements = Pane.GetElements(xme);
+            foreach (var element in elements)
+            {
+                referencePoint.ElementList.Add(element);
+            }
+
             return referencePoint;
         }
     }

@@ -36,7 +36,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             if (xmeHeight != null)
                 pane.Height = UnitValue.Parse(xmeHeight.Value);
 
-            var elms = pane.GetElements(xme);
+            var elms = GetElements(xme);
             pane.ElementList.AddRange(elms);
 
             return pane;

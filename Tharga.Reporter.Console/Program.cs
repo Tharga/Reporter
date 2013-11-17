@@ -1,276 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
-using Image = Tharga.Reporter.Engine.Entity.Element.Image;
-using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Console
 {
-    public static class ReportBusinessHelper
-    {
-        public static UnitValue SumTop = UnitValue.Parse("15cm");
-
-        internal static Section GetNoteBase(Color backLineColor, Color backFieldColor)
-        {
-            var section = new Section
-            {
-                Margin =
-                {
-                    Left = UnitValue.Parse("2cm"),
-                    Right = UnitValue.Parse("1cm"),
-                    Top = UnitValue.Parse("1cm"),
-                    Bottom = UnitValue.Parse("0,5cm")
-                }
-            };
-
-            #region Header
-
-
-            section.Header.Height = UnitValue.Parse("6cm");
-            section.Header.ElementList.Add(new Rectangle { Left = UnitValue.Parse("9,5cm"), Top = UnitValue.Parse("0cm"), Right = UnitValue.Parse("8,5cm"), Bottom = UnitValue.Parse("2cm"), BorderColor = backLineColor, BorderWidth = UnitValue.Parse("1px"), BackgroundColor = backFieldColor });
-            section.Header.ElementList.Add(new Image { Source = "{Company.Logotype}", Height = UnitValue.Parse("3,5cm"), Top = UnitValue.Parse("0cm"), IsBackground = true });
-
-            //Customer
-            var customerArea = new ReferencePoint()
-            {
-                Left = UnitValue.Parse("10cm"),
-                Top = UnitValue.Parse("2,5cm"),
-                Stack = ReferencePoint.StackMethod.Vertical,
-                Name = "CustomerArea"
-            };
-            section.Header.ElementList.Add(customerArea);
-            customerArea.ElementList.Add(new Text { Value = "Kund nr: {Customer.Number}" });
-            customerArea.ElementList.Add(new Text { Value = "{Customer.Name}" });
-            //customerArea.ElementList.Add(Text.Create("Att: {Customer.DeliveryAddress.Representative.Name} ({Customer.DeliveryAddress.Representative.BuyerNumber})", hideValue: "Customer.DeliveryAddress.Representative.Name"));
-            customerArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.Note}" });
-            customerArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.StreetName}" });
-            customerArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.PostalCode} {Customer.DeliveryAddress.City}" });
-            customerArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.Country}" });
-
-            var refArea = new ReferencePoint { Left = UnitValue.Parse("3cm"), Top = UnitValue.Parse("2,5cm"), Stack = ReferencePoint.StackMethod.Vertical };
-            section.Header.ElementList.Add(refArea);
-            refArea.ElementList.Add(new Text { Value = "Vår Referens" });
-            refArea.ElementList.Add(new Text { Value = "{User.Name}" });
-            refArea.ElementList.Add(new Text { Value = " " });
-            refArea.ElementList.Add(new Text { Value = "Er Referens" }); //TODO: This should be hidden if there is no value for {Customer.DeliveryAddress.Representative.Name}.
-            refArea.ElementList.Add(new Text { Value = "{Customer.DeliveryAddress.Representative.Name}" });
-
-
-            #endregion
-            #region Footer
-
-
-            const string top = "3px";
-            section.Footer.Height = UnitValue.Parse("2cm");
-            var addressRefPoint = new ReferencePoint { Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
-            section.Footer.ElementList.Add(addressRefPoint);
-            addressRefPoint.ElementList.Add(new Text { Value = "Postadress", Font = { Color = backFieldColor, Size = 6 } });
-            addressRefPoint.ElementList.Add(new Text { Value = "{Company.StreetName}", Font = { Color = backLineColor, Size = 8 } });
-            addressRefPoint.ElementList.Add(new Text { Value = "{Company.PostalCode} {Company.City}", Font = { Color = backLineColor, Size = 8 } });
-
-            var hallRefPoint = new ReferencePoint { Left = UnitValue.Parse("4cm"), Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
-            section.Footer.ElementList.Add(hallRefPoint);
-            hallRefPoint.ElementList.Add(new Text { Value = "Telefon", Font = { Color = backLineColor, Size = 6 } });
-            hallRefPoint.ElementList.Add(new Text { Value = "{Company.Phone}", Font = { Color = backLineColor, Size = 8 } });
-            hallRefPoint.ElementList.Add(new Text { Value = "Fax", Font = { Color = backLineColor, Size = 6 } });
-            hallRefPoint.ElementList.Add(new Text { Value = "{Company.Fax}", Font = { Color = backLineColor, Size = 8 } });
-
-            var tradRefPoint = new ReferencePoint { Left = UnitValue.Parse("8,5cm"), Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
-            section.Footer.ElementList.Add(tradRefPoint);
-            tradRefPoint.ElementList.Add(new Text { Value = "{EMail1}", Font = { Color = backLineColor, Size = 8 } });
-            tradRefPoint.ElementList.Add(new Text { Value = "{EMail2}", Font = { Color = backLineColor, Size = 8 } });
-            tradRefPoint.ElementList.Add(new Text { Value = "{EMail3}", Font = { Color = backLineColor, Size = 8 } });
-
-            var bg = new ReferencePoint { Left = UnitValue.Parse("16cm"), Top = UnitValue.Parse(top), Stack = ReferencePoint.StackMethod.Vertical };
-            section.Footer.ElementList.Add(bg);
-            bg.ElementList.Add(new Text { Value = "Bankgiro", Font = { Color = backLineColor, Size = 6 } });
-            bg.ElementList.Add(new Text { Value = "{Bankgiro}", Font = { Color = backLineColor, Size = 8 } });
-
-
-            #endregion
-            #region Pane
-
-
-            //Order Table
-            //var orderItemTable = new Table("OrderItems", UnitValue.Parse("0cm"), UnitValue.Parse("0cm"), null)
-            //{
-            //    Height = UnitValue.Parse(SumTop),
-            //    Width = UnitValue.Parse("18cm"),
-            //    BorderColor = backLineColor,
-            //    BackgroundColor = backFieldColor,
-            //};
-            //orderItemTable.AddColumn("{ArticleName}", "Specifikation", widthMode: Table.WidthMode.Spring);
-            //orderItemTable.AddColumn("{BoxCount.NumberOfBoxes}*{BoxCount.ItemsPerBox}", "Lådor", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "*");
-            //orderItemTable.AddColumn("{Count}", "Antal", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
-            //orderItemTable.AddColumn("{NetNormalItemPrice}", "Normal", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "{NetSaleItemPrice}");
-            //orderItemTable.AddColumn("{DiscountPercentage}%", "Rabatt", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "0%");
-            //orderItemTable.AddColumn("{NetSaleItemPrice}", "á-pris", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
-            //orderItemTable.AddColumn("{NetSaleTotalPrice}", "Belopp", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
-
-            //Order summary
-            var orderSummaryBv = new ReferencePoint { Top = SumTop };
-            section.Pane.ElementList.Add(orderSummaryBv);
-            orderSummaryBv.ElementList.Add(new Line { Width = UnitValue.Parse("100%"), BorderColor = backLineColor });
-            //orderSummaryBv.ElementList.Add(new Rectangle("0cm", "0cm", "100%", "999cm", backLineColor));
-            //orderSummaryBv.ElementList.Add(new Line("0cm", "1cm", "100%", "0cm", backLineColor));
-            orderSummaryBv.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), Width = UnitValue.Parse("100%"), BorderColor = backLineColor });
-            //orderSummaryBv.ElementList.Add(Text.Create("Betalningsvillkor", backLineColor, 6));
-
-            //var orderSummaryDt = new ReferencePoint("7cm", sumTop);
-            //section.Pane.ElementList.Add(orderSummaryDt);
-            ////orderSummaryDt.ElementList.Add(new Line("0cm", "0cm", "0cm", "1cm", backLineColor));
-            ////orderSummaryDt.ElementList.Add(Text.Create("Förfallodag", backLineColor, 6));
-
-            //var orderSummaryOcr = new ReferencePoint("0cm", SumTop);
-            //section.Pane.ElementList.Add(orderSummaryOcr);
-            //var ocrTitle = Text.Create("OCR", backLineColor, 6);
-            //ocrTitle.Left = UnitValue.Parse("2px");
-            //orderSummaryOcr.ElementList.Add(ocrTitle);
-            //var ocrText = Text.Create("{OCR}", top: "0,5cm");
-            //ocrText.Width = UnitValue.Parse("2,45cm");
-            //ocrText.TextAlignment = TextBase.Alignment.Left;
-            //ocrText.Left = UnitValue.Parse("2px"); 
-            //orderSummaryOcr.ElementList.Add(ocrText);
-
-            var orderSummaryPe = new ReferencePoint { Left = UnitValue.Parse("10cm"), Top = SumTop };
-            section.Pane.ElementList.Add(orderSummaryPe);
-            orderSummaryPe.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), BorderColor = backLineColor });
-            var peTitle = new Text { Value = "Summa exkl. moms", Font = { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
-            orderSummaryPe.ElementList.Add(peTitle);
-            var netSaleTotalPriceText = new Text { Value = "{NetSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,45cm"), TextAlignment = TextBase.Alignment.Right };
-            orderSummaryPe.ElementList.Add(netSaleTotalPriceText);
-
-            var orderSummaryVat = new ReferencePoint { Left = UnitValue.Parse("12,5cm"), Top = SumTop };
-            section.Pane.ElementList.Add(orderSummaryVat);
-            orderSummaryVat.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), BorderColor = backLineColor });
-            var vatTiel = new Text { Value = "Moms", Font = { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
-            orderSummaryVat.ElementList.Add(vatTiel);
-            var vatSaleTotalPriceText = new Text { Value = "{VatSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,45cm"), TextAlignment = TextBase.Alignment.Right };
-            orderSummaryVat.ElementList.Add(vatSaleTotalPriceText);
-
-            var orderSummaryGross = new ReferencePoint { Left = UnitValue.Parse("15cm"), Top = SumTop };
-            section.Pane.ElementList.Add(orderSummaryGross);
-            orderSummaryGross.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), BorderColor = backLineColor });
-            var grossTitle = new Text { Value = "Att betala", Font = { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
-            orderSummaryGross.ElementList.Add(grossTitle);
-            var grossSaleTotalPriceText = new Text { Value = "{GrossSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,95cm"), TextAlignment = TextBase.Alignment.Right };
-            orderSummaryGross.ElementList.Add(grossSaleTotalPriceText);
-
-            //Extra info
-            var vatInfoReference = new ReferencePoint { Left = UnitValue.Parse("0"), Top = SumTop };
-            var vatInfoText = new Text { Value = "Org.nr {Company.OrgNo}. Innehar F-skattsedel. Vat nr {Company.VatNo}.", Left = UnitValue.Parse("2px"), Top = UnitValue.Parse("1cm"), Font = { Size = 6, Color = backLineColor } };
-            vatInfoReference.ElementList.Add(vatInfoText);
-            //var lateInfoText = new Text { Value = "Vid betalning efter förfallodagen debiteras 18%", Left = UnitValue.Parse("2px"), Top = UnitValue.Parse("1,5cm"), FontSize = 10, FontColor = backLineColor };
-            //vatInfoReference.ElementList.Add(lateInfoText);
-
-            //TODO: Add to template
-            var signText = new Text { Value = "Er kvittens", Left = UnitValue.Parse("2px"), Top = UnitValue.Parse("1,5cm"), Font = { Size = 10, Color = backLineColor } };
-            vatInfoReference.ElementList.Add(signText);
-            var signLine = new Line { Left = UnitValue.Parse("2cm"), Top = UnitValue.Parse("2cm"), Width = UnitValue.Parse("5cm"), BorderColor = backLineColor };
-            vatInfoReference.ElementList.Add(signLine);
-
-            section.Pane.ElementList.Add(vatInfoReference);
-
-            //Pane
-            //section.Pane.ElementList.Add(orderItemTable);
-            //section.Pane.ElementList.Add(new Rectangle {BorderColor = backLineColor, BorderWidth = UnitValue.Parse("1px")});
-            section.Pane.ElementList.Add(new Rectangle { BorderColor = backLineColor });
-
-
-            #endregion
-
-            return section;
-        }
-
-        internal static void AssignFooterData(ref DocumentData documentData)
-        {
-            //TODO: Load this information from the service
-            documentData.Add("Company.Name", "Skalleberg HTRG");
-            documentData.Add("Company.StreetName", "Ormbackavägen 67");
-            documentData.Add("Company.PostalCode", "175 61");
-            documentData.Add("Company.City", "JÄRFÄLLA");
-            documentData.Add("Company.Phone", "08-91 99 66");
-            documentData.Add("Company.Fax", "08-91 50 67");
-            documentData.Add("Company.OrgNo", "916619-5488");
-            documentData.Add("Company.VatNo", "SE916619548801");
-            documentData.Add("Bankgiro", "364-1230");
-            documentData.Add("EMail1", "lennart@skalleberg.se");
-            documentData.Add("EMail2", "roger@skalleberg.se");
-            documentData.Add("EMail3", "oddbjorn@skalleberg.se");
-        }
-    }
-
-    class SkallSim1
-    {
-        public static Section GetDeliveryNoteSection(Color backLineColor)
-        {
-            //var backFieldColor = Color.FromArgb(backLineColor.A, backLineColor.R + 127, backLineColor.G + 127, backLineColor.B + 127);
-            var backFieldColor = Color.White;
-            //var backFieldColor = Color.FromArgb(255, 128, 128, 255);
-
-            var section = ReportBusinessHelper.GetNoteBase(backLineColor, backFieldColor);
-
-            #region Header
-
-            section.Header.ElementList.Add(new Text { Value = "Följesedel", Left = UnitValue.Parse("10cm"), Top = UnitValue.Parse("0"), Font = { Size = 22 } });
-            section.Header.ElementList.Add(new Text { Value = "Nr:", Left = UnitValue.Parse("10cm"), Top = UnitValue.Parse("24px") });
-            section.Header.ElementList.Add(new Text { Value = "{Number}", Left = UnitValue.Parse("12.5cm"), Top = UnitValue.Parse("24px") });
-            section.Header.ElementList.Add(new Text { Value = "Datum:", Left = UnitValue.Parse("10cm"), Top = UnitValue.Parse("36px") });
-            section.Header.ElementList.Add(new Text { Value = "{Date}", Left = UnitValue.Parse("12,5cm"), Top = UnitValue.Parse("36px") });
-
-
-            #endregion
-            #region Footer
-
-
-
-            #endregion
-            #region Pane
-
-
-            ////Signature for the representative
-            //var signRefPoint = new ReferencePoint("1cm", "18cm");
-            //section.Pane.ElementList.Add(signRefPoint);
-            //signRefPoint.ElementList.Add(new Line("0cm", "0cm", "8cm", "0cm", backLineColor, "1px"));
-            //signRefPoint.ElementList.Add(Text.Create("{Representative.Name}", "0", "0cm"));
-
-            section.Pane.ElementList.Add(GetDeliveryNoteTable(backLineColor, backFieldColor));
-
-            #endregion
-
-            return section;
-        }
-
-        private static Table GetDeliveryNoteTable(Color? backLineColor, Color? backFieldColor)
-        {
-            var orderItemTable = new Table
-            {
-                Name = "OrderItems",
-                Height = ReportBusinessHelper.SumTop,
-                Width = UnitValue.Parse("100%"),
-                BorderColor = backLineColor ?? Color.Black,
-                BackgroundColor = backFieldColor,
-            };
-            //orderItemTable.AddColumn("{BoxCount.NumberOfBoxes}*{BoxCount.ItemsPerBox}", "Lådor", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "*");
-            orderItemTable.AddColumn("{Description}", "Specifikation", widthMode: Table.WidthMode.Spring);
-            orderItemTable.AddColumn("{AmountDescription}", "Lådor", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "");
-            orderItemTable.AddColumn("{Count}", "Antal", widthMode: Table.WidthMode.Specific, width: UnitValue.Parse("3cm"), alignment: Table.Alignment.Right);
-            orderItemTable.AddColumn("{NetNormalItemPrice}", "Pris", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "{NetSaleItemPrice}");
-            orderItemTable.AddColumn("{DiscountPercentage}%", "Rabatt", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "0%");
-            orderItemTable.AddColumn("{NetSaleItemPrice}", "Säljpris", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
-            orderItemTable.AddColumn("{NetSaleTotalPrice}", "Belopp", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
-            //orderItemTable.AddColumn("{VAT}", "Moms", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right);
-
-            return orderItemTable;
-        }
-
-    }
-
     static class Program
     {
         static void Main(string[] args)
@@ -281,11 +20,13 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
-            Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
+            //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
+
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
-            //SkallebergSample1();
+            
+            SkallebergSample1();
 
             //Bugs: 
             //When spanning with textBoxes an empty page can sometimes be added, if the last word fitx exactly
@@ -296,16 +37,42 @@ namespace Tharga.Reporter.Console
 
         private static void SkallebergSample1()
         {
-            var section = SkallSim1.GetDeliveryNoteSection(Color.FromArgb(255, 0, 0, 0));
-            var t = new Template(section);
+            var documentData = GetDocumentData();
 
-            var xme = t.ToXml();
+            var section = SkallSim1.GetDeliveryNoteSection(Color.FromArgb(255, 0, 0, 0));
+            var template = new Template(section);
+
+            var xme = template.ToXml();
 
             var t2 = Template.Load(xme);
             var xme2 = t2.ToXml();
 
             if (xme.OuterXml != xme2.OuterXml)
                 Debug.WriteLine("Oups!");
+
+            var byteArray = Rendering.CreatePDFDocument(template, debug: false, documentData: documentData, background: false);
+            ExecuteFile(byteArray);
+
+            var byteArrayA = Rendering.CreatePDFDocument(t2, debug: false, documentData: documentData, background: false);
+            ExecuteFile(byteArrayA);
+
+            if (byteArrayA.Length != byteArray.Length)
+                Debug.WriteLine("Oups!");
+        }
+
+        private static DocumentData GetDocumentData()
+        {
+            var documentData = new DocumentData();
+
+            documentData.Add("Number", "12345");
+            documentData.Add("Time", "10.00.00");
+            documentData.Add("Date", "2001-01-01");
+
+            documentData.Add("User.Name", "Rea Padda");
+
+            documentData.Add("Customer.Name", "Bob Loblaw");
+
+            return documentData;
         }
 
         private static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
