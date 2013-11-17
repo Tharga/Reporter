@@ -35,7 +35,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             xme.SetAttribute("DisplayName", DisplayName);
             xme.SetAttribute("Align", Align.ToString());
-            xme.SetAttribute("HideValue", HideValue);
+            if (HideValue != null)
+                xme.SetAttribute("HideValue", HideValue);
             if (Width != null)
                 xme.SetAttribute("Width", Width.Value.ToString());
             xme.SetAttribute("WidthMode", WidthMode.ToString());
@@ -48,7 +49,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var displayName = xme.Attributes["DisplayName"].Value;
             var align = (Table.Alignment)Enum.Parse(typeof(Table.Alignment), xme.Attributes["Align"].Value);
 
-            var hideValue = xme.Attributes["HideValue"].Value;
+            string hideValue = null;
+            if (xme.Attributes["HideValue"] != null)
+                hideValue = xme.Attributes["HideValue"].Value;
 
             UnitValue? width = null;
             if (xme.Attributes["Width"] != null)

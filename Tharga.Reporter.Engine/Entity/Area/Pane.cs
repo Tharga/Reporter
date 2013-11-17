@@ -32,16 +32,25 @@ namespace Tharga.Reporter.Engine.Entity.Area
             foreach (var element in _elementList)
             {
                 XRect bnd;
-                //if (element is MultiPageAreaElement)
-                if (element is MultiPageElement)
+                if (element as MultiPageElement != null)
                 {
                     var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
                     if (needMore)
                         needAnotherPage = true;
                 }
-                else if (element is SinglePageAreaElement)
+                else if (element as MultiPageAreaElement != null)
+                {
+                    var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    if (needMore)
+                        needAnotherPage = true;
+                }
+                else if (element as SinglePageAreaElement != null)
                 {
                     ((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException(string.Format("Unknown type {0} for pane to render.", element.GetType().Name));
                 }
             }
             return needAnotherPage;

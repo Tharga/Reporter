@@ -50,11 +50,11 @@ namespace Tharga.Reporter.Console
             if (xme.OuterXml != xme2.OuterXml)
                 Debug.WriteLine("Oups!");
 
-            var byteArray = Rendering.CreatePDFDocument(template, debug: false, documentData: documentData, background: false);
-            ExecuteFile(byteArray);
-
             var byteArrayA = Rendering.CreatePDFDocument(t2, debug: false, documentData: documentData, background: false);
             ExecuteFile(byteArrayA);
+
+            var byteArray = Rendering.CreatePDFDocument(template, debug: false, documentData: documentData, background: false);
+            ExecuteFile(byteArray);
 
             if (byteArrayA.Length != byteArray.Length)
                 Debug.WriteLine("Oups!");

@@ -139,7 +139,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                 //Create header
                 double left = 0;
-                foreach (var column in _columns.Values.Where(x => !x.Hide).ToList())
+                var tableColumns = _columns.Values.Where(x => !x.Hide).ToList();
+                foreach (var column in tableColumns)
                 {
                     var alignmentJusttification = 0D;
                     if (column.Align == Alignment.Right)
