@@ -52,8 +52,8 @@ namespace Tharga.Reporter.Console
                     Name = "OrderItems",
                     Height = ReportBusinessHelper.SumTop,
                     Width = UnitValue.Parse("100%"),
-                    BorderColor = backLineColor ?? Color.Black,
-                    BackgroundColor = backFieldColor,
+                    ContentBorderColor = backLineColor ?? Color.Black,
+                    ContentBackgroundColor = backFieldColor,
                 };
             //orderItemTable.AddColumn("{BoxCount.NumberOfBoxes}*{BoxCount.ItemsPerBox}", "Lådor", UnitValue.Parse("2cm"), alignment: Table.Alignment.Right, hideValue: "*");
             orderItemTable.AddColumn("{Description}", "Specifikation", widthMode: Table.WidthMode.Spring);

@@ -13,59 +13,81 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public class Table : MultiPageAreaElement
     {
-        private readonly Color _defaultBorderColor = Color.Black;
+        private readonly Font _defaultContentFont = new Font();
+        private readonly Font _defaultHeaderFont = new Font {Size = 18};
 
         public enum Alignment { Left, Right };
         public enum WidthMode { Specific, Auto, Spring }
 
-        private Color? _borderColor;
-        private Color? _backgroundColor;
-        private Font _headerFont;
-        private string _headerFontClass;
-        private Font _lineFont;
-        private string _lineFontClass;
         private readonly Dictionary<string, TableColumn> _columns = new Dictionary<string, TableColumn>();
 
-        public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
-        public Color? BackgroundColor { get { return _backgroundColor; } set { _backgroundColor = value; } }
-        internal Font HeaderFont
+        //private Color? _borderColor;
+        //private Color? _backgroundColor;
+        private Font _headerFont;
+        private string _headerFontClass;
+        private Color? _headerBorderColor;
+        private Color? _headerBackgroundColor;
+
+        private Font _contentFont;
+        private string _contentFontClass;
+        private Color? _contentBorderColor;
+        private Color? _contentBackgroundColor;
+
+        //public Color? BorderColor { get { return _borderColor; } set { _borderColor = value; } }
+        //public Color? BackgroundColor { get { return _backgroundColor; } set { _backgroundColor = value; } }
+
+        internal Dictionary<string, TableColumn> Columns { get { return _columns; } }
+
+        public Font HeaderFont
         {
             get
             {
-                if (!string.IsNullOrEmpty(_headerFontClass)) 
-                    throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFontClass has already been set.");
-                return _headerFont ?? (_headerFont = new Font());
+                return _headerFont ?? _defaultHeaderFont;
             }
-        }
-        public string HeaderFontClass
-        {
-            get { return _headerFontClass; }
             set
             {
-                if (_headerFont != null) throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFont has already been set.");
+                if (!string.IsNullOrEmpty(_headerFontClass))
+                    throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFontClass has already been set.");
+                _headerFont = value;
+            }
+        }
+        internal string HeaderFontClass //TODO: Hidden because it is not yet fully implemented
+        {
+            get { return _headerFontClass ?? string.Empty; }
+            set
+            {
+                if (_headerFont != null) 
+                    throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFont has already been set.");
                 _headerFontClass = value;
             }
         }
-        internal Font LineFont
+        public Color? HeaderBorderColor { get { return _headerBorderColor; } set { _headerBorderColor = value; } }
+        public Color? HeaderBackgroundColor { get { return _headerBackgroundColor; } set { _headerBackgroundColor = value; } }
+        public Font ContentFont
         {
             get
             {
-                if (!string.IsNullOrEmpty(_lineFontClass))
-                    throw new InvalidOperationException("Cannot set both LineFont and LineFontClass. LineFontClass has already been set.");
-                return _lineFont ?? (_lineFont = new Font());
+                return _contentFont ?? _defaultContentFont;
             }
-        }
-        public string LineFontClass
-        {
-            get { return _lineFontClass; }
             set
             {
-                if (_lineFont != null)
-                    throw new InvalidOperationException("Cannot set both LineFont and LineFontClass. LineFont has already been set.");
-                _lineFontClass = value;
+                if (!string.IsNullOrEmpty(_contentFontClass))
+                    throw new InvalidOperationException("Cannot set both ContentFont and ContentFontClass. ContentFontClass has already been set.");
+                _contentFont = value;
             }
         }
-        internal Dictionary<string, TableColumn> Columns { get { return _columns; } }
+        internal string ContentFontClass  //TODO: Hidden because it is not yet fully implemented
+        {
+            get { return _contentFontClass ?? string.Empty; }
+            set
+            {
+                if (_contentFont != null)
+                    throw new InvalidOperationException("Cannot set both ContentFont and ContentFontClass. ContentFont has already been set.");
+                _contentFontClass = value;
+            }
+        }
+        public Color? ContentBorderColor { get { return _contentBorderColor; } set { _contentBorderColor = value; } }
+        public Color? ContentBackgroundColor { get { return _contentBackgroundColor; } set { _contentBackgroundColor = value; } }
 
         private int _rowPointer;
 
@@ -201,21 +223,35 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         private void RenderBorder(XRect elementBounds, XGraphics gfx, XSize headerSize)
         {
-            if (BorderColor != null)
+            //TODO: Specify this to be the content oly
+            if (ContentBorderColor != null)
             {
-                var borderPen = new XPen(BorderColor);
+                var borderPen = new XPen(ContentBorderColor.Value);
 
                 //Rectangle around the entire table
-                gfx.DrawRectangle(borderPen, elementBounds);
+                //gfx.DrawRectangle(borderPen, elementBounds);
 
                 //Rectangle around the title
-                if (BackgroundColor != null)
+                if (ContentBackgroundColor != null)
                 {
-                    var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                    var brush = new XSolidBrush(XColor.FromArgb(ContentBackgroundColor.Value));
+                    gfx.DrawRectangle(borderPen, brush, elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height);
+                }
+                else
+                    gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height);
+            }
+
+            if (HeaderBorderColor != null)
+            {
+                var borderPen = new XPen(HeaderBorderColor.Value);
+
+                if (HeaderBackgroundColor != null)
+                {
+                    var brush = new XSolidBrush(XColor.FromArgb(HeaderBackgroundColor.Value));
                     gfx.DrawRectangle(borderPen, brush, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
                 }
                 else
-                    gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
+                    gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);                
             }
         }
 
@@ -242,17 +278,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         private string GetLineName()
         {
-            return LineFont.GetRenderName(LineFontClass);
+            return ContentFont.GetRenderName(ContentFontClass);
         }
 
         private double GetLineSize()
         {
-            return LineFont.GetRenderSize(LineFontClass);
+            return ContentFont.GetRenderSize(ContentFontClass);
         }
 
         private Color GetLineColor()
         {
-            return LineFont.GetRenderColor(LineFontClass);
+            return ContentFont.GetRenderColor(ContentFontClass);
         }
 
         public void AddColumn(string displayFormat, string displayName,  UnitValue? width = null,
@@ -266,17 +302,37 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             var xme = base.ToXme();
 
-            if (_backgroundColor != null)
-                xme.SetAttribute("BackgroundColor", string.Format("{0}{1}{2}", _backgroundColor.Value.R.ToString("X2"), _backgroundColor.Value.G.ToString("X2"), _backgroundColor.Value.B.ToString("X2")));
+            if (_contentBackgroundColor != null)
+                xme.SetAttribute("ContentBackgroundColor", string.Format("{0}{1}{2}", _contentBackgroundColor.Value.R.ToString("X2"), _contentBackgroundColor.Value.G.ToString("X2"), _contentBackgroundColor.Value.B.ToString("X2")));
 
-            if (_borderColor != null)
-                xme.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
+            if (_contentBorderColor != null)
+                xme.SetAttribute("ContentBorderColor", string.Format("{0}{1}{2}", _contentBorderColor.Value.R.ToString("X2"), _contentBorderColor.Value.G.ToString("X2"), _contentBorderColor.Value.B.ToString("X2")));
+
+            if (_headerBackgroundColor != null)
+                xme.SetAttribute("HeaderBackgroundColor", string.Format("{0}{1}{2}", _headerBackgroundColor.Value.R.ToString("X2"), _headerBackgroundColor.Value.G.ToString("X2"), _headerBackgroundColor.Value.B.ToString("X2")));
+
+            if (_headerBorderColor != null)
+                xme.SetAttribute("HeaderBorderColor", string.Format("{0}{1}{2}", _headerBorderColor.Value.R.ToString("X2"), _headerBorderColor.Value.G.ToString("X2"), _headerBorderColor.Value.B.ToString("X2")));
+
+            if (_headerFont != null)
+            {
+                var fontXme = _headerFont.ToXme("HeaderFont");
+                var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
+                xme.AppendChild(importedFont);
+            }
 
             if (_headerFontClass != null)
                 xme.SetAttribute("HeaderFontClass", _headerFontClass);
 
-            if (_lineFontClass != null)
-                xme.SetAttribute("LineFontClass", _lineFontClass);
+            if (_contentFont != null)
+            {
+                var fontXme = _contentFont.ToXme("ContentFont");
+                var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
+                xme.AppendChild(importedFont);
+            }
+
+            if (_contentFontClass != null)
+                xme.SetAttribute("ContentFontClass", _contentFontClass);
 
             var columns = xme.OwnerDocument.CreateElement("Columns");
             xme.AppendChild(columns);
@@ -299,34 +355,53 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             table.AppendData(xme);
 
-            var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
+            var xmlBackgroundColor = xme.Attributes["ContentBackgroundColor"];
             if (xmlBackgroundColor != null)
-                table.BackgroundColor = xmlBackgroundColor.Value.ToColor();
+                table.ContentBackgroundColor = xmlBackgroundColor.Value.ToColor();
 
-            var xmlBorderColor = xme.Attributes["BorderColor"];
+            var xmlBorderColor = xme.Attributes["ContentBorderColor"];
             if (xmlBorderColor != null)
-                table.BorderColor = xmlBorderColor.Value.ToColor();
+                table.ContentBorderColor = xmlBorderColor.Value.ToColor();
+
+            var xmlHeaderBackgroundColor = xme.Attributes["HeaderBackgroundColor"];
+            if (xmlHeaderBackgroundColor != null)
+                table.HeaderBackgroundColor = xmlHeaderBackgroundColor.Value.ToColor();
+
+            var xmlHeaderBorderColor = xme.Attributes["HeaderBorderColor"];
+            if (xmlHeaderBorderColor != null)
+                table.HeaderBorderColor = xmlHeaderBorderColor.Value.ToColor();
 
             var xmlHeaderFontClass = xme.Attributes["HeaderFontClass"];
             if (xmlHeaderFontClass != null)
                 table.HeaderFontClass = xmlHeaderFontClass.Value;
 
-            var xmlLineFontClass = xme.Attributes["LineFontClass"];
+            var xmlLineFontClass = xme.Attributes["ContentFontClass"];
             if (xmlLineFontClass != null)
-                table.LineFontClass = xmlLineFontClass.Value;
+                table.ContentFontClass = xmlLineFontClass.Value;
 
-            var xmlTemplate = xme.FirstChild;
-
-            if (xmlTemplate.Name != "Columns") throw new InvalidOperationException(string.Format("Columns level cannot be parsed as element of type {0}.", xmlTemplate.Name));
-            foreach (XmlElement xmlColumn in xmlTemplate.ChildNodes)
+            foreach (XmlElement child in xme)
             {
-                var name = xmlColumn.Attributes["Key"].Value;
-
-                var col = TableColumn.Load(xmlColumn);
-
-                table.AddColumn(name, col.DisplayName, col.Width, col.WidthMode, col.Align, col.HideValue);
+                switch (child.Name)
+                {
+                    case "HeaderFont":
+                        table.HeaderFont = Font.Load(child);
+                        break;
+                    case "ContentFont":
+                        table.ContentFont = Font.Load(child);
+                        break;
+                    case "Columns":
+                        foreach (XmlElement xmlColumn in child.ChildNodes)
+                        {
+                            var name = xmlColumn.Attributes["Key"].Value;
+                            var col = TableColumn.Load(xmlColumn);
+                            table.AddColumn(name, col.DisplayName, col.Width, col.WidthMode, col.Align, col.HideValue);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to text base.", child.Name));
+                }
             }
-
+            
             return table;
         }
     }

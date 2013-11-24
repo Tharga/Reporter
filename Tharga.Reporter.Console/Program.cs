@@ -7,6 +7,8 @@ using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
+using Font = Tharga.Reporter.Engine.Entity.Font;
+using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Console
 {
@@ -24,9 +26,9 @@ namespace Tharga.Reporter.Console
 
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
-            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            Create_PDF_document_with_template_that_spans_over_multiple_pages();
             
-            SkallebergSample1();
+            //SkallebergSample1();
 
             //Bugs: 
             //When spanning with textBoxes an empty page can sometimes be added, if the last word fitx exactly
@@ -85,7 +87,33 @@ namespace Tharga.Reporter.Console
 
             var content = new Section{Name = "Content"};
 
-            var tableTemplate = new Table { Name ="MyTable", BorderColor = System.Drawing.Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
+            var rect = new Rectangle { BackgroundColor = Color.NavajoWhite, Width="33%", Height = "100%", BorderColor = Color.MediumTurquoise };
+            content.Pane.ElementList.Add(rect);
+
+            //TODO: Possible to assign and use a font class, instead of a specific font
+            string someFontClass = null; // "MyFontClass";
+
+            //var tableTemplate = new Table { Name ="MyTable", BorderColor = Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
+            var tableTemplate = new Table
+                {
+                    Name = "MyTable",
+                    Top = UnitValue.Parse("5cm"),
+                    Height = UnitValue.Parse("200"),
+                    Left = UnitValue.Parse("1cm"),
+                    Width = UnitValue.Parse("10cm"),
+                    ContentFont = new Font {FontName = "Times", Size = 12},
+                    HeaderFont = new Font {FontName = "Arial", Size = 21},
+                    //HeaderFontClass = someFontClass
+
+                    ContentBorderColor = Color.MediumSeaGreen,
+                    ContentBackgroundColor = Color.LightGreen,
+
+                    HeaderBackgroundColor = Color.LightSkyBlue,
+                    HeaderBorderColor = Color.MediumSlateBlue
+
+                    //TODO: Possible to specify line, skip
+
+                };
             content.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("A {Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("B {Col2}", "Column 2", UnitValue.Parse("5cm"));
@@ -98,7 +126,7 @@ namespace Tharga.Reporter.Console
             content.Margin.Right = UnitValue.Parse("1cm");
 
             //Handling page numbers
-            content.Header.ElementList.Add(new Text { Value = "Some text in the header. Page {PageNumber} of {TotalPages}" });
+            content.Header.ElementList.Add(new Text {Value = "Some text in the header. Page {PageNumber} of {TotalPages}",}); //FontClass = someFontClass });
             content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. Page {PageNumber} of {TotalPages}" });
             content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. Page {PageNumber} of {TotalPages}" });
 
@@ -113,7 +141,7 @@ namespace Tharga.Reporter.Console
             var template = new Template(coverPage);
             template.SectionList.Add(content);
             template.SectionList.Add(index);
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: true);
+            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
 
             ExecuteFile(byteArray);
         }
@@ -122,7 +150,7 @@ namespace Tharga.Reporter.Console
         {
             var section = new Section();
 
-            var tableTemplate = new Table {Name = "MyTable", BorderColor = System.Drawing.Color.Blue};
+            var tableTemplate = new Table { Name = "MyTable", ContentBorderColor = System.Drawing.Color.Blue };
             section.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("{Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("{Col2}", "Column 2", UnitValue.Parse("5cm"));

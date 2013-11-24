@@ -27,7 +27,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        public string FontClass
+        internal string FontClass //TODO: Hidden because it is not yet fully implemented
         {
             get { return _fontClass ?? string.Empty; }
             set

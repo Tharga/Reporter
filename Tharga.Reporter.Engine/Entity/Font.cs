@@ -48,11 +48,11 @@ namespace Tharga.Reporter.Engine.Entity
             return Size;
         }
 
-        internal System.Drawing.Color GetRenderColor(string defaultClass)
+        internal Color GetRenderColor(string defaultClass)
         {
             if (_color == null)
             {
-                var result = System.Drawing.Color.Black;
+                var result = Color.Black;
                 if (!string.IsNullOrEmpty(defaultClass))
                 {
                     throw new NotImplementedException();
@@ -66,10 +66,10 @@ namespace Tharga.Reporter.Engine.Entity
             return Color;
         }
 
-        internal XmlElement ToXme()
+        internal XmlElement ToXme(string elementName = null)
         {
             var xmd = new XmlDocument();
-            var xme = xmd.CreateElement(GetType().ToShortTypeName());
+            var xme = xmd.CreateElement(elementName ?? GetType().ToShortTypeName());
 
             if (_color != null)
                 xme.SetAttribute("Color", string.Format("{0}{1}{2}", _color.Value.R.ToString("X2"), _color.Value.G.ToString("X2"), _color.Value.B.ToString("X2")));

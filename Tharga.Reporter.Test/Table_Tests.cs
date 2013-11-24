@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
+using Font = Tharga.Reporter.Engine.Entity.Font;
 
 namespace Tharga.Reporter.Test
 {
@@ -49,16 +50,19 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(table.Width, otherLine.Width);
             Assert.AreEqual(table.Top, otherLine.Top);
             Assert.AreEqual(table.Bottom, otherLine.Bottom);
-            Assert.AreEqual(table.Height, otherLine.Height);            
+            Assert.AreEqual(table.Height, otherLine.Height);
             Assert.AreEqual(table.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(table.Name, otherLine.Name);
-            Assert.AreEqual(table.BackgroundColor, otherLine.BackgroundColor);
-            Assert.AreEqual(table.BorderColor, otherLine.BorderColor);
-            Assert.AreEqual(table.HeaderFont.FontName, otherLine.HeaderFont.FontName);
+            Assert.AreEqual(table.ContentBackgroundColor, otherLine.ContentBackgroundColor);
+            Assert.AreEqual(table.ContentBorderColor, otherLine.ContentBorderColor);
+            Assert.AreEqual(table.HeaderBackgroundColor, otherLine.HeaderBackgroundColor);
+            Assert.AreEqual(table.HeaderBorderColor, otherLine.HeaderBorderColor);
             Assert.AreEqual(table.HeaderFontClass, otherLine.HeaderFontClass);
-            Assert.AreEqual(table.LineFont.FontName, otherLine.LineFont.FontName);
-            Assert.AreEqual(table.LineFontClass, otherLine.LineFontClass);
+            Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
+            Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
+            Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
             Assert.AreEqual(table.ToString(), otherLine.ToString());
+            Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
 
@@ -68,8 +72,10 @@ namespace Tharga.Reporter.Test
             //Arrange
             var table = new Table
                 {
-                    BackgroundColor = Color.Navy,
-                    BorderColor = Color.Olive,
+                    ContentBackgroundColor = Color.Navy,
+                    ContentBorderColor = Color.Olive,
+                    HeaderBackgroundColor = Color.MediumTurquoise,
+                    HeaderBorderColor = Color.MediumVioletRed,
                     Bottom = UnitValue.Parse("10px"),
                     HeaderFontClass = "A",
                     Height = UnitValue.Parse("20px"),
@@ -77,7 +83,7 @@ namespace Tharga.Reporter.Test
                     Left = UnitValue.Parse("10cm"),
                     Right = UnitValue.Parse("20cm"),
                     Name = "Bob",
-                    LineFontClass = "C"                    
+                    ContentFont = new Font {FontName = "Times", Size = 7}
                 };
             table.AddColumn("A0", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
             table.AddColumn("A1", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
@@ -96,10 +102,14 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(table.Height, otherLine.Height);
             Assert.AreEqual(table.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(table.Name, otherLine.Name);
-            Assert.AreEqual(table.BackgroundColor.Value.ToArgb(), otherLine.BackgroundColor.Value.ToArgb());
-            Assert.AreEqual(table.BorderColor.ToArgb(), otherLine.BorderColor.ToArgb());
+            Assert.AreEqual(table.ContentBackgroundColor.Value.ToArgb(), otherLine.ContentBackgroundColor.Value.ToArgb());
+            Assert.AreEqual(table.ContentBorderColor.Value.ToArgb(), otherLine.ContentBorderColor.Value.ToArgb());
+            Assert.AreEqual(table.HeaderBackgroundColor.Value.ToArgb(), otherLine.HeaderBackgroundColor.Value.ToArgb());
+            Assert.AreEqual(table.HeaderBorderColor.Value.ToArgb(), otherLine.HeaderBorderColor.Value.ToArgb());
             Assert.AreEqual(table.HeaderFontClass, otherLine.HeaderFontClass);
-            Assert.AreEqual(table.LineFontClass, otherLine.LineFontClass);
+            Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
+            Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
+            Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
             Assert.AreEqual(table.ToString(), otherLine.ToString());           
             Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
