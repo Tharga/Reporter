@@ -223,15 +223,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         private void RenderBorder(XRect elementBounds, XGraphics gfx, XSize headerSize)
         {
-            //TODO: Specify this to be the content oly
-            if (ContentBorderColor != null)
+            if (ContentBorderColor != null || ContentBackgroundColor != null)
             {
-                var borderPen = new XPen(ContentBorderColor.Value);
+                var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value);
 
-                //Rectangle around the entire table
-                //gfx.DrawRectangle(borderPen, elementBounds);
-
-                //Rectangle around the title
                 if (ContentBackgroundColor != null)
                 {
                     var brush = new XSolidBrush(XColor.FromArgb(ContentBackgroundColor.Value));
@@ -241,9 +236,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height);
             }
 
-            if (HeaderBorderColor != null)
+            if (HeaderBorderColor != null || HeaderBackgroundColor != null)
             {
-                var borderPen = new XPen(HeaderBorderColor.Value);
+                var borderPen = new XPen(HeaderBorderColor ?? HeaderBackgroundColor.Value);
 
                 if (HeaderBackgroundColor != null)
                 {

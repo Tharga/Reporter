@@ -108,8 +108,8 @@ namespace Tharga.Reporter.Console
                     ContentBorderColor = Color.MediumSeaGreen,
                     ContentBackgroundColor = Color.LightGreen,
 
+                    HeaderBorderColor = Color.MediumSlateBlue,
                     HeaderBackgroundColor = Color.LightSkyBlue,
-                    HeaderBorderColor = Color.MediumSlateBlue
 
                     //TODO: Possible to specify line, skip
 
