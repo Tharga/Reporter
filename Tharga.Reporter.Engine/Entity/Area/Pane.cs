@@ -26,7 +26,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 ((MultiPageAreaElement)element).ClearRenderPointer();
         }
 
-        internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo)
+        internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var needAnotherPage = false;
             foreach (var element in _elementList)
@@ -34,19 +34,19 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 XRect bnd;
                 if (element as MultiPageElement != null)
                 {
-                    var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo,section);
                     if (needMore)
                         needAnotherPage = true;
                 }
                 else if (element as MultiPageAreaElement != null)
                 {
-                    var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo,section);
                     if (needMore)
                         needAnotherPage = true;
                 }
                 else if (element as SinglePageAreaElement != null)
                 {
-                    ((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo);
+                    ((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
                 }
                 else
                 {

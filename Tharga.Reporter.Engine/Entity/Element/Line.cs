@@ -15,7 +15,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
         private string BorderWidth { get { return "1px"; } } //TODO: Make this configurable
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
+        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             elementBounds = GetBounds(parentBounds);
 

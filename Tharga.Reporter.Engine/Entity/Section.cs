@@ -6,14 +6,18 @@ namespace Tharga.Reporter.Engine.Entity
 {
     public class Section
     {
+        private readonly Font _globalDefaultFont = new Font {};
+
         private UnitRectangle _margin;
         private string _name;
+        private Font _defaultFont;
 
         public UnitRectangle Margin { get { return _margin ?? Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")); } set { _margin = value; } }
         public Header Header { get; private set; }
         public Footer Footer { get; private set; }
         public Pane Pane { get; private set; }
         public string Name { get { return _name ?? string.Empty; } set { _name = value; } }
+        public Font DefaultFont { get { return _defaultFont ?? _globalDefaultFont; } set { _defaultFont = value; } }
 
         public Section()
         {

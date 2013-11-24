@@ -48,7 +48,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             _wordPointer = 0;
         }
 
-        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
+        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             elementBounds = GetBounds(parentBounds);
 
@@ -62,8 +62,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     gfx.DrawRectangle(debugPen, elementBounds);
                 }
 
-                var font = new XFont(GetFontName(), GetFontSize(), XFontStyle.Regular);
-                var brush = new XSolidBrush(XColor.FromArgb(GetColor()));
+                var font = new XFont(GetFontName(section), GetFontSize(section), XFontStyle.Regular);
+                var brush = new XSolidBrush(XColor.FromArgb(GetColor(section)));
 
                 var text = GetValue(documentData, pageNumberInfo);
                 var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
@@ -117,19 +117,40 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
-        private string GetFontName()
+        private string GetFontName(Section section)
         {
-            return Font.GetRenderName(FontClass);
+            if (_font != null)
+                return _font.FontName;
+
+            //TODO: Use font class
+
+            return section.DefaultFont.FontName;
+
+            //return Font.GetRenderName(FontClass);
         }
 
-        private double GetFontSize()
+        private double GetFontSize(Section section)
         {
-            return Font.GetRenderSize(FontClass);
+            if (_font != null)
+                return _font.Size;
+
+            //TODO: Use font class
+
+            return section.DefaultFont.Size;
+
+            //return Font.GetRenderSize(FontClass);
         }
 
-        private Color GetColor()
+        private Color GetColor(Section section)
         {
-            return Font.GetRenderColor(FontClass);
+            if (_font != null)
+                return _font.Color;
+
+            //TODO: Use font class
+
+            return section.DefaultFont.Color;
+
+            //return Font.GetRenderColor(FontClass);
         }
 
         private string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)

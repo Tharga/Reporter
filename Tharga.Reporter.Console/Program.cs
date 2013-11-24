@@ -85,7 +85,16 @@ namespace Tharga.Reporter.Console
             var index = new Section {Name = "Index"};
             index.Pane.ElementList.Add(new Text { Value = "This is the index page.", Top = UnitValue.Parse("50mm") ,Left = UnitValue.Parse("2inch")});
 
-            var content = new Section{Name = "Content"};
+            var content = new Section
+                {
+                    Name = "Content",
+                    DefaultFont = new Font
+                        {
+                            Size = 14, 
+                            Color = Color.Orange, 
+                            FontName = "Times"
+                        }
+                };
 
             var rect = new Rectangle { BackgroundColor = Color.NavajoWhite, Width="33%", Height = "100%", BorderColor = Color.MediumTurquoise };
             content.Pane.ElementList.Add(rect);
@@ -101,8 +110,8 @@ namespace Tharga.Reporter.Console
                     Height = UnitValue.Parse("200"),
                     Left = UnitValue.Parse("1cm"),
                     Width = UnitValue.Parse("10cm"),
-                    ContentFont = new Font {FontName = "Times", Size = 12},
-                    HeaderFont = new Font {FontName = "Arial", Size = 21},
+                    //ContentFont = new Font {FontName = "Times", Size = 12, Color = Color.Red},
+                    //HeaderFont = new Font {FontName = "Arial", Size = 21},
                     //HeaderFontClass = someFontClass
 
                     ContentBorderColor = Color.MediumSeaGreen,
@@ -112,6 +121,7 @@ namespace Tharga.Reporter.Console
                     HeaderBackgroundColor = Color.LightSkyBlue,
 
                     //TODO: Possible to specify line, skip
+                    //TODO: Possible to set content line height (More spacing on each line)
 
                 };
             content.Pane.ElementList.Add(tableTemplate);

@@ -7,7 +7,6 @@ using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    //TODO: Rename to AreaElement
     public abstract class Element
     {
         private UnitValue? _left;

@@ -53,11 +53,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
         }
 
         protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
+            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var bounds = GetBounds(parentBounds);
 
-            var needMorePages = RenderChildren(page, documentData, bounds, includeBackground, debug, pageNumberInfo);
+            var needMorePages = RenderChildren(page, documentData, bounds, includeBackground, debug, pageNumberInfo,section);
 
             if (debug)
             {
@@ -77,7 +77,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return needMorePages;
         }
 
-        private bool RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug, PageNumberInfo pageNumberInfo)
+        private bool RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var needMorePages = false;
 
@@ -102,10 +102,10 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
                 var elmBnd = new XRect();                
                 if (element is SinglePageAreaElement)
-                    ((SinglePageAreaElement)element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo);
+                    ((SinglePageAreaElement)element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo, section);
                 else if (element is MultiPageAreaElement)
                 {
-                    if (((MultiPageAreaElement) element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo))
+                    if (((MultiPageAreaElement) element).Render(page, bounds, documentData, out elmBnd, background, debug, pageNumberInfo,section))
                         needMorePages = true;
                 }
 

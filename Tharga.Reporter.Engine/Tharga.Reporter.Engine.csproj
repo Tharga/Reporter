@@ -62,6 +62,7 @@
     <Compile Include="Entity\DocumentDataTable.cs" />
     <Compile Include="Entity\DocumentProperties.cs" />
     <Compile Include="Entity\Element\Base\Element.cs" />
+    <Compile Include="Entity\Element\Base\MultiPageElement.cs" />
     <Compile Include="Entity\Element\Extensions\ElementExtensions.cs" />
     <Compile Include="Entity\Element\Image.cs" />
     <Compile Include="Entity\Element\Line.cs" />

@@ -20,11 +20,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             _relativeAlignment = new UnitRectangle();
         }
 
-        //protected AreaElement(UnitRectangle relativeAlignment)
-        //{
-        //    _relativeAlignment = relativeAlignment;
-        //}
-
         protected override XRect GetBounds(XRect parentBounds)
         {
             if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");

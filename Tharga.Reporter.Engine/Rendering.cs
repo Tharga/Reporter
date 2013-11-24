@@ -146,7 +146,7 @@ namespace Tharga.Reporter.Engine
                     var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
                     var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
                     
-                    needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug, pageNumberInfo);
+                    needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug, pageNumberInfo, section);
 
 
                     ////Draw fingerprint
@@ -165,7 +165,7 @@ namespace Tharga.Reporter.Engine
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
                         //section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
-                        postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo));
+                        postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo,section));
 
                         if (_debug)
                         {
@@ -181,7 +181,7 @@ namespace Tharga.Reporter.Engine
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
                         //section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
-                        postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo));
+                        postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo,section));
 
                         if (_debug)
                         {

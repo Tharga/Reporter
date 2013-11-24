@@ -25,7 +25,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
+            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             elementBounds = GetBounds(parentBounds);
 

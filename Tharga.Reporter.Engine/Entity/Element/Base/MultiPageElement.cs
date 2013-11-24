@@ -4,7 +4,7 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public abstract class MultiPageAreaElement : AreaElement
+    public abstract class MultiPageElement : Element
     {
         protected internal abstract void ClearRenderPointer();
         protected internal abstract bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section);

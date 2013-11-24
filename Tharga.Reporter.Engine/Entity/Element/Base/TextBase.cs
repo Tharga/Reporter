@@ -19,7 +19,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         public Font Font
         {
-            get { return _font ?? _defaultFont; }
+            get
+            {
+                //TODO: The default font should be picked from the section
+                return _font ?? _defaultFont;
+            }
             set
             {
                 if (!string.IsNullOrEmpty(_fontClass)) throw new InvalidOperationException("Cannot set both Font and FontClass. FontClass has already been set.");
@@ -29,7 +33,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal string FontClass //TODO: Hidden because it is not yet fully implemented
         {
-            get { return _fontClass ?? string.Empty; }
+            get
+            {
+                return _fontClass ?? string.Empty;
+            }
             set
             {
                 if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
@@ -40,14 +47,15 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Alignment TextAlignment { get { return _textAlignment ?? _defaultTextAlignmen; } set { _textAlignment = value; } }
 
         protected internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
-                                                DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
+                                                DocumentData documentData, out XRect elementBounds, bool includeBackground,
+                                                bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var bounds = GetBounds(parentBounds);
 
             using (var gfx = XGraphics.FromPdfPage(page))
             {
-                var font = new XFont(GetName(), GetSize(), XFontStyle.Regular);
-                var brush = new XSolidBrush(XColor.FromArgb(GetColor()));
+                var font = new XFont(GetName(section), GetSize(section), XFontStyle.Regular);
+                var brush = new XSolidBrush(XColor.FromArgb(GetColor(section)));
 
                 var text = GetValue(documentData, pageNumberInfo);
                 var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
@@ -63,7 +71,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (includeBackground || !IsBackground)
                 {
                     gfx.DrawString(text, font, brush, elementBounds, XStringFormats.TopLeft);
-                    //gfx.DrawString(text, font, brush, bounds, XStringFormats.TopLeft);
 
                     if (debug)
                     {
@@ -77,19 +84,39 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected abstract string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo);
 
-        private string GetName()
+        private string GetName(Section section)
         {
-            return Font.GetRenderName(FontClass);
+            if (_font != null)
+                return _font.FontName;
+
+            //TODO: Use the font class.
+
+            return section.DefaultFont.FontName;
+            //return Font.GetRenderName(FontClass, section);
         }
 
-        private double GetSize()
+        private double GetSize(Section section)
         {
-            return Font.GetRenderSize(FontClass);
+            if (_font != null)
+                return _font.Size;
+
+            //TODO: Use the font class
+
+            return section.DefaultFont.Size;
+
+            //return Font.GetRenderSize(FontClass);
         }
 
-        private Color GetColor()
+        private Color GetColor(Section section)
         {
-            return Font.GetRenderColor(FontClass);
+            if (_font != null)
+                return _font.Color;
+
+            //TODO: Use the font class
+
+            return section.DefaultFont.Color;
+
+            //return Font.GetRenderColor(FontClass);
         }
 
         protected override void AppendData(XmlElement xme)

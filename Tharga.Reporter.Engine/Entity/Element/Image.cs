@@ -18,7 +18,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public string Source { get { return _source ?? string.Empty; } set { _source = value; } }
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo)
+            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var bounds = GetBounds(parentBounds);
             var imageData = GetImage(documentData, bounds);

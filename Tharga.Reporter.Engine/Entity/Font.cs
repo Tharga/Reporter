@@ -19,20 +19,21 @@ namespace Tharga.Reporter.Engine.Entity
         public double Size { get { return _size ?? 10; } set { _size = value; } }
         public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
 
-        internal string GetRenderName(string defaultClass)
-        {
-            if (string.IsNullOrEmpty(FontName))
-            {
-                if (string.IsNullOrEmpty(defaultClass))
-                    return "Verdana";
+        //TODO: This should be handle one step up (Look at how TextBase uses GetName with default data)
+        //internal string GetRenderName(string defaultClass)
+        //{
+        //    if (string.IsNullOrEmpty(FontName))
+        //    {
+        //        if (string.IsNullOrEmpty(defaultClass))
+        //            return "Verdana";
 
-                throw new NotImplementedException();
-                //var fontList = Engine._fontClassList.FindAll(itm => string.Compare(itm.ClassName, defaultClass, StringComparison.InvariantCultureIgnoreCase) == 0);
-                //if (fontList.Count != 1) throw new InvalidOperationException(String.Format("The template contains {0} definitions of the font class {1}.", fontList.Count, defaultClass));
-                //return fontList[0].FontName;
-            }
-            return FontName;
-        }
+        //        throw new NotImplementedException();
+        //        //var fontList = Engine._fontClassList.FindAll(itm => string.Compare(itm.ClassName, defaultClass, StringComparison.InvariantCultureIgnoreCase) == 0);
+        //        //if (fontList.Count != 1) throw new InvalidOperationException(String.Format("The template contains {0} definitions of the font class {1}.", fontList.Count, defaultClass));
+        //        //return fontList[0].FontName;
+        //    }
+        //    return FontName;
+        //}
 
         internal double GetRenderSize(string defaultClass)
         {
