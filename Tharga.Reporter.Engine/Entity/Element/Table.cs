@@ -264,8 +264,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use font class
 
             return section.DefaultFont.FontName;
-
-            //return HeaderFont.GetRenderName(HeaderFontClass);
         }
 
         private double GetHeaderSize(Section section)
@@ -276,8 +274,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use font class
 
             return section.DefaultFont.Size;
-
-            //return HeaderFont.GetRenderSize(HeaderFontClass);
         }
 
         private Color GetHeaderColor(Section section)
@@ -288,8 +284,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use font class
 
             return section.DefaultFont.Color;
-
-            //return HeaderFont.GetRenderColor(HeaderFontClass);
         }
 
         private string GetContentName(Section section)
@@ -300,8 +294,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use font class
 
             return section.DefaultFont.FontName;
-
-            //return ContentFont.GetRenderName(ContentFontClass);
         }
 
         private double GetContentSize(Section section)
@@ -312,8 +304,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use font class
 
             return section.DefaultFont.Size;
-
-            //return ContentFont.GetRenderSize(ContentFontClass);
         }
 
         private Color GetContentColor(Section section)
@@ -324,8 +314,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use font class
 
             return section.DefaultFont.Color;
-
-            //return ContentFont.GetRenderColor(ContentFontClass);
         }
 
         public void AddColumn(string displayFormat, string displayName,  UnitValue? width = null,

@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.Xml;
 using Tharga.Reporter.Engine.Entity.Element;
@@ -9,7 +8,6 @@ namespace Tharga.Reporter.Engine.Entity
     public class Font
     {
         private readonly Color _defaultColor = Color.Black;
-        private const double SizeEpsilon = 0.01;
 
         private string _fontName;
         private double? _size;
@@ -18,54 +16,6 @@ namespace Tharga.Reporter.Engine.Entity
         public string FontName { get { return _fontName ?? string.Empty; } set { _fontName = value; } }
         public double Size { get { return _size ?? 10; } set { _size = value; } }
         public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
-
-        //TODO: This should be handle one step up (Look at how TextBase uses GetName with default data)
-        //internal string GetRenderName(string defaultClass)
-        //{
-        //    if (string.IsNullOrEmpty(FontName))
-        //    {
-        //        if (string.IsNullOrEmpty(defaultClass))
-        //            return "Verdana";
-
-        //        throw new NotImplementedException();
-        //        //var fontList = Engine._fontClassList.FindAll(itm => string.Compare(itm.ClassName, defaultClass, StringComparison.InvariantCultureIgnoreCase) == 0);
-        //        //if (fontList.Count != 1) throw new InvalidOperationException(String.Format("The template contains {0} definitions of the font class {1}.", fontList.Count, defaultClass));
-        //        //return fontList[0].FontName;
-        //    }
-        //    return FontName;
-        //}
-
-        internal double GetRenderSize(string defaultClass)
-        {
-            if (Math.Abs(Size - 0) < SizeEpsilon)
-            {
-                if (string.IsNullOrEmpty(defaultClass))
-                    return 10;
-                throw new NotImplementedException();
-                //var fontList = Engine._fontClassList.FindAll(itm => string.Compare(itm.ClassName, defaultClass, StringComparison.InvariantCultureIgnoreCase) == 0);
-                //if (fontList.Count != 1) throw new InvalidOperationException(String.Format("The template contains {0} definitions of the font class {1}.", fontList.Count, defaultClass));
-                //return fontList[0].Size;
-            }
-            return Size;
-        }
-
-        internal Color GetRenderColor(string defaultClass)
-        {
-            if (_color == null)
-            {
-                var result = Color.Black;
-                if (!string.IsNullOrEmpty(defaultClass))
-                {
-                    throw new NotImplementedException();
-                    //var fontList = Engine._fontClassList.FindAll(itm => string.Compare(itm.ClassName, defaultClass, StringComparison.InvariantCultureIgnoreCase) == 0);
-                    //if (fontList.Count != 1) throw new InvalidOperationException(String.Format("The template contains {0} definitions of the font class {1}.", fontList.Count, defaultClass));
-                    //if (fontList[0].Color != null)
-                    //    result = fontList[0].Color.Value;
-                }
-                return result;
-            }
-            return Color;
-        }
 
         internal XmlElement ToXme(string elementName = null)
         {

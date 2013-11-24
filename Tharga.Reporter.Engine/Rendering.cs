@@ -164,7 +164,6 @@ namespace Tharga.Reporter.Engine
                     if (section.Header != null)
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                        //section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
                         postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo,section));
 
                         if (_debug)
@@ -180,7 +179,6 @@ namespace Tharga.Reporter.Engine
                     if (section.Footer != null)
                     {
                         var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                        //section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo);
                         postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo,section));
 
                         if (_debug)

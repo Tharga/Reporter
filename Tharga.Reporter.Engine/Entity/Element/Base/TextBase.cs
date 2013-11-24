@@ -92,7 +92,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use the font class.
 
             return section.DefaultFont.FontName;
-            //return Font.GetRenderName(FontClass, section);
         }
 
         private double GetSize(Section section)
@@ -103,8 +102,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use the font class
 
             return section.DefaultFont.Size;
-
-            //return Font.GetRenderSize(FontClass);
         }
 
         private Color GetColor(Section section)
@@ -115,8 +112,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //TODO: Use the font class
 
             return section.DefaultFont.Color;
-
-            //return Font.GetRenderColor(FontClass);
         }
 
         protected override void AppendData(XmlElement xme)

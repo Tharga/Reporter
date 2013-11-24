@@ -90,8 +90,8 @@ namespace Tharga.Reporter.Console
                     Name = "Content",
                     DefaultFont = new Font
                         {
-                            Size = 14, 
-                            Color = Color.Orange, 
+                            Size = 14,
+                            Color = Color.Orange,
                             FontName = "Times"
                         }
                 };
