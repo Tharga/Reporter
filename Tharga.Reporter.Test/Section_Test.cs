@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
+using Font = Tharga.Reporter.Engine.Entity.Font;
+using Image = Tharga.Reporter.Engine.Entity.Element.Image;
+using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 using Text = Tharga.Reporter.Engine.Entity.Element.Text;
 
 namespace Tharga.Reporter.Test
@@ -26,8 +30,37 @@ namespace Tharga.Reporter.Test
             var otherTemplate = Template.Load(xml);
 
             //Assert
+            Assert.AreEqual(section.DefaultFont.FontName, otherTemplate.SectionList.First().DefaultFont.FontName);
+            Assert.AreEqual(section.DefaultFont.Size, otherTemplate.SectionList.First().DefaultFont.Size);
+            Assert.AreEqual(section.DefaultFont.Color, otherTemplate.SectionList.First().DefaultFont.Color);
             Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
             Assert.AreEqual(name, otherTemplate.SectionList.First().Name);
+        }
+
+        [Test]
+        public void Section_with_a_defaultFont()
+        {
+            //Arrange
+            var section = new Section
+            {
+                DefaultFont = new Font
+                    {
+                        FontName = "Times",
+                        Size = 11,
+                        Color = Color.MediumTurquoise
+                    }
+            };
+            var xme = section.ToXme();
+
+            //Act
+            var other = Section.Load(xme);
+
+            //Assert
+            Assert.AreEqual(section.Name, other.Name);
+            Assert.AreEqual(section.DefaultFont.FontName, other.DefaultFont.FontName);
+            Assert.AreEqual(section.DefaultFont.Size, other.DefaultFont.Size);
+            Assert.AreEqual(section.DefaultFont.Color.ToArgb(), other.DefaultFont.Color.ToArgb());
+            Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
         }
 
         [Test]

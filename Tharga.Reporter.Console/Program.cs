@@ -110,7 +110,7 @@ namespace Tharga.Reporter.Console
                     Height = UnitValue.Parse("200"),
                     Left = UnitValue.Parse("1cm"),
                     Width = UnitValue.Parse("10cm"),
-                    //ContentFont = new Font {FontName = "Times", Size = 12, Color = Color.Red},
+                    ContentFont = new Font {FontName = "Times", Size = 12, Color = Color.Blue},
                     //HeaderFont = new Font {FontName = "Arial", Size = 21},
                     //HeaderFontClass = someFontClass
 
@@ -122,8 +122,16 @@ namespace Tharga.Reporter.Console
 
                     //TODO: Possible to specify line, skip
                     //TODO: Possible to set content line height (More spacing on each line)
+                    SkipLine = new SkipLine
+                        {
+                            Interval = 3,
+                            Height = "3mm",
+                        },
 
+                        ColumnPadding = "5mm",
+                        //RowPadding = "1mm",
                 };
+
             content.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("A {Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("B {Col2}", "Column 2", UnitValue.Parse("5cm"));

@@ -61,6 +61,9 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
             Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
             Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
+            Assert.AreEqual(table.SkipLine, otherLine.SkipLine);
+            Assert.AreEqual(table.ColumnPadding, otherLine.ColumnPadding);
+            Assert.AreEqual(table.RowPadding, otherLine.RowPadding);
             Assert.AreEqual(table.ToString(), otherLine.ToString());
             Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
@@ -83,7 +86,10 @@ namespace Tharga.Reporter.Test
                     Left = UnitValue.Parse("10cm"),
                     Right = UnitValue.Parse("20cm"),
                     Name = "Bob",
-                    ContentFont = new Font {FontName = "Times", Size = 7}
+                    ContentFont = new Font {FontName = "Times", Size = 7},
+                    SkipLine = new SkipLine {Interval = 5, Height = "8mm"},
+                    ColumnPadding = UnitValue.Parse("7mm"),
+                    RowPadding = UnitValue.Parse("6mm"),
                 };
             table.AddColumn("A0", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
             table.AddColumn("A1", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
@@ -110,6 +116,10 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
             Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
             Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
+            Assert.AreEqual(table.SkipLine.Interval, otherLine.SkipLine.Interval);
+            Assert.AreEqual(table.SkipLine.Height, otherLine.SkipLine.Height);
+            Assert.AreEqual(table.ColumnPadding, otherLine.ColumnPadding);
+            Assert.AreEqual(table.RowPadding, otherLine.RowPadding);
             Assert.AreEqual(table.ToString(), otherLine.ToString());           
             Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);

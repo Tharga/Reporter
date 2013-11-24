@@ -44,6 +44,13 @@ namespace Tharga.Reporter.Engine.Entity
                 section.AppendChild(importedSection);
             }
 
+            if (_defaultFont != null)
+            {
+                var xmeDefaultFont = DefaultFont.ToXme("DefaultFont");
+                var importedDefaultFont = ownerDocument.ImportNode(xmeDefaultFont, true);
+                section.AppendChild(importedDefaultFont);
+            }
+
             var header = Header.ToXme();
             var importedHeader = ownerDocument.ImportNode(header, true);
             section.AppendChild(importedHeader);
@@ -82,6 +89,9 @@ namespace Tharga.Reporter.Engine.Entity
                         break;
                     case "Pane":
                         section.Pane = Pane.Load(child);
+                        break;
+                    case "DefaultFont":
+                        section.DefaultFont = Font.Load(child);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to section.", child.Name));
