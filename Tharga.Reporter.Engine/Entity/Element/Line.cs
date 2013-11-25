@@ -8,12 +8,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public sealed class Line : SinglePageAreaElement
     {
-        private readonly Color _defaultBorderColor = Color.Black;
+        private readonly Color _defaultColor = Color.Black;
+        private readonly UnitValue _defaultThickness = "0.1px";
 
-        private Color? _borderColor;
+        private Color? _color;
+        private UnitValue? _thickness;
 
-        public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
-        private string BorderWidth { get { return "1px"; } } //TODO: Make this configurable
+        public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
+        public UnitValue Thickness { get { return _thickness ?? _defaultThickness; } set { _thickness = value; }}
 
         protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
@@ -23,8 +25,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    var borderWidth = UnitValue.Parse(BorderWidth);
-                    var pen = new XPen(XColor.FromArgb(BorderColor), borderWidth.GetXUnitValue(0));
+                    var borderWidth = UnitValue.Parse(Thickness);
+                    var pen = new XPen(XColor.FromArgb(Color), borderWidth.GetXUnitValue(0));
 
                     gfx.DrawLine(pen, elementBounds.Left, elementBounds.Top, elementBounds.Right, elementBounds.Bottom);
                 }
@@ -35,14 +37,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             var xme = base.ToXme();
 
-            if (_borderColor != null)
-                xme.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
+            if (_color != null)
+                xme.SetAttribute("Color", string.Format("{0}{1}{2}", _color.Value.R.ToString("X2"), _color.Value.G.ToString("X2"), _color.Value.B.ToString("X2")));
 
             if (_isBackground != null)
                 xme.SetAttribute("IsBackground", IsBackground.ToString());
 
             if (_name != null)
                 xme.SetAttribute("Name", Name);
+
+            if (_thickness != null)
+                xme.SetAttribute("Thickness", Thickness.ToString());
 
             return xme;
         }
@@ -53,9 +58,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             line.AppendData(xme);
 
-            var xmlBorderColor = xme.Attributes["BorderColor"];
+            var xmlBorderColor = xme.Attributes["Color"];
             if (xmlBorderColor != null)
-                line.BorderColor = xmlBorderColor.Value.ToColor();
+                line.Color = xmlBorderColor.Value.ToColor();
 
             var xmlAttribute = xme.Attributes["IsBackground"];
             if (xmlAttribute != null)
@@ -64,6 +69,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var xmlName = xme.Attributes["Name"];
             if (xmlName != null)
                 line.Name = xmlName.Value;
+
+            var xmlThickness = xme.Attributes["Thickness"];
+            if (xmlThickness != null)
+                line.Thickness = xmlThickness.Value;
 
             return line;
         }

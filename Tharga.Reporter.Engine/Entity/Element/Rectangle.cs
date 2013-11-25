@@ -54,10 +54,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 xme.SetAttribute("BackgroundColor", string.Format("{0}{1}{2}", _backgroundColor.Value.R.ToString("X2"), _backgroundColor.Value.G.ToString("X2"), _backgroundColor.Value.B.ToString("X2")));
 
             if (_borderColor != null)
-                xme.SetAttribute("BorderColor", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
+                xme.SetAttribute("Color", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
 
             if (_borderWidth != null)
-                xme.SetAttribute("BorderWidth", _borderWidth.Value.ToString());
+                xme.SetAttribute("Thickness", _borderWidth.Value.ToString());
 
             return xme;
         }
@@ -72,11 +72,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (xmlBackgroundColor != null)
                 rectangle.BackgroundColor = xmlBackgroundColor.Value.ToColor();
 
-            var xmlBorderColor = xme.Attributes["BorderColor"];
+            var xmlBorderColor = xme.Attributes["Color"];
             if (xmlBorderColor != null)
                 rectangle.BorderColor = xmlBorderColor.Value.ToColor();
 
-            var xmlBorderWidth = xme.Attributes["BorderWidth"];
+            var xmlBorderWidth = xme.Attributes["Thickness"];
             if (xmlBorderWidth != null)
                 rectangle.BorderWidth = UnitValue.Parse(xmlBorderWidth.Value);
 

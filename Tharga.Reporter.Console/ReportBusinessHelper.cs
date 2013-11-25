@@ -95,12 +95,12 @@ namespace Tharga.Reporter.Console
             //Order summary
             var orderSummaryBv = new ReferencePoint { Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryBv);
-            orderSummaryBv.ElementList.Add(new Line { Width = UnitValue.Parse("100%"), Height="0", BorderColor = backLineColor });
-            orderSummaryBv.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), Width = UnitValue.Parse("100%"), Height = "0", BorderColor = backLineColor });
+            orderSummaryBv.ElementList.Add(new Line { Width = UnitValue.Parse("100%"), Height="0", Color = backLineColor });
+            orderSummaryBv.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), Width = UnitValue.Parse("100%"), Height = "0", Color = backLineColor });
 
             var orderSummaryPe = new ReferencePoint { Left = UnitValue.Parse("10cm"), Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryPe);
-            orderSummaryPe.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), Width = "0", BorderColor = backLineColor });
+            orderSummaryPe.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), Width = "0", Color = backLineColor });
             var peTitle = new Text { Value = "Summa exkl. moms", Font = new Engine.Entity.Font { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
             orderSummaryPe.ElementList.Add(peTitle);
             var netSaleTotalPriceText = new Text { Value = "{NetSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,45cm"), TextAlignment = TextBase.Alignment.Right };
@@ -108,7 +108,7 @@ namespace Tharga.Reporter.Console
 
             var orderSummaryVat = new ReferencePoint { Left = UnitValue.Parse("12,5cm"), Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryVat);
-            orderSummaryVat.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), Width = "0", BorderColor = backLineColor });
+            orderSummaryVat.ElementList.Add(new Line { Height = UnitValue.Parse("1cm"), Width = "0", Color = backLineColor });
             var vatTiel = new Text { Value = "Moms", Font = new Engine.Entity.Font { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
             orderSummaryVat.ElementList.Add(vatTiel);
             var vatSaleTotalPriceText = new Text { Value = "{VatSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,45cm"), TextAlignment = TextBase.Alignment.Right };
@@ -116,7 +116,7 @@ namespace Tharga.Reporter.Console
 
             var orderSummaryGross = new ReferencePoint { Left = UnitValue.Parse("15cm"), Top = SumTop };
             section.Pane.ElementList.Add(orderSummaryGross);
-            orderSummaryGross.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), Height = "0", BorderColor = backLineColor });
+            orderSummaryGross.ElementList.Add(new Line { Top = UnitValue.Parse("1cm"), Height = "0", Color = backLineColor });
             var grossTitle = new Text { Value = "Att betala", Font = new Engine.Entity.Font { Color = backLineColor, Size = 6 }, Left = UnitValue.Parse("2px") };
             orderSummaryGross.ElementList.Add(grossTitle);
             var grossSaleTotalPriceText = new Text { Value = "{GrossSaleTotalPrice}", Top = UnitValue.Parse("0,5cm"), Width = UnitValue.Parse("2,95cm"), TextAlignment = TextBase.Alignment.Right };
@@ -132,14 +132,14 @@ namespace Tharga.Reporter.Console
             //TODO: Add to template
             var signText = new Text { Value = "Er kvittens", Left = UnitValue.Parse("2px"), Top = UnitValue.Parse("1,5cm"), Font = new Engine.Entity.Font { Size = 10, Color = backLineColor } };
             vatInfoReference.ElementList.Add(signText);
-            var signLine = new Line { Left = UnitValue.Parse("2cm"), Top = UnitValue.Parse("2cm"), Width = UnitValue.Parse("5cm"), Height = "0", BorderColor = backLineColor };
+            var signLine = new Line { Left = UnitValue.Parse("2cm"), Top = UnitValue.Parse("2cm"), Width = UnitValue.Parse("5cm"), Height = "0", Color = backLineColor };
             vatInfoReference.ElementList.Add(signLine);
 
             section.Pane.ElementList.Add(vatInfoReference);
 
             //Pane
             //section.Pane.ElementList.Add(orderItemTable);
-            //section.Pane.ElementList.Add(new Rectangle {BorderColor = backLineColor, BorderWidth = UnitValue.Parse("1px")});
+            //section.Pane.ElementList.Add(new Rectangle {Color = backLineColor, Thickness = UnitValue.Parse("1px")});
             section.Pane.ElementList.Add(new Rectangle { BorderColor = backLineColor });
 
 

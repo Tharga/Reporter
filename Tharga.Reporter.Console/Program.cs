@@ -102,7 +102,7 @@ namespace Tharga.Reporter.Console
             //TODO: Possible to assign and use a font class, instead of a specific font
             string someFontClass = null; // "MyFontClass";
 
-            //var tableTemplate = new Table { Name ="MyTable", BorderColor = Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
+            //var tableTemplate = new Table { Name ="MyTable", Color = Color.Green,  Top = UnitValue.Parse("5cm"), Height = UnitValue.Parse("200"), Left = UnitValue.Parse("1cm"), Width = UnitValue.Parse("10cm") };
             var tableTemplate = new Table
                 {
                     Name = "MyTable",
@@ -145,6 +145,9 @@ namespace Tharga.Reporter.Console
 
             //Handling page numbers
             content.Header.ElementList.Add(new Text {Value = "Some text in the header. Page {PageNumber} of {TotalPages}",}); //FontClass = someFontClass });
+            content.Header.ElementList.Add(new Line { Top = "1cm", Left = "10%", Width = "50%", Height = "0", Thickness = "0.1" });
+            content.Header.ElementList.Add(new Line { Top = "1,2cm", Left = "10%", Width = "50%", Height = "0", Thickness = "1" });
+            content.Header.ElementList.Add(new Line { Top = "1,4cm", Left = "10%", Width = "50%", Height = "0" , Thickness = "2"});
             content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. Page {PageNumber} of {TotalPages}" });
             content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. Page {PageNumber} of {TotalPages}" });
 

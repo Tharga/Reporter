@@ -25,9 +25,10 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(line.Top, otherLine.Top);
             Assert.AreEqual(line.Bottom, otherLine.Bottom);
             Assert.AreEqual(line.Height, otherLine.Height);
-            Assert.AreEqual(line.BorderColor.ToArgb(), otherLine.BorderColor.ToArgb());
+            Assert.AreEqual(line.Color.ToArgb(), otherLine.Color.ToArgb());
             Assert.AreEqual(line.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(line.Name, otherLine.Name);
+            Assert.AreEqual(line.Thickness, otherLine.Thickness);
             Assert.AreEqual(line.ToString(), otherLine.ToString());
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
@@ -43,9 +44,9 @@ namespace Tharga.Reporter.Test
                 Top = UnitValue.Parse("3mm"),
                 Bottom = UnitValue.Parse("4mm"),
                 IsBackground = true,
-                BorderColor = Color.Aquamarine,
+                Color = Color.Aquamarine,
                 Name = "Bob Loblaw",
-                
+                Thickness = "1cm",                
             };
             var xme = line.ToXme();
 
@@ -60,9 +61,10 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(line.Top, otherLine.Top);
             Assert.AreEqual(line.Bottom, otherLine.Bottom);
             Assert.AreEqual(line.Height, otherLine.Height);
-            Assert.AreEqual(line.BorderColor.ToArgb(), otherLine.BorderColor.ToArgb());
+            Assert.AreEqual(line.Color.ToArgb(), otherLine.Color.ToArgb());
             Assert.AreEqual(line.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(line.Name, otherLine.Name);
+            Assert.AreEqual(line.Thickness, otherLine.Thickness);
             Assert.AreEqual(line.ToString(), otherLine.ToString());
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
         }
