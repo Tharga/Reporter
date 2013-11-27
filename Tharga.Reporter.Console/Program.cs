@@ -8,6 +8,7 @@ using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
 using Font = Tharga.Reporter.Engine.Entity.Font;
+using Image = Tharga.Reporter.Engine.Entity.Element.Image;
 using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Console
@@ -135,6 +136,15 @@ namespace Tharga.Reporter.Console
             content.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("A {Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("B {Col2}", "Column 2", UnitValue.Parse("5cm"));
+
+            var bc = new BarCode { Left = "3cm", Top = "1cm", Width = "5cm", Height = "2cm", Code = "12345" };
+            content.Pane.ElementList.Add(bc);
+            
+            //var rc = new Rectangle { Left = "3cm", Top = "1cm", Width = "5cm", Height = "2cm" };
+            //content.Pane.ElementList.Add(rc);
+
+            //var img = new Image { Source = @"C:\Users\Daniel\AppData\Local\Temp\tmpBF4F.tmp.png", Left = "3cm", Top = "5cm", Width = "50%", Height = "3cm" };
+            //content.Pane.ElementList.Add(img);
 
             content.Header.Height = UnitValue.Parse("2cm");
             content.Footer.Height = UnitValue.Parse("2cm");

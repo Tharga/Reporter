@@ -61,6 +61,7 @@
     <Compile Include="Entity\DocumentData.cs" />
     <Compile Include="Entity\DocumentDataTable.cs" />
     <Compile Include="Entity\DocumentProperties.cs" />
+    <Compile Include="Entity\Element\BarCode.cs" />
     <Compile Include="Entity\Element\Base\Element.cs" />
     <Compile Include="Entity\Element\Base\MultiPageElement.cs" />
     <Compile Include="Entity\Element\Extensions\ElementExtensions.cs" />
@@ -93,6 +94,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="FREE3OF9.TTF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Tharga.Reporter.Engine.nuspec">
       <SubType>Designer</SubType>

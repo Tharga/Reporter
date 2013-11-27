@@ -161,6 +161,7 @@ namespace Tharga.Reporter.Test
             section.Pane.ElementList.Add(new Text());
             section.Pane.ElementList.Add(new TextBox());
             section.Pane.ElementList.Add(new ReferencePoint());
+            section.Pane.ElementList.Add(new BarCode());
 
             var template = new Template(section);
             var xml = template.ToXml();

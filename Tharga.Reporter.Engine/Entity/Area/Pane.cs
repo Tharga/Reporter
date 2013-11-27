@@ -116,6 +116,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     case "ReferencePoint":
                         element = ReferencePoint.Load(xmlElement);
                         break;
+                    case "BarCode":
+                        element = BarCode.Load(xmlElement);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(string.Format("Cannot parse element {0} as a subelement of pane.", xmlElement.Name));
                 }
