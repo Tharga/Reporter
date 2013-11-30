@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
@@ -78,6 +79,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 imageData = System.Drawing.Image.FromFile(source);
             }
+            else if (WebResourceExists(source,out imageData))
+            {
+                return imageData;
+            }
             else if (!string.IsNullOrEmpty(source))
             {
                 try
@@ -115,6 +120,34 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
 
             return imageData;
+        }
+
+        private bool WebResourceExists(string imageUrl, out System.Drawing.Image imageData)
+        {
+            imageData = null;
+
+            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_");
+            var cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
+
+            if (!File.Exists(cacheFileName))
+            {
+                try
+                {
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(imageUrl, cacheFileName);
+                    }
+                }
+                catch (WebException)
+                {
+                    File.Delete(cacheFileName);
+                    return false;
+                }
+            }
+
+            imageData = System.Drawing.Image.FromFile(cacheFileName);
+
+            return true;
         }
 
         internal override XmlElement ToXme()

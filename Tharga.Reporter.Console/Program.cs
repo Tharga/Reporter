@@ -82,6 +82,7 @@ namespace Tharga.Reporter.Console
         {
             var coverPage = new Section {Name = "Cover"};
             coverPage.Pane.ElementList.Add(new Text{Value = "This is the cover page.",Top = UnitValue.Parse("50%"), Left = UnitValue.Parse("50%")});
+            coverPage.Pane.ElementList.Add(new Image { Right = "0", Top = "0", Height = "2cm", Width = "4cm", Source = "http://thargelion.se/images/thargelion-logo.png" });
 
             var index = new Section {Name = "Index"};
             index.Pane.ElementList.Add(new Text { Value = "This is the index page.", Top = UnitValue.Parse("50mm") ,Left = UnitValue.Parse("2inch")});
