@@ -54,8 +54,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             using (var gfx = XGraphics.FromPdfPage(page))
             {
-                var font = new XFont(GetName(section), GetSize(section), XFontStyle.Regular);
-                var brush = new XSolidBrush(XColor.FromArgb(GetColor(section)));
+                var font = new XFont(_font.GetName(section), _font.GetSize(section), _font.GetStyle(section));
+                var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(section)));
 
                 var text = GetValue(documentData, pageNumberInfo);
                 var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
@@ -83,36 +83,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         protected abstract string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo);
-
-        private string GetName(Section section)
-        {
-            if (_font != null)
-                return _font.FontName;
-
-            //TODO: Use the font class.
-
-            return section.DefaultFont.FontName;
-        }
-
-        private double GetSize(Section section)
-        {
-            if (_font != null)
-                return _font.Size;
-
-            //TODO: Use the font class
-
-            return section.DefaultFont.Size;
-        }
-
-        private Color GetColor(Section section)
-        {
-            if (_font != null)
-                return _font.Color;
-
-            //TODO: Use the font class
-
-            return section.DefaultFont.Color;
-        }
 
         protected override void AppendData(XmlElement xme)
         {

@@ -40,8 +40,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 using (var gfx = XGraphics.FromPdfPage(page))
                 {
-                    var legendFont = new XFont(GetFontName(section), GetFontSize(section), XFontStyle.Regular);
-                    var legendBrush = new XSolidBrush(XColor.FromArgb(GetColor(section)));
+                    var legendFont = new XFont(_font.GetName(section), _font.GetSize(section), _font.GetStyle(section));
+                    var legendBrush = new XSolidBrush(XColor.FromArgb(_font.GetColor(section)));
                     var legendFontSize = gfx.MeasureString(Code, legendFont);
 
                     using (var image = XImage.FromGdiPlusImage(imageData))
@@ -69,36 +69,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             //}
 
             return Code.ParseValue(documentData, pageNumberInfo);
-        }
-
-        private string GetFontName(Section section)
-        {
-            if (_font != null)
-                return _font.FontName;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.FontName;
-        }
-
-        private double GetFontSize(Section section)
-        {
-            if (_font != null)
-                return _font.Size;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.Size;
-        }
-
-        private Color GetColor(Section section)
-        {
-            if (_font != null)
-                return _font.Color;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.Color;
         }
 
         private System.Drawing.Image GetImage(DocumentData documentData, XRect bounds, PageNumberInfo pageNumberInfo, Section section)
@@ -140,7 +110,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             //TODO: Possible to have specific color for the barcode
             //var brush = new SolidBrush(Color.Black);
-            var brush = new SolidBrush(GetColor(section));
+            var brush = new SolidBrush(_font.GetColor(section));
 
             var bmp = new Bitmap((int)barCodeSize.Width, (int)barCodeSize.Height, PixelFormat.Format32bppArgb);
             using (var objGraphics = Graphics.FromImage(bmp))

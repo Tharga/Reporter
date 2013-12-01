@@ -1,5 +1,7 @@
+using System;
 using System.Drawing;
 using System.Xml;
+using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Helper;
 
@@ -12,10 +14,68 @@ namespace Tharga.Reporter.Engine.Entity
         private string _fontName;
         private double? _size;
         private Color? _color;
+        private bool? _bold;
+        private bool? _italic;
+        private bool? _underline;
+        private bool? _strikeout;
 
         public string FontName { get { return _fontName ?? string.Empty; } set { _fontName = value; } }
         public double Size { get { return _size ?? 10; } set { _size = value; } }
         public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
+        public bool Bold
+        {
+            get
+            {
+                return _bold ?? false;
+            } 
+            set
+            {
+                if (Underline) throw new InvalidOperationException("Cannot use Bold, Underline is set to true.");
+                if (Strikeout) throw new InvalidOperationException("Cannot use Bold, Strikeout is set to true.");
+                _bold = value;
+            }
+        }
+        public bool Italic
+        {
+            get
+            {
+                return _italic ?? false;
+            } 
+            set
+            {
+                if (Underline) throw new InvalidOperationException("Cannot use Italic, Underline is set to true.");
+                if (Strikeout) throw new InvalidOperationException("Cannot use Italic, Strikeout is set to true.");
+                _italic = value;
+            }
+        }
+        public bool Underline
+        {
+            get
+            {
+                return _underline ?? false;
+            }
+            set
+            {
+                if (Bold) throw new InvalidOperationException("Cannot use Underline, Bold is set to true.");
+                if (Italic) throw new InvalidOperationException("Cannot use Underline, Italic is set to true.");
+                if (Strikeout) throw new InvalidOperationException("Cannot use Underline, Strikeout is set to true.");
+                _underline = value;
+            }
+        }
+        public bool Strikeout
+        {
+            get
+            {
+                return _strikeout ?? false;
+            } 
+            set
+            {
+                if (Bold) throw new InvalidOperationException("Cannot use Strikeout, Bold is set to true.");
+                if (Italic) throw new InvalidOperationException("Cannot use Strikeout, Italic is set to true.");
+                if (Underline) throw new InvalidOperationException("Cannot use Strikeout, Underline is set to true.");
+                _strikeout = value;
+            }
+        }
 
         internal XmlElement ToXme(string elementName = null)
         {
@@ -30,6 +90,18 @@ namespace Tharga.Reporter.Engine.Entity
 
             if (_size != null)
                 xme.SetAttribute("Size", _size.ToString());
+
+            if (_bold != null)
+                xme.SetAttribute("Bold", _bold.ToString());
+
+            if (_italic != null)
+                xme.SetAttribute("Italic", _italic.ToString());
+
+            if (_strikeout != null)
+                xme.SetAttribute("Strikeout", _strikeout.ToString());
+
+            if (_underline != null)
+                xme.SetAttribute("Underline", _underline.ToString());
 
             return xme;
         }
@@ -49,6 +121,22 @@ namespace Tharga.Reporter.Engine.Entity
             var xmlSize = xme.Attributes["Size"];
             if (xmlSize != null)
                 line.Size = double.Parse(xmlSize.Value);
+
+            var xmlBold = xme.Attributes["Bold"];
+            if (xmlBold != null)
+                line.Bold = bool.Parse(xmlBold.Value);
+
+            var xmlItalic = xme.Attributes["Italic"];
+            if (xmlItalic != null)
+                line.Italic = bool.Parse(xmlItalic.Value);
+
+            var xmlStrikeout = xme.Attributes["Strikeout"];
+            if (xmlStrikeout != null)
+                line.Strikeout = bool.Parse(xmlStrikeout.Value);
+
+            var xmlUnderline = xme.Attributes["Underline"];
+            if (xmlUnderline != null)
+                line.Underline = bool.Parse(xmlUnderline.Value);
 
             return line;
         }        

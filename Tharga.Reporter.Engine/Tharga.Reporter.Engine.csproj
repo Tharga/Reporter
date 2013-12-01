@@ -65,6 +65,7 @@
     <Compile Include="Entity\Element\Base\Element.cs" />
     <Compile Include="Entity\Element\Base\MultiPageElement.cs" />
     <Compile Include="Entity\Element\Extensions\ElementExtensions.cs" />
+    <Compile Include="Entity\Element\Extensions\FontExtensions.cs" />
     <Compile Include="Entity\Element\Image.cs" />
     <Compile Include="Entity\Element\Line.cs" />
     <Compile Include="Entity\Element\Base\MultiPageAreaElement.cs" />

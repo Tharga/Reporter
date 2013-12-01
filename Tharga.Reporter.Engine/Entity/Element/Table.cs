@@ -110,10 +110,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             using (var gfx = XGraphics.FromPdfPage(page))
             {
                 var debugPen = new XPen(XColor.FromArgb(Color.Yellow), 0.1);
-                var headerFont = new XFont(GetHeaderName(section), GetHeaderSize(section), XFontStyle.Regular);
-                var headerBrush = new XSolidBrush(XColor.FromArgb(GetHeaderColor(section)));
-                var lineFont = new XFont(GetContentName(section), GetContentSize(section), XFontStyle.Regular);
-                var lineBrush = new XSolidBrush(XColor.FromArgb(GetContentColor(section)));
+                var headerFont = new XFont(_headerFont.GetName(section), _headerFont.GetSize(section), _headerFont.GetStyle(section));
+                var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(section)));
+                var lineFont = new XFont(_contentFont.GetName(section), _contentFont.GetSize(section), _contentFont.GetStyle(section));
+                var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(section)));
 
                 var headerSize = gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
                 var lineSize = gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
@@ -264,66 +264,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             var result = input.ParseValue(row);
             return result;
-        }
-
-        private string GetHeaderName(Section section)
-        {
-            if (_headerFont != null)
-                return _headerFont.FontName;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.FontName;
-        }
-
-        private double GetHeaderSize(Section section)
-        {
-            if (_headerFont != null)
-                return _headerFont.Size;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.Size;
-        }
-
-        private Color GetHeaderColor(Section section)
-        {
-            if (_headerFont != null)
-                return _headerFont.Color;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.Color;
-        }
-
-        private string GetContentName(Section section)
-        {
-            if (_contentFont != null)
-                return _contentFont.FontName;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.FontName;
-        }
-
-        private double GetContentSize(Section section)
-        {
-            if (_contentFont != null)
-                return _contentFont.Size;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.Size;
-        }
-
-        private Color GetContentColor(Section section)
-        {
-            if (_contentFont != null)
-                return _contentFont.Color;
-
-            //TODO: Use font class
-
-            return section.DefaultFont.Color;
         }
 
         public void AddColumn(string displayFormat, string displayName,  UnitValue? width = null,

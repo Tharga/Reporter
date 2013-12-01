@@ -160,6 +160,14 @@ namespace Tharga.Reporter.Console
             content.Header.ElementList.Add(new Line { Top = "1,2cm", Left = "10%", Width = "50%", Height = "0", Thickness = "1" });
             content.Header.ElementList.Add(new Line { Top = "1,4cm", Left = "10%", Width = "50%", Height = "0" , Thickness = "2"});
             content.Footer.ElementList.Add(new Text { Value = "Some text in the footer. Page {PageNumber} of {TotalPages}" });
+
+            content.Footer.ElementList.Add(new Text { Value = "Some normal text in the footer.", Top = "0,5cm", Font = new Font { Bold = false, Italic = false } });
+            content.Footer.ElementList.Add(new Text {Value = "Some bold text in the footer.", Top = "1cm", Font = new Font {Bold = true}});
+            content.Footer.ElementList.Add(new Text { Value = "Some italic text in the footer.", Top = "1,5cm", Font = new Font { Italic = true } });
+            content.Footer.ElementList.Add(new Text { Value = "Some bold italic text in the footer.", Top = "0,5cm", Left = "5cm", Font = new Font { Italic = true, Bold = true } });
+            content.Footer.ElementList.Add(new Text { Value = "Some undelined text in the footer.", Top = "1cm", Left = "5cm", Font = new Font { Underline = true } });
+            content.Footer.ElementList.Add(new Text { Value = "Some strikeout text in the footer.", Top = "1,5cm", Left = "5cm", Font = new Font { Strikeout = true } });
+            
             content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. Page {PageNumber} of {TotalPages}" });
 
             var documentData = new DocumentData();
