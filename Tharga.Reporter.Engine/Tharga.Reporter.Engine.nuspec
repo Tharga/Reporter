@@ -10,5 +10,8 @@
     <iconUrl>http://support.thargelion.se/Images/ThargelionIcon.png</iconUrl>
     <language>en-US</language>
     <tags></tags>
-  </metadata>  
+  </metadata>
+  <files>
+    <file src="*.TTF" target="lib" /> 
+  </files>
 </package>
