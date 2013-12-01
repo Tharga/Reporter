@@ -235,7 +235,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             if (ContentBorderColor != null || ContentBackgroundColor != null)
             {
-                var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value);
+                var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value, 0.1); //TODO: Se the thickness of the boarder
 
                 if (ContentBackgroundColor != null)
                 {
@@ -248,7 +248,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (HeaderBorderColor != null || HeaderBackgroundColor != null)
             {
-                var borderPen = new XPen(HeaderBorderColor ?? HeaderBackgroundColor.Value);
+                var borderPen = new XPen(HeaderBorderColor ?? HeaderBackgroundColor.Value, 0.1); //TODO: Se the thickness of the boarder
 
                 if (HeaderBackgroundColor != null)
                 {
