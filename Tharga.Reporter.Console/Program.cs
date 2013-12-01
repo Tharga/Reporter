@@ -170,7 +170,7 @@ namespace Tharga.Reporter.Console
             
             content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. Page {PageNumber} of {TotalPages}" });
 
-            content.Pane.ElementList.Add(new TextBox { Left = "10cm", Value = "Vill du automatiskt få denna följesedel skickad via mejl varje gång du handlar hos Skalleberg. Skicka då ett meddelande till support@thargelion.se med ditt kundnummer så fixar vi det." });
+            content.Pane.ElementList.Add(new TextBox { Left = "10cm", Height="2cm", Value = "Vill du automatiskt få denna följesedel skickad via mejl varje gång du handlar hos Skalleberg. Skicka då ett meddelande till support@thargelion.se med ditt kundnummer så fixar vi det." });
 
             var documentData = new DocumentData();
             var tableData = documentData.GetDataTable("MyTable");
@@ -335,7 +335,8 @@ namespace Tharga.Reporter.Console
 
         private static void Multipage_PDF_by_spanning_text()
         {
-            var section = new Section { Name = "First" };
+            var section = new Section {Name = "First"};
+            section.Header.ElementList.Add(new Text {Value = "{PageNumber} ({TotalPages})"});
             section.Margin = new UnitRectangle {Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm"), Right = UnitValue.Parse("1cm"), Bottom = UnitValue.Parse("1cm")};
 
             var s = GetRandomText();

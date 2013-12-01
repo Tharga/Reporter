@@ -108,9 +108,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
                                 return true;
                             }
                         }
-                        //var t = sb.ToString();
-                        //gfx.DrawString(t, font, brush, left, top, XStringFormats.TopLeft);
                     }
+
+                    //Print what is left of the text
+                    gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
+                    //_wordPointer = 0; //This would make the text continue from start on the following pages.
+                    _wordPointer = _words.Length; //This would make the text be blank on any trailing pages.
                 }
                 else
                     gfx.DrawString(text, font, brush, left, top, XStringFormats.TopLeft);

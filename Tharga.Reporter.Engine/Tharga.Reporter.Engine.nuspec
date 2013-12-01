@@ -12,6 +12,6 @@
     <tags></tags>
   </metadata>
   <files>
-    <file src="*.TTF" target="lib" /> 
+    <file src="*.TTF" target="Content" /> 
   </files>
 </package>
