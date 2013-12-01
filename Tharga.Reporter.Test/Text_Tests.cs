@@ -81,8 +81,8 @@ namespace Tharga.Reporter.Test
             //Arrange
             var text = new Text
                 {
-                    IsBackground =true,
-                    Name ="Rea Padda",
+                    IsBackground = true,
+                    Name = "Rea Padda",
                     Right = UnitValue.Parse("1px"),
                     Width = UnitValue.Parse("10cm"),
                     Bottom = UnitValue.Parse("2px"),

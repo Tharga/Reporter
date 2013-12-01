@@ -12,7 +12,7 @@ namespace Tharga.Reporter.Engine.Entity
         private readonly Color _defaultColor = Color.Black;
 
         private string _fontName;
-        private double? _size;
+        private int? _size;
         private Color? _color;
         private bool? _bold;
         private bool? _italic;
@@ -20,7 +20,7 @@ namespace Tharga.Reporter.Engine.Entity
         private bool? _strikeout;
 
         public string FontName { get { return _fontName ?? string.Empty; } set { _fontName = value; } }
-        public double Size { get { return _size ?? 10; } set { _size = value; } }
+        public int Size { get { return _size ?? 10; } set { _size = value; } }
         public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
         public bool Bold
         {
@@ -120,7 +120,7 @@ namespace Tharga.Reporter.Engine.Entity
 
             var xmlSize = xme.Attributes["Size"];
             if (xmlSize != null)
-                line.Size = double.Parse(xmlSize.Value);
+                line.Size = int.Parse(xmlSize.Value);
 
             var xmlBold = xme.Attributes["Bold"];
             if (xmlBold != null)

@@ -21,7 +21,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             get
             {
-                //TODO: The default font should be picked from the section
                 return _font ?? _defaultFont;
             }
             set

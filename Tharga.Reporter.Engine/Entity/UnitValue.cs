@@ -69,11 +69,6 @@ namespace Tharga.Reporter.Engine.Entity
             return new UnitValue(s);
         }
 
-        //internal static UnitValue Create()
-        //{
-        //    return new UnitValue("0");
-        //}
-
 
         #endregion
 
