@@ -170,6 +170,8 @@ namespace Tharga.Reporter.Console
             
             content.Pane.ElementList.Add(new Text { Value = "Some text in the pane. Page {PageNumber} of {TotalPages}" });
 
+            content.Pane.ElementList.Add(new TextBox { Left = "10cm", Value = "Vill du automatiskt få denna följesedel skickad via mejl varje gång du handlar hos Skalleberg. Skicka då ett meddelande till support@thargelion.se med ditt kundnummer så fixar vi det." });
+
             var documentData = new DocumentData();
             var tableData = documentData.GetDataTable("MyTable");
             for (var i = 0; i < 100; i++)

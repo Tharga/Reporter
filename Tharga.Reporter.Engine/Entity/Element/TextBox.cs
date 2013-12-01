@@ -108,7 +108,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                                 return true;
                             }
                         }
-                        gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
+                        //var t = sb.ToString();
+                        //gfx.DrawString(t, font, brush, left, top, XStringFormats.TopLeft);
                     }
                 }
                 else
