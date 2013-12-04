@@ -59,14 +59,23 @@ namespace Tharga.Reporter.Console
 
             section.Footer.ElementList.Add(new Image { Source = "http://skalleberg.se/wp-content/uploads/2013/10/bildspel-1-840x270.png", Left = "50%" });
 
+            section.Pane.ElementList.Add(new Rectangle {BorderColor = Color.Green, Width = "50%", Height = "50%", Left = "25%", Top = "25%"});
+            section.Pane.ElementList.Add(new BarCode { Code = "ABC123" });
+
+
+            section.Footer.ElementList.Add(new Text {Value = "Data: {SomeData}"});
+
             var template = new Template(section);
 
+            var documentData = new DocumentData();
+            documentData.Add("SomeData", "Reapadda");
+
             //Old way
-            var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
+            var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
             ExecuteFile(oldBytes);
 
             //New way
-            var renderer = new Renderer{ Template = template, Debug = true};
+            var renderer = new Renderer { Template = template, Debug = true, DocumentData = documentData };
             var bytes = renderer.GetPDFDocument();
             ExecuteFile(bytes);
 

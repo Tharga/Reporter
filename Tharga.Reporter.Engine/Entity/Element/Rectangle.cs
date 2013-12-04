@@ -48,7 +48,20 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected internal override void Render(IRenderData renderData)
         {
-            throw new System.NotImplementedException();
+            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+            if (renderData.IncludeBackground || !IsBackground)
+            {
+                var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
+
+                if (BackgroundColor != null)
+                {
+                    var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                    renderData.Gfx.DrawRectangle(pen, brush, renderData.ElementBounds);
+                }
+                else
+                    renderData.Gfx.DrawRectangle(pen, renderData.ElementBounds);
+            }
         }
 
         internal override XmlElement ToXme()

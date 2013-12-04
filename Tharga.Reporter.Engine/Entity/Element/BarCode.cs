@@ -61,7 +61,27 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected internal override void Render(IRenderData renderData)
         {
-            throw new NotImplementedException();
+            var bounds = GetBounds(renderData.ParentBounds);
+            var imageData = GetImage(renderData.DocumentData, bounds, renderData.PageNumberInfo, renderData.Section);
+            renderData.ElementBounds = bounds;
+
+            if (renderData.IncludeBackground || !IsBackground)
+            {
+                var legendFont = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+                var legendBrush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+                var legendFontSize = renderData.Gfx.MeasureString(Code, legendFont);
+
+                using (var image = XImage.FromGdiPlusImage(imageData))
+                {
+                    renderData.Gfx.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height - legendFontSize.Height));
+                }
+
+                //TODO: Possible to hide the text (Just show the barcode)
+                var code = GetCode(renderData.DocumentData, renderData.PageNumberInfo);
+                //gfx.DrawString(code, legendFont, legendBrush, elementBounds, XStringFormats.BottomCenter);
+                renderData.Gfx.DrawString(code, legendFont, legendBrush, new XPoint(renderData.ElementBounds.Left, renderData.ElementBounds.Bottom - legendFontSize.Height), XStringFormats.TopLeft);
+            }
+            imageData.Dispose();
         }
 
         private string GetCode(DocumentData documentData, PageNumberInfo pageNumberInfo)
