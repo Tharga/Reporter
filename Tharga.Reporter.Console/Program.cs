@@ -53,6 +53,7 @@ namespace Tharga.Reporter.Console
             section.Pane.ElementList.Add(new Line { Left = "10cm", Thickness = "1mm", Color = Color.MidnightBlue });
             section.Pane.ElementList.Add(new Line { Top = "10cm", Thickness = "1mm", Color = Color.MidnightBlue });
             section.Pane.ElementList.Add(new Text { Value = "Bob Lablow" });
+            section.Pane.ElementList.Add(new Image { Source = "http://smutty.com/ajax/tracking/out.php?pid=1275955" });
 
             var template = new Template(section);
 

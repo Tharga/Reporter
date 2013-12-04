@@ -41,7 +41,19 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         protected internal override void Render(IRenderData renderData)
         {
-            throw new NotImplementedException();
+            var bounds = GetBounds(renderData.ParentBounds);
+            var imageData = GetImage(renderData.DocumentData, bounds);
+            renderData.ElementBounds = GetImageBounds(imageData, bounds);
+
+            if (renderData.IncludeBackground || !IsBackground)
+            {
+                using (var image = XImage.FromGdiPlusImage(imageData))
+                {
+                    renderData.Gfx.DrawImage(image, renderData.ElementBounds);
+                }
+            }
+
+            imageData.Dispose();
         }
 
         private static XRect GetImageBounds(System.Drawing.Image imageData, XRect bounds)
@@ -131,7 +143,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             imageData = null;
 
-            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_");
+            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?","_");
             var cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
 
             if (!File.Exists(cacheFileName))
