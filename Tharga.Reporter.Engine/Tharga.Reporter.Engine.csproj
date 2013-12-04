@@ -88,7 +88,9 @@
     <Compile Include="Entity\Font.cs" />
     <Compile Include="Entity\SectionList.cs" />
     <Compile Include="Entity\SkipLine.cs" />
+    <Compile Include="ExteptionExtension.cs" />
     <Compile Include="Printing.cs" />
+    <Compile Include="Renderer.cs" />
     <Compile Include="Rendering.cs" />
     <Compile Include="Entity\Element\Base\AreaElement.cs" />
     <Compile Include="Entity\Area\Footer.cs" />

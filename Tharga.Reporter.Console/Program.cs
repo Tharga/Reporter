@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.Text;
 using Tharga.Reporter.Engine;
@@ -18,6 +19,7 @@ namespace Tharga.Reporter.Console
         static void Main(string[] args)
         {
             //Blank_default_PDF_document();
+            Basic_elements();
             //Basic_PDF_document_with_some_text_on_it();
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
@@ -27,8 +29,8 @@ namespace Tharga.Reporter.Console
 
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
-            Create_PDF_document_with_template_that_spans_over_multiple_pages();
-            
+            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+
             //SkallebergSample1();
 
             //Bugs: 
@@ -36,6 +38,31 @@ namespace Tharga.Reporter.Console
 
             //What else do we want??
             //- Serialize/unzerialize template to xml
+        }
+
+        private static void Basic_elements()
+        {
+            var section = new Section();
+
+            section.Margin = new UnitRectangle {Left = "1cm", Top = "2cm", Right = "3cm", Bottom = "4cm"};
+            section.Pane.ElementList.Add(new Line {});
+
+            var template = new Template(section);
+
+            var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
+            ExecuteFile(oldBytes);
+
+            var renderer = new Renderer{ Template = template, Debug = true };
+            var bytes = renderer.GetPDFDocument();
+            ExecuteFile(bytes);
+
+            var printerSettings = new PrinterSettings
+                {
+                    PrinterName = "Microsoft XPS Document Writer",
+                    PrintToFile = true,
+                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+                };
+            renderer.Print(printerSettings);
         }
 
         private static void SkallebergSample1()
