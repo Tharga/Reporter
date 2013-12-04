@@ -109,8 +109,7 @@ namespace Tharga.Reporter.Engine.Entity
 
         internal int GetRenderPageCount()
         {
-            if (_renderPageCount == null) throw new InvalidOperationException("The section has not been pre-rendered so that the number of pages could be calculated.");
-            return _renderPageCount.Value;
+            return _renderPageCount ?? 1;
         }
     }
 }

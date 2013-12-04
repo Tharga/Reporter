@@ -184,7 +184,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _pageText.Add(lines.ToArray());
             }
             else
-                throw new NotImplementedException("All fits on one page, is not yet implemented");
+                _pageText.Add(new[] {text});
 
             return _pageText.Count;
         }

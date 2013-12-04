@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
 using System.Text;
+using System.Threading.Tasks;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -21,28 +22,16 @@ namespace Tharga.Reporter.Console
             //Blank_default_PDF_document();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
-
-            //MultipleSections_Sample();
-
-
-            //Basic_PDF_document_with_some_text_on_it();
+            Basic_PDF_document_with_some_text_on_it();
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
-            Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-
+            //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
-
             //SkallebergSample1();
-
-            //Bugs: 
-            //When spanning with textBoxes an empty page can sometimes be added, if the last word fitx exactly
-
-            //What else do we want??
-            //- Serialize/unzerialize template to xml
         }
 
         private async static void MultiPageAreaElement_Sample()
@@ -54,7 +43,7 @@ namespace Tharga.Reporter.Console
             section.Header.Height = "2cm";
             section.Footer.Height = "2cm";            
 
-            section.Pane.ElementList.Add(new TextBox{ Value = ""});
+            section.Pane.ElementList.Add(new TextBox{ Value = "Blah"});
 
 
             var template = new Template(section);
@@ -62,23 +51,7 @@ namespace Tharga.Reporter.Console
             var documentData = new DocumentData();
             documentData.Add("SomeData", "Reapadda");
 
-            //Old way
-            var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
-            ExecuteFile(oldBytes);
-
-            //New way
-            var renderer = new Renderer { Template = template, Debug = true, DocumentData = documentData };
-            var bytes = await renderer.GetPDFDocumentAsync();
-            ExecuteFile(bytes);
-
-            //Directly to printer
-            var printerSettings = new PrinterSettings
-            {
-                PrinterName = "Microsoft XPS Document Writer",
-                PrintToFile = true,
-                PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
-            };
-            await renderer.PrintAsync(printerSettings);
+            await SampleOutput(template, documentData);
         }
 
         private async static void SinglePageAreaElement_Sample()
@@ -111,13 +84,27 @@ namespace Tharga.Reporter.Console
             var documentData = new DocumentData();
             documentData.Add("SomeData", "Reapadda");
 
+            await SampleOutput(template, documentData);
+        }
+
+        private static async Task SampleOutput(Template template, DocumentData documentData)
+        {
+            //Prep
+            var renderer = new Renderer {Template = template, Debug = true, DocumentData = documentData};
+            var stopWatch = new Stopwatch();
+
             //Old way
+            stopWatch.Reset();
+            stopWatch.Start();
             var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
+            Debug.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             ExecuteFile(oldBytes);
 
             //New way
-            var renderer = new Renderer { Template = template, Debug = true, DocumentData = documentData };
+            stopWatch.Reset();
+            stopWatch.Start();
             var bytes = await renderer.GetPDFDocumentAsync();
+            Debug.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             ExecuteFile(bytes);
 
             //Directly to printer
@@ -127,7 +114,10 @@ namespace Tharga.Reporter.Console
                     PrintToFile = true,
                     PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
                 };
+            stopWatch.Reset();
+            stopWatch.Start();
             await renderer.PrintAsync(printerSettings);
+            Debug.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
         }
 
         private static void SkallebergSample1()
@@ -362,11 +352,10 @@ namespace Tharga.Reporter.Console
         //    ExecuteFile(byteArray);
         //}
 
-        private static void Blank_default_PDF_document()
+        private async static void Blank_default_PDF_document()
         {
             var template = new Template(new Section());
-            var byteArray = Rendering.CreatePDFDocument(template);
-            ExecuteFile(byteArray);
+            await SampleOutput(template, new DocumentData());
         }
 
         private async static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
@@ -511,7 +500,7 @@ namespace Tharga.Reporter.Console
             ExecuteFile(byteArray);
         }
 
-        private static void Basic_PDF_document_with_some_text_on_it()
+        private async static void Basic_PDF_document_with_some_text_on_it()
         {
             var section = new Section();
             var refPoint = new ReferencePoint {Stack = ReferencePoint.StackMethod.Vertical, Name = "SomeName", Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm")};
@@ -531,8 +520,8 @@ namespace Tharga.Reporter.Console
             documentData.Add("Data2", "");
             documentData.Add("Data3", null);
             documentData.Add("Data5", "Loblaw");
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
-            ExecuteFile(byteArray);
+
+            SampleOutput(template, documentData);
         }
 
         private static void ExecuteFile(byte[] byteArray)
