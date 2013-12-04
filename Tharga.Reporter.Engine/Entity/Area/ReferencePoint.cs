@@ -77,7 +77,12 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return needMorePages;
         }
 
-        protected internal override bool Render()
+        protected internal override int PreRender(IRenderData renderData)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected internal override void Render(IRenderData renderData, int page)
         {
             throw new NotImplementedException();
         }
@@ -191,5 +196,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
             return referencePoint;
         }
+
+        //public override int PageCount(IRenderData renderData)
+        //{
+        //    var multi = ElementList.Where(x => x is MultiPageAreaElement || x is MultiPageElement);
+        //    return multi.Max(x => x.PageCount(renderData));
+        //}
     }
 }

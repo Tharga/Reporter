@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Xml;
@@ -19,6 +20,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private string _hideValue;
         private string[] _words;
         private int _wordPointer;
+        private List<string[]> _pageText;
 
         public string Value { get { return _value ?? string.Empty; } set { _value = value; } }
         public string HideValue { get { return _hideValue ?? string.Empty; } set { _hideValue = value; } }
@@ -121,9 +123,102 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
-        protected internal override bool Render()
+        protected internal override int PreRender(IRenderData renderData)
         {
-            throw new NotImplementedException();
+            if (_pageText!= null) throw new InvalidOperationException("Pre-render has already been performed.");
+            _pageText = new List<string[]>();
+
+            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+            if (!renderData.IncludeBackground && IsBackground)
+                return 0;
+
+            var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+
+            var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
+            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+
+            var left = renderData.ElementBounds.Left;
+            var top = renderData.ElementBounds.Top;
+
+            if (textSize.Width > renderData.ElementBounds.Width)
+            {
+                //Need to set data over more than one page
+                var words = text.Split(' ');
+
+                var sb = new StringBuilder();
+                var lines = new List<string>();
+                foreach (var nextWord in words)
+                {
+                    var textSoFar = sb.ToString();
+                    sb.AppendFormat("{0} ", nextWord);
+                    var nextTextSize = renderData.Gfx.MeasureString(sb.ToString(), font, XStringFormats.TopLeft);
+                    if (nextTextSize.Width > renderData.ElementBounds.Width) //Now we are over the limit (Previous state will fit)
+                    {
+                        if (string.IsNullOrEmpty(textSoFar))
+                        {
+                            //One singe word that is too long, print it anyway
+                            //renderData.Gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
+                            lines.Add(sb.ToString());
+                        }
+                        else
+                        {
+                            //renderData.Gfx.DrawString(ready, font, brush, left, top, XStringFormats.TopLeft);
+                            lines.Add(textSoFar);
+                            sb.Clear();
+                            sb.AppendFormat("{0} ", nextWord);
+                        }
+                        top += nextTextSize.Height;
+
+                        if (top > renderData.ElementBounds.Bottom - nextTextSize.Height)
+                        {
+                            //Now we have reached the limit of the page
+                            _pageText.Add(lines.ToArray());
+                            lines.Clear();
+                            top = renderData.ElementBounds.Top;
+                        }
+                    }
+                }
+                lines.Add(sb.ToString());
+                _pageText.Add(lines.ToArray());
+            }
+            else
+                throw new NotImplementedException("All fits on one page, is not yet implemented");
+
+            return _pageText.Count;
+        }
+
+        protected internal override void Render(IRenderData renderData, int page)
+        {
+            if (_pageText== null) throw new InvalidOperationException("Pre-render has not been performed.");
+
+            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+            if (!renderData.IncludeBackground && IsBackground)
+                return;
+
+            if (renderData.Debug)
+            {
+                var debugPen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
+                renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds);
+            }
+
+            var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+
+            var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
+            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+
+            var left = renderData.ElementBounds.Left;
+            var top = renderData.ElementBounds.Top;
+
+            foreach (var line in _pageText[page])
+            {
+                renderData.Gfx.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
+                var newTextSize = renderData.Gfx.MeasureString(line, font, XStringFormats.TopLeft);
+                top += newTextSize.Height;
+            }            
         }
 
         private string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
@@ -193,5 +288,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             return text;
         }
+
+        //TODO: Fix!
+        //public override int PageCount(IRenderData renderData)
+        //{
+        //    return 2;
+        //}
     }
 }

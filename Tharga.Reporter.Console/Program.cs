@@ -19,13 +19,18 @@ namespace Tharga.Reporter.Console
         static void Main(string[] args)
         {
             //Blank_default_PDF_document();
-            Basic_elements();
+            //SinglePageAreaElement_Sample();
+            //MultiPageAreaElement_Sample();
+
+            //MultipleSections_Sample();
+
+
             //Basic_PDF_document_with_some_text_on_it();
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
-            //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
+            Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
 
             //Create_PDF_document_from_template();
             //Create_PDF_document_with_basic_template();
@@ -40,7 +45,43 @@ namespace Tharga.Reporter.Console
             //- Serialize/unzerialize template to xml
         }
 
-        private static void Basic_elements()
+        private async static void MultiPageAreaElement_Sample()
+        {
+            var section = new Section();
+
+            section.Margin = new UnitRectangle { Left = "3cm", Top = "1cm", Right = "1cm", Bottom = "1cm" };
+
+            section.Header.Height = "2cm";
+            section.Footer.Height = "2cm";            
+
+            section.Pane.ElementList.Add(new TextBox{ Value = ""});
+
+
+            var template = new Template(section);
+
+            var documentData = new DocumentData();
+            documentData.Add("SomeData", "Reapadda");
+
+            //Old way
+            var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
+            ExecuteFile(oldBytes);
+
+            //New way
+            var renderer = new Renderer { Template = template, Debug = true, DocumentData = documentData };
+            var bytes = await renderer.GetPDFDocumentAsync();
+            ExecuteFile(bytes);
+
+            //Directly to printer
+            var printerSettings = new PrinterSettings
+            {
+                PrinterName = "Microsoft XPS Document Writer",
+                PrintToFile = true,
+                PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
+            };
+            await renderer.PrintAsync(printerSettings);
+        }
+
+        private async static void SinglePageAreaElement_Sample()
         {
             var section = new Section();
 
@@ -76,7 +117,7 @@ namespace Tharga.Reporter.Console
 
             //New way
             var renderer = new Renderer { Template = template, Debug = true, DocumentData = documentData };
-            var bytes = renderer.GetPDFDocument();
+            var bytes = await renderer.GetPDFDocumentAsync();
             ExecuteFile(bytes);
 
             //Directly to printer
@@ -86,7 +127,7 @@ namespace Tharga.Reporter.Console
                     PrintToFile = true,
                     PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
                 };
-            renderer.Print(printerSettings);
+            await renderer.PrintAsync(printerSettings);
         }
 
         private static void SkallebergSample1()
@@ -328,7 +369,7 @@ namespace Tharga.Reporter.Console
             ExecuteFile(byteArray);
         }
 
-        private static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
+        private async static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
         {
             var section = new Section { Name = "Content" };
 
@@ -339,8 +380,36 @@ namespace Tharga.Reporter.Console
 
             var template = new Template(section);
 
-            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray);
+
+            var sw = new Stopwatch();
+
+            //Old way
+            sw.Start();
+            var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
+            Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            //ExecuteFile(oldBytes);
+
+            //New way
+            var renderer = new Renderer { Template = template, Debug = true };
+
+            sw.Reset();
+            sw.Start();
+            var bytes = await renderer.GetPDFDocumentAsync();
+            Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            ExecuteFile(bytes);
+
+            ////Directly to printer
+            //var printerSettings = new PrinterSettings
+            //{
+            //    PrinterName = "Microsoft XPS Document Writer",
+            //    PrintToFile = true,
+            //    PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
+            //};
+
+            //sw.Reset();
+            //sw.Start();
+            //renderer.Print(printerSettings);
+            //Debug.WriteLine("Print: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
         }
 
         public static void Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking()

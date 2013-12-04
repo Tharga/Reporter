@@ -39,13 +39,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (renderData.IncludeBackground || !IsBackground)
             {
-                //using (var gfx = XGraphics.FromPdfPage(page))
-                //{
-                    var borderWidth = UnitValue.Parse(Thickness);
-                    var pen = new XPen(XColor.FromArgb(Color), borderWidth.GetXUnitValue(0));
+                var borderWidth = UnitValue.Parse(Thickness);
+                var pen = new XPen(XColor.FromArgb(Color), borderWidth.GetXUnitValue(0));
 
-                    renderData.Gfx.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);
-                //}
+                renderData.Gfx.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);
             }
         }
 

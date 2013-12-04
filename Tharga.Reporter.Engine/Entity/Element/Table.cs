@@ -231,7 +231,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
-        protected internal override bool Render()
+        protected internal override int PreRender(IRenderData renderData)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected internal override void Render(IRenderData renderData, int page)
         {
             throw new NotImplementedException();
         }
@@ -408,5 +413,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             
             return table;
         }
+
+        //TODO: Fix!
+        //public override int PageCount(IRenderData renderData)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

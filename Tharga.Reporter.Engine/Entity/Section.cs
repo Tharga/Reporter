@@ -11,6 +11,7 @@ namespace Tharga.Reporter.Engine.Entity
         private UnitRectangle _margin;
         private string _name;
         private Font _defaultFont;
+        private int? _renderPageCount = null;
 
         public UnitRectangle Margin { get { return _margin ?? Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")); } set { _margin = value; } }
         public Header Header { get; private set; }
@@ -99,6 +100,17 @@ namespace Tharga.Reporter.Engine.Entity
             }
 
             return section;
+        }
+
+        internal void SetRenderPageCount(int renderPageCount)
+        {
+            _renderPageCount = renderPageCount;
+        }
+
+        internal int GetRenderPageCount()
+        {
+            if (_renderPageCount == null) throw new InvalidOperationException("The section has not been pre-rendered so that the number of pages could be calculated.");
+            return _renderPageCount.Value;
         }
     }
 }

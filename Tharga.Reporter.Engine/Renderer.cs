@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing.Printing;
+using System.Linq;
+using System.Threading.Tasks;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
 using MigraDoc.Rendering.Printing;
@@ -25,17 +28,58 @@ namespace Tharga.Reporter.Engine
         public DocumentData DocumentData { get { return _documentData; } set { _documentData = value; } }
         public bool Debug { get; set; }
 
-        //TODO: Async
-        public void CreatePdf(string fileName)
+        public async Task CreatePdf(string fileName)
         {
             if (System.IO.File.Exists(fileName))
                 throw new InvalidOperationException("The file already exists.").AddData("fileName", fileName);
 
-            System.IO.File.WriteAllBytes(fileName, GetPDFDocument());
+            System.IO.File.WriteAllBytes(fileName, await GetPDFDocumentAsync());
         }
 
-        //TODO: Async
-        public byte[] GetPDFDocument()
+        public async Task<byte[]> GetPDFDocumentAsync()
+        {
+            var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
+
+            var pdfDocument = CreatePDFDocument();
+            if (hasMultiPageElements)
+            {
+                RenderPDFDocument(pdfDocument, true);
+                pdfDocument = CreatePDFDocument();
+            }
+            RenderPDFDocument(pdfDocument, false);
+
+            var memStream = new System.IO.MemoryStream();
+            pdfDocument.Save(memStream);
+            return memStream.ToArray();
+        }
+
+        private void RenderPDFDocument(PdfDocument pdfDocument, bool preRender)
+        {
+            var doc = GetDocument(preRender);
+
+            var docRenderer = new DocumentRenderer(doc);
+            docRenderer.PrepareDocument();
+
+            for (var ii = 0; ii < doc.Sections.Count; ii++)
+            {
+                var page = pdfDocument.AddPage();
+
+                //TODO: Use printer settings information to get this value (Same as when the document is actually printed)
+                //page.Size = PdfSharp.PageSize.Letter;
+                page.Size = PdfSharp.PageSize.A4;
+
+                var gfx = XGraphics.FromPdfPage(page);
+                // HACK²
+                gfx.MUH = PdfFontEncoding.Unicode;
+                gfx.MFEH = PdfFontEmbedding.Default;
+
+                docRenderer.RenderPage(gfx, ii + 1);
+
+                DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height), preRender, ii);
+            }
+        }
+
+        private PdfDocument CreatePDFDocument()
         {
             var pdfDocument = new PdfDocument();
             if (_documentProperties != null)
@@ -72,40 +116,12 @@ namespace Tharga.Reporter.Engine
             pdfDocument.SecuritySettings.PermitModifyDocument = false;
             pdfDocument.SecuritySettings.PermitPrint = true;
             //pdfDocument.SecuritySettings.UserPassword = "qwerty";
-
-
-            var doc = GetDocument();
-
-            var docRenderer = new DocumentRenderer(doc);
-            docRenderer.PrepareDocument();
-
-            for (int ii = 0; ii < doc.Sections.Count; ii++)
-            {
-                var page = pdfDocument.AddPage();
-
-                //TODO: Use printer settings information to get this value (Same as when the document is actually printed)
-                //page.Size = PdfSharp.PageSize.Letter;
-                page.Size = PdfSharp.PageSize.A4;
-
-                var gfx = XGraphics.FromPdfPage(page);
-                // HACK²
-                gfx.MUH = PdfFontEncoding.Unicode;
-                gfx.MFEH = PdfFontEmbedding.Default;
-
-                docRenderer.RenderPage(gfx, ii + 1);
-
-                DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height));
-            }
-
-            var memStream = new System.IO.MemoryStream();
-            pdfDocument.Save(memStream);
-            return memStream.ToArray();
+            return pdfDocument;
         }
 
-        //TODO: Async
-        public void Print(PrinterSettings printerSettings)
+        public async Task PrintAsync(PrinterSettings printerSettings)
         {
-            var doc = GetDocument();
+            var doc = GetDocument(true);
 
             var docRenderer = new DocumentRenderer(doc);
             docRenderer.PrepareDocument();
@@ -128,7 +144,8 @@ namespace Tharga.Reporter.Engine
             var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
             gfx.ScaleTransform(scale);
 
-            DoRenderStuff(gfx, new XRect(unitSize));
+            //TODO: Provide correct rendering method
+            DoRenderStuff(gfx, new XRect(unitSize), true, 1);
         }
 
         private static XSize GetSize(XSize rawSize)
@@ -157,7 +174,7 @@ namespace Tharga.Reporter.Engine
             return xSize;
         }
 
-        private void DoRenderStuff(XGraphics gfx, XRect size)
+        private void DoRenderStuff(XGraphics gfx, XRect size, bool preRender, int page)
         {
             var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
             var debugFont = new XFont("Verdana", 10);
@@ -169,6 +186,8 @@ namespace Tharga.Reporter.Engine
             var pageNumberInfo = new PageNumberInfo(++pageNumber);
             foreach (var section in _template.SectionList)
             {
+                section.Pane.ClearRenderPointers();
+
                 var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height),
                               section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
 
@@ -197,34 +216,39 @@ namespace Tharga.Reporter.Engine
 
                 var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, Debug);
 
-                //needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug, pageNumberInfo, section);
-                section.Pane.Render(renderData);
-
-                //Header
-                if (section.Header != null)
+                if (preRender)
                 {
-                    var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
-                    //postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo, section));
-                    postRendering.Add(() => section.Header.Render(renderDataHeader));
-
-                    if (Debug)
-                    {
-                        gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
-                    }
+                    var pageCount = section.Pane.PreRender(renderData);
+                    section.SetRenderPageCount(pageCount);
                 }
-
-                //Footer
-                if (section.Footer != null)
+                else
                 {
-                    var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
-                    //postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo, section));
-                    postRendering.Add(() => section.Footer.Render(renderDataFooter));
+                    section.Pane.Render(renderData, page);
 
-                    if (Debug)
+                    //Header
+                    if (section.Header != null)
                     {
-                        gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
+                        var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+                        var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
+                        postRendering.Add(() => section.Header.Render(renderDataHeader, page));
+
+                        if (Debug)
+                        {
+                            gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
+                        }
+                    }
+
+                    //Footer
+                    if (section.Footer != null)
+                    {
+                        var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+                        var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
+                        postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
+
+                        if (Debug)
+                        {
+                            gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
+                        }
                     }
                 }
             }
@@ -235,14 +259,21 @@ namespace Tharga.Reporter.Engine
             }
         }
 
-        private Document GetDocument()
+        private Document GetDocument(bool preRender)
         {
             var doc = new Document();
 
             foreach (var section in _template.SectionList)
             {
-                //TODO: Count the number of pages needed and add them here
-                var sec = doc.AddSection();
+                if (preRender)
+                    doc.AddSection();
+                else
+                {
+                    for (var i = 0; i < section.GetRenderPageCount(); i++)
+                    {
+                        doc.AddSection();
+                    }
+                }
             }
 
             return doc;

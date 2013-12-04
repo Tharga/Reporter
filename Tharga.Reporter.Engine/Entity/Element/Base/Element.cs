@@ -100,5 +100,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
+        //public abstract int PageCount(IRenderData renderData);
     }
 }

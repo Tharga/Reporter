@@ -8,6 +8,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
     {
         protected internal abstract void ClearRenderPointer();
         protected internal abstract bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section);
-        protected internal abstract bool Render();
+        protected internal abstract int PreRender(IRenderData renderData);
+        protected internal abstract void Render(IRenderData renderData, int page);
     }
 }

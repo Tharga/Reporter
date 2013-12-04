@@ -26,37 +26,42 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 ((MultiPageAreaElement)element).ClearRenderPointer();
         }
 
-        internal bool Render(IRenderData renderData)
+        internal void Render(IRenderData renderData, int page)
         {
-            var needAnotherPage = false;
             foreach (var element in _elementList)
             {
-                XRect bnd;
                 if (element as MultiPageElement != null)
-                {
-                    //var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
-                    var needMore = ((MultiPageElement) element).Render();
-                    if (needMore)
-                        needAnotherPage = true;
-                }
+                    ((MultiPageElement)element).Render(renderData, page);
                 else if (element as MultiPageAreaElement != null)
-                {
-                    //var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
-                    var needMore = ((MultiPageAreaElement)element).Render();
-                    if (needMore)
-                        needAnotherPage = true;
-                }
+                    ((MultiPageAreaElement)element).Render(renderData, page);
                 else if (element as SinglePageAreaElement != null)
-                {
-                    //((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
                     ((SinglePageAreaElement)element).Render(renderData);
-                }
                 else
-                {
                     throw new ArgumentOutOfRangeException(string.Format("Unknown type {0} for pane to render.", element.GetType().Name));
-                }
             }
-            return needAnotherPage;
+        }
+
+        internal int PreRender(IRenderData renderData)
+        {
+            var maxTotalPages = 1;
+            var elementsToRender = _elementList.Where(x => x is MultiPageAreaElement || x is MultiPageElement).ToArray();
+
+            foreach (var element in elementsToRender)
+            {
+                var totalPages = 1;
+                if (element as MultiPageElement != null)
+                    totalPages = ((MultiPageElement) element).PreRender(renderData);
+                else if (element as MultiPageAreaElement != null)
+                    totalPages = ((MultiPageAreaElement)element).PreRender(renderData);
+                else if (element as SinglePageAreaElement != null)
+                    ((SinglePageAreaElement)element).Render(renderData);
+                else
+                    throw new ArgumentOutOfRangeException(string.Format("Unknown type {0} for pane to render.", element.GetType().Name));
+
+                if (totalPages > maxTotalPages)
+                    maxTotalPages = totalPages;
+            }
+            return maxTotalPages;
         }
 
         internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo, Section section)
