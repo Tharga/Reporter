@@ -204,8 +204,9 @@ namespace Tharga.Reporter.Engine
                 if (section.Header != null)
                 {
                     var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
                     //postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo, section));
-                    postRendering.Add(() => section.Header.Render(renderData));
+                    postRendering.Add(() => section.Header.Render(renderDataHeader));
 
                     if (Debug)
                     {
@@ -217,8 +218,9 @@ namespace Tharga.Reporter.Engine
                 if (section.Footer != null)
                 {
                     var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
                     //postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo, section));
-                    postRendering.Add(() => section.Footer.Render(renderData));
+                    postRendering.Add(() => section.Footer.Render(renderDataFooter));
 
                     if (Debug)
                     {

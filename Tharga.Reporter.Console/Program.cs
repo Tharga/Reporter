@@ -55,6 +55,10 @@ namespace Tharga.Reporter.Console
             section.Pane.ElementList.Add(new Text { Value = "Bob Lablow" });
             section.Pane.ElementList.Add(new Image { Source = "http://smutty.com/ajax/tracking/out.php?pid=1275955" });
 
+            section.Header.ElementList.Add(new Image { Source = "http://smutty.so.clients.cdn13.com//media_smutty/d/e/n/t/b/dentinho-eduoi-9e266c.jpg" });
+
+            section.Footer.ElementList.Add(new Image { Source = "http://smutty.so.clients.cdn13.com//media_smutty/t/w/i/g/p/twigboy-01ns7-4014e7.jpg", Left="50%" });
+
             var template = new Template(section);
 
             //Old way
