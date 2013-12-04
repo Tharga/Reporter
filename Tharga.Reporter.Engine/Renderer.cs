@@ -23,6 +23,7 @@ namespace Tharga.Reporter.Engine
         private DocumentData _documentData;
         private Template _template;
         private int _printPageCount;
+        private bool _preRendered;
 
         public Template Template { get { return _template; } set { _template = value; } }
         public DocumentProperties DocumentProperties { get { return _documentProperties; } set { _documentProperties = value; } }
@@ -39,14 +40,8 @@ namespace Tharga.Reporter.Engine
 
         public async Task<byte[]> GetPDFDocumentAsync()
         {
-            //TODO: Check if pre-render has already been performed
-            var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
-            
-            if (hasMultiPageElements)
-            {
-                var pdfDocumentPre = CreatePDFDocument();
-                RenderPDFDocument(pdfDocumentPre, true);
-            }
+            PreRender();
+
             var pdfDocument = CreatePDFDocument();
             RenderPDFDocument(pdfDocument, false);
 
@@ -57,6 +52,9 @@ namespace Tharga.Reporter.Engine
 
         private void RenderPDFDocument(PdfDocument pdfDocument, bool preRender)
         {
+            if ( _preRendered && preRender)
+                throw new InvalidOperationException("Prerender has already been performed.");
+
             var doc = GetDocument(preRender);
 
             var docRenderer = new DocumentRenderer(doc);
@@ -79,6 +77,9 @@ namespace Tharga.Reporter.Engine
 
                 DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height), preRender, ii);
             }
+
+            if (preRender)
+                _preRendered = true;
         }
 
         private PdfDocument CreatePDFDocument()
@@ -125,13 +126,7 @@ namespace Tharga.Reporter.Engine
         {
             _printPageCount = 0;
 
-            //TODO: Check if pre-render has already been performed
-            var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
-            if (hasMultiPageElements)
-            {
-                var pdfDocument = CreatePDFDocument();
-                RenderPDFDocument(pdfDocument, true);
-            }
+            PreRender();
 
             var doc = GetDocument(false);
 
@@ -145,6 +140,19 @@ namespace Tharga.Reporter.Engine
             printDocument.Renderer = docRenderer;
             printDocument.PrinterSettings = printerSettings;
             printDocument.Print();
+        }
+
+        private void PreRender()
+        {
+            if (!_preRendered)
+            {
+                var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
+                if (hasMultiPageElements)
+                {
+                    var pdfDocument = CreatePDFDocument();
+                    RenderPDFDocument(pdfDocument, true);
+                }
+            }
         }
 
         void printDocument_PrintPage(object sender, PrintPageEventArgs e)

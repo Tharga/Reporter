@@ -383,20 +383,20 @@ namespace Tharga.Reporter.Console
 
             var sw = new Stopwatch();
 
-            ////Old way
-            //sw.Start();
-            //var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
-            //Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
-            ////ExecuteFile(oldBytes);
+            //Old way
+            sw.Start();
+            var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
+            Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            ExecuteFile(oldBytes);
 
-            ////New way
+            //New way
             var renderer = new Renderer { Template = template, Debug = true };
 
-            //sw.Reset();
-            //sw.Start();
-            //var bytes = await renderer.GetPDFDocumentAsync();
-            //Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
-            ////ExecuteFile(bytes);
+            sw.Reset();
+            sw.Start();
+            var bytes = await renderer.GetPDFDocumentAsync();
+            Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            ExecuteFile(bytes);
 
             //Directly to printer
             var printerSettings = new PrinterSettings
