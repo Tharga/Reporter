@@ -45,6 +45,36 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         public Alignment TextAlignment { get { return _textAlignment ?? _defaultTextAlignmen; } set { _textAlignment = value; } }
 
+        protected internal override void Render(IRenderData renderData)
+        {
+            var bounds = GetBounds(renderData.ParentBounds);
+
+            var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+
+            var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
+            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+
+            var offset = 0D;
+            if (TextAlignment == Alignment.Right)
+            {
+                offset = bounds.Width - textSize.Width;
+            }
+
+            renderData.ElementBounds = new XRect(bounds.Left + offset, bounds.Y, textSize.Width, textSize.Height);
+
+            if (renderData.IncludeBackground || !IsBackground)
+            {
+                renderData.Gfx.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
+
+                if (renderData.Debug)
+                {
+                    var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
+                    renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
+                }
+            }
+        }
+
         protected internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
                                                 DocumentData documentData, out XRect elementBounds, bool includeBackground,
                                                 bool debug, PageNumberInfo pageNumberInfo, Section section)
@@ -77,7 +107,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         gfx.DrawRectangle(debugPen, elementBounds.Left, elementBounds.Top, textSize.Width, textSize.Height);
                     }
                 }
-                //TODO: Manually create line feed so that text can fit inside a box. (Spanning on multipler pages)
             }
         }
 

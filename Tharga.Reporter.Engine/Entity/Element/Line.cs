@@ -6,30 +6,6 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public interface IRenderData
-    {
-        XRect ParentBounds { get; }
-        XRect ElementBounds { get; set; }
-        bool IncludeBackground { get; }
-        XGraphics Gfx { get; }
-    }
-
-    class RenderData : IRenderData
-    {
-        private readonly XGraphics _gfx;
-
-        public RenderData(XGraphics gfx, XRect parentBounds)
-        {
-            _gfx = gfx;
-            ParentBounds = parentBounds;
-        }
-
-        public XRect ParentBounds { get; private set; }
-        public XRect ElementBounds { get; set; }
-        public bool IncludeBackground { get; private set; }
-        public XGraphics Gfx { get { return _gfx; } }
-    }
-
     public sealed class Line : SinglePageAreaElement
     {
         private readonly Color _defaultColor = Color.Black;

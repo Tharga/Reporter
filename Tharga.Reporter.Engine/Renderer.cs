@@ -8,6 +8,7 @@ using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Engine
@@ -16,10 +17,12 @@ namespace Tharga.Reporter.Engine
     {
         //TODO: Lock theese object when rendering starts
         private DocumentProperties _documentProperties;
+        private DocumentData _documentData;
         private Template _template;
 
         public Template Template { get { return _template; } set { _template = value; } }
         public DocumentProperties DocumentProperties { get { return _documentProperties; } set { _documentProperties = value; } }
+        public DocumentData DocumentData { get { return _documentData; } set { _documentData = value; } }
         public bool Debug { get; set; }
 
         //TODO: Async
@@ -156,13 +159,14 @@ namespace Tharga.Reporter.Engine
 
         private void DoRenderStuff(XGraphics gfx, XRect size)
         {
-            var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Orange), 2);
+            var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
             var debugFont = new XFont("Verdana", 10);
-            var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Orange));
+            var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Gray));
 
             var postRendering = new List<Action>();
 
             var pageNumber = 0;
+            var pageNumberInfo = new PageNumberInfo(++pageNumber);
             foreach (var section in _template.SectionList)
             {
                 var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height),
@@ -191,7 +195,7 @@ namespace Tharga.Reporter.Engine
                 var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
                 var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
 
-                var renderData = new RenderData(gfx, paneBounds);
+                var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, Debug);
 
                 //needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug, pageNumberInfo, section);
                 section.Pane.Render(renderData);
@@ -227,17 +231,6 @@ namespace Tharga.Reporter.Engine
             {
                 action();
             }
-
-            ////TODO: Put stuff from template here
-            //gfx.DrawLine(new XPen(XColor.FromArgb(128, 0, 0, 255)), 0, 0, 100, 100);
-
-            //var f = new XPoint(new XUnit(100, XGraphicsUnit.Millimeter), new XUnit(200, XGraphicsUnit.Millimeter));
-            //var t = new XPoint(new XUnit(215, XGraphicsUnit.Millimeter), new XUnit(279, XGraphicsUnit.Millimeter));
-            //gfx.DrawLine(new XPen(XColor.FromArgb(128, 255, 0, 0)), f, t);
-
-            //var from = new XPoint(XUnit.Parse("1cm"), XUnit.Parse("1cm"));
-            //var to = new XPoint(XUnit.Parse("11cm"), XUnit.Parse("1cm"));
-            //gfx.DrawLine(new XPen(XColor.FromArgb(128, 255, 0, 0)), @from, to);
         }
 
         private Document GetDocument()
@@ -246,35 +239,9 @@ namespace Tharga.Reporter.Engine
 
             foreach (var section in _template.SectionList)
             {
+                //TODO: Count the number of pages needed and add them here
                 var sec = doc.AddSection();
-                foreach (var element in section.Pane.ElementList)
-                {
-                    if (element.GetType() == typeof(Entity.Element.Text))
-                    {
-                        var textElement = element as Entity.Element.Text;
-
-                        var para = sec.AddParagraph();
-                        para.AddText(textElement.Value);
-                    }
-                }
             }
-
-
-            //var sec = doc.AddSection();
-            //var para = sec.AddParagraph();
-            //para.Format.Alignment = ParagraphAlignment.Justify;
-            //para.Format.Font.Name = "Times New Roman";
-            //para.Format.Font.Size = 12;
-            //para.Format.Font.Color = Colors.DarkGray;
-            //para.AddText("Duisism odigna acipsum delesenisl ");
-            //para.AddFormattedText("ullum in velenit", TextFormat.Bold);
-            //para.AddText(" ipit iurero dolum zzriliquisis nit wis dolore vel et nonsequipit, velendigna " +
-            //             "auguercilit lor se dipisl duismod tatem zzrit at laore magna feummod oloborting ea con vel " +
-            //             "essit augiati onsequat luptat nos diatum vel ullum illummy nonsent nit ipis et nonsequis " +
-            //             "niation utpat. Odolobor augait et non etueril landre min ut ulla feugiam commodo lortie ex " +
-            //             "essent augait el ing eumsan hendre feugait prat augiatem amconul laoreet. ≤≥≈≠");
-            //para.Format.Borders.Distance = "5pt";
-            //para.Format.Borders.Color = Colors.Gold;
 
             return doc;
         }

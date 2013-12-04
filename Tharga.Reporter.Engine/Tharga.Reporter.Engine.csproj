@@ -79,10 +79,12 @@
     <Compile Include="Entity\Element\Extensions\ElementExtensions.cs" />
     <Compile Include="Entity\Element\Extensions\FontExtensions.cs" />
     <Compile Include="Entity\Element\Image.cs" />
+    <Compile Include="Entity\Element\IRenderData.cs" />
     <Compile Include="Entity\Element\Line.cs" />
     <Compile Include="Entity\Element\Base\MultiPageAreaElement.cs" />
     <Compile Include="Entity\Element\Rectangle.cs" />
     <Compile Include="Entity\Element\Base\SinglePageAreaElement.cs" />
+    <Compile Include="Entity\Element\RenderData.cs" />
     <Compile Include="Entity\Element\Table.cs" />
     <Compile Include="Entity\Element\TableColumn.cs" />
     <Compile Include="Entity\Element\Text.cs" />
@@ -92,7 +94,6 @@
     <Compile Include="Entity\SectionList.cs" />
     <Compile Include="Entity\SkipLine.cs" />
     <Compile Include="ExteptionExtension.cs" />
-    <Compile Include="Printing.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="Rendering.cs" />
     <Compile Include="Entity\Element\Base\AreaElement.cs" />

@@ -53,10 +53,5 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             return text;
         }
-
-        protected internal override void Render(IRenderData renderData)
-        {
-            
-        }
     }
 }
