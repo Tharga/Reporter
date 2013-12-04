@@ -53,11 +53,11 @@ namespace Tharga.Reporter.Console
             section.Pane.ElementList.Add(new Line { Left = "10cm", Thickness = "1mm", Color = Color.MidnightBlue });
             section.Pane.ElementList.Add(new Line { Top = "10cm", Thickness = "1mm", Color = Color.MidnightBlue });
             section.Pane.ElementList.Add(new Text { Value = "Bob Lablow" });
-            section.Pane.ElementList.Add(new Image { Source = "http://smutty.com/ajax/tracking/out.php?pid=1275955" });
+            section.Pane.ElementList.Add(new Image { Source = "http://skalleberg.se/wp-content/uploads/2013/10/bildspel3-840x270.png" });
 
-            section.Header.ElementList.Add(new Image { Source = "http://smutty.so.clients.cdn13.com//media_smutty/d/e/n/t/b/dentinho-eduoi-9e266c.jpg" });
+            section.Header.ElementList.Add(new Image { Source = "http://skalleberg.se/wp-content/uploads/2013/10/bildspel2-840x270.png" });
 
-            section.Footer.ElementList.Add(new Image { Source = "http://smutty.so.clients.cdn13.com//media_smutty/t/w/i/g/p/twigboy-01ns7-4014e7.jpg", Left="50%" });
+            section.Footer.ElementList.Add(new Image { Source = "http://skalleberg.se/wp-content/uploads/2013/10/bildspel-1-840x270.png", Left = "50%" });
 
             var template = new Template(section);
 
