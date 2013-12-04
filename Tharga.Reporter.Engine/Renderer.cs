@@ -118,13 +118,24 @@ namespace Tharga.Reporter.Engine
 
         void printDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            var xSize = GetSize(e);
-            var scale = GetScale(xSize);
+            var rawSize = GetSize(e);
+            var unitSize = GetSize(rawSize);
+            var scale = GetScale(unitSize);
 
-            var gfx = XGraphics.FromGraphics(e.Graphics, xSize, XGraphicsUnit.Point);
+            var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
             gfx.ScaleTransform(scale);
 
-            DoRenderStuff(gfx, new XRect(0, 0, xSize.Width, xSize.Height));
+            DoRenderStuff(gfx, new XRect(unitSize));
+        }
+
+        private static XSize GetSize(XSize rawSize)
+        {
+            var wm = PrinterUnitConvert.Convert(rawSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter)/100;
+            var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
+            var hm = PrinterUnitConvert.Convert(rawSize.Height, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter)/100;
+            var hx = new XUnit(hm, XGraphicsUnit.Millimeter);
+            var unitSize = new XSize(wx, hx);
+            return unitSize;
         }
 
         private static double GetScale(XSize xSize)
@@ -145,7 +156,7 @@ namespace Tharga.Reporter.Engine
 
         private void DoRenderStuff(XGraphics gfx, XRect size)
         {
-            var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Orange), 0.1);
+            var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Orange), 2);
             var debugFont = new XFont("Verdana", 10);
             var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Orange));
 

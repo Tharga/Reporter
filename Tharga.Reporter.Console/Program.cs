@@ -49,7 +49,9 @@ namespace Tharga.Reporter.Console
             section.Header.Height = "5cm";
             section.Footer.Height = "1cm";
 
-            section.Pane.ElementList.Add(new Line {});
+            section.Pane.ElementList.Add(new Line { Thickness = "1mm", Color = Color.MidnightBlue });
+            section.Pane.ElementList.Add(new Line { Left = "10cm", Thickness = "1mm", Color = Color.MidnightBlue });
+            section.Pane.ElementList.Add(new Line { Top = "10cm", Thickness = "1mm", Color = Color.MidnightBlue });
             section.Pane.ElementList.Add(new Text { Value = "Bob Lablow" });
 
             var template = new Template(section);
