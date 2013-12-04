@@ -231,6 +231,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
+        protected internal override bool Render()
+        {
+            throw new NotImplementedException();
+        }
+
         private void RenderBorder(XRect elementBounds, XGraphics gfx, XSize headerSize)
         {
             if (ContentBorderColor != null || ContentBackgroundColor != null)

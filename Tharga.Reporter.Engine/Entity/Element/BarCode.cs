@@ -59,6 +59,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             imageData.Dispose();
         }
 
+        protected internal override void Render(IRenderData renderData)
+        {
+            throw new NotImplementedException();
+        }
+
         private string GetCode(DocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             //if (!string.IsNullOrEmpty(HideValue))

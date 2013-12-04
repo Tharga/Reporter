@@ -77,6 +77,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return needMorePages;
         }
 
+        protected internal override bool Render()
+        {
+            throw new NotImplementedException();
+        }
+
         private bool RenderChildren(PdfPage page, DocumentData documentData, XRect bounds, bool background, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var needMorePages = false;

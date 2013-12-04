@@ -26,6 +26,39 @@ namespace Tharga.Reporter.Engine.Entity.Area
                 ((MultiPageAreaElement)element).ClearRenderPointer();
         }
 
+        internal bool Render(IRenderData renderData)
+        {
+            var needAnotherPage = false;
+            foreach (var element in _elementList)
+            {
+                XRect bnd;
+                if (element as MultiPageElement != null)
+                {
+                    //var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
+                    var needMore = ((MultiPageElement) element).Render();
+                    if (needMore)
+                        needAnotherPage = true;
+                }
+                else if (element as MultiPageAreaElement != null)
+                {
+                    //var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
+                    var needMore = ((MultiPageAreaElement)element).Render();
+                    if (needMore)
+                        needAnotherPage = true;
+                }
+                else if (element as SinglePageAreaElement != null)
+                {
+                    //((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
+                    ((SinglePageAreaElement)element).Render(renderData);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException(string.Format("Unknown type {0} for pane to render.", element.GetType().Name));
+                }
+            }
+            return needAnotherPage;
+        }
+
         internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var needAnotherPage = false;

@@ -121,6 +121,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
+        protected internal override bool Render()
+        {
+            throw new NotImplementedException();
+        }
+
         private string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             if (!string.IsNullOrEmpty(HideValue))

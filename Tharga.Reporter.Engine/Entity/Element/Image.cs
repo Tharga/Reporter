@@ -39,6 +39,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             imageData.Dispose();
         }
 
+        protected internal override void Render(IRenderData renderData)
+        {
+            throw new NotImplementedException();
+        }
+
         private static XRect GetImageBounds(System.Drawing.Image imageData, XRect bounds)
         {
             var imageBounds = bounds;

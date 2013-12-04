@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing.Printing;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
@@ -7,6 +8,7 @@ using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Engine
 {
@@ -143,7 +145,13 @@ namespace Tharga.Reporter.Engine
 
         private void DoRenderStuff(XGraphics gfx, XRect size)
         {
+            var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Orange), 0.1);
+            var debugFont = new XFont("Verdana", 10);
+            var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Orange));
 
+            var postRendering = new List<Action>();
+
+            var pageNumber = 0;
             foreach (var section in _template.SectionList)
             {
                 var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height),
@@ -151,11 +159,7 @@ namespace Tharga.Reporter.Engine
 
                 if (Debug)
                 {
-                    var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.1);
-                    var debugFont = new XFont("Verdana", 10);
-                    var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Gray));
-
-                    var sectionName = section.Name ?? "Unnamed section";
+                    var sectionName = string.IsNullOrEmpty(section.Name) ? "Unnamed section" : section.Name;
                     var textSize = gfx.MeasureString(sectionName, debugFont);
                     gfx.DrawString(sectionName, debugFont, debugBrush, 0, textSize.Height);
 
@@ -171,6 +175,46 @@ namespace Tharga.Reporter.Engine
                     //Bottom margin
                     gfx.DrawLine(debugPen, 0, sectionBounds.Bottom, size.Width, sectionBounds.Bottom);
                 }
+
+                var headerHeight = section.Header.Height.GetXUnitValue(sectionBounds.Height);
+                var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
+                var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
+
+                var renderData = new RenderData(gfx, paneBounds);
+
+                //needAnotherPage = section.Pane.Render(page, paneBounds, _documentData, _background, _debug, pageNumberInfo, section);
+                section.Pane.Render(renderData);
+
+                //Header
+                if (section.Header != null)
+                {
+                    var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+                    //postRendering.Add(() => section.Header.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo, section));
+                    postRendering.Add(() => section.Header.Render(renderData));
+
+                    if (Debug)
+                    {
+                        gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
+                    }
+                }
+
+                //Footer
+                if (section.Footer != null)
+                {
+                    var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+                    //postRendering.Add(() => section.Footer.Render(page, bounds, _documentData, _background, _debug, pageNumberInfo, section));
+                    postRendering.Add(() => section.Footer.Render(renderData));
+
+                    if (Debug)
+                    {
+                        gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
+                    }
+                }
+            }
+
+            foreach (var action in postRendering)
+            {
+                action();
             }
 
             ////TODO: Put stuff from template here

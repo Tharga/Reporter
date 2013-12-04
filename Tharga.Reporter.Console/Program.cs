@@ -45,17 +45,25 @@ namespace Tharga.Reporter.Console
             var section = new Section();
 
             section.Margin = new UnitRectangle {Left = "1cm", Top = "2cm", Right = "3cm", Bottom = "4cm"};
+
+            section.Header.Height = "5cm";
+            section.Footer.Height = "1cm";
+
             section.Pane.ElementList.Add(new Line {});
+            section.Pane.ElementList.Add(new Text { Value = "Bob Lablow" });
 
             var template = new Template(section);
 
+            //Old way
             var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
             ExecuteFile(oldBytes);
 
+            //New way
             var renderer = new Renderer{ Template = template, Debug = true };
             var bytes = renderer.GetPDFDocument();
             ExecuteFile(bytes);
 
+            //Directly to printer
             var printerSettings = new PrinterSettings
                 {
                     PrinterName = "Microsoft XPS Document Writer",

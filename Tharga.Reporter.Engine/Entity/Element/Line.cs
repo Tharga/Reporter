@@ -6,6 +6,30 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
+    public interface IRenderData
+    {
+        XRect ParentBounds { get; }
+        XRect ElementBounds { get; set; }
+        bool IncludeBackground { get; }
+        XGraphics Gfx { get; }
+    }
+
+    class RenderData : IRenderData
+    {
+        private readonly XGraphics _gfx;
+
+        public RenderData(XGraphics gfx, XRect parentBounds)
+        {
+            _gfx = gfx;
+            ParentBounds = parentBounds;
+        }
+
+        public XRect ParentBounds { get; private set; }
+        public XRect ElementBounds { get; set; }
+        public bool IncludeBackground { get; private set; }
+        public XGraphics Gfx { get { return _gfx; } }
+    }
+
     public sealed class Line : SinglePageAreaElement
     {
         private readonly Color _defaultColor = Color.Black;
@@ -30,6 +54,22 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                     gfx.DrawLine(pen, elementBounds.Left, elementBounds.Top, elementBounds.Right, elementBounds.Bottom);
                 }
+            }
+        }
+
+        protected internal override void Render(IRenderData renderData)
+        {
+            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+            if (renderData.IncludeBackground || !IsBackground)
+            {
+                //using (var gfx = XGraphics.FromPdfPage(page))
+                //{
+                    var borderWidth = UnitValue.Parse(Thickness);
+                    var pen = new XPen(XColor.FromArgb(Color), borderWidth.GetXUnitValue(0));
+
+                    renderData.Gfx.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);
+                //}
             }
         }
 

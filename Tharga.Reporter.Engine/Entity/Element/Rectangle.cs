@@ -46,6 +46,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
+        protected internal override void Render(IRenderData renderData)
+        {
+            throw new System.NotImplementedException();
+        }
+
         internal override XmlElement ToXme()
         {
             var xme = base.ToXme();
