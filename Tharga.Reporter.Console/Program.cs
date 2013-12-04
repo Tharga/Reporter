@@ -61,7 +61,7 @@ namespace Tharga.Reporter.Console
             ExecuteFile(oldBytes);
 
             //New way
-            var renderer = new Renderer{ Template = template, Debug = true };
+            var renderer = new Renderer{ Template = template, Debug = true};
             var bytes = renderer.GetPDFDocument();
             ExecuteFile(bytes);
 

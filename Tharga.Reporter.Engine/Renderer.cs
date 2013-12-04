@@ -81,10 +81,10 @@ namespace Tharga.Reporter.Engine
                 var page = pdfDocument.AddPage();
 
                 //TODO: Use printer settings information to get this value (Same as when the document is actually printed)
-                page.Size = PdfSharp.PageSize.Letter;
-                //page.Size = PdfSharp.PageSize.A4;
+                //page.Size = PdfSharp.PageSize.Letter;
+                page.Size = PdfSharp.PageSize.A4;
 
-                XGraphics gfx = XGraphics.FromPdfPage(page);
+                var gfx = XGraphics.FromPdfPage(page);
                 // HACK²
                 gfx.MUH = PdfFontEncoding.Unicode;
                 gfx.MFEH = PdfFontEmbedding.Default;
