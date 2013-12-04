@@ -383,33 +383,33 @@ namespace Tharga.Reporter.Console
 
             var sw = new Stopwatch();
 
-            //Old way
-            sw.Start();
-            var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
-            Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
-            //ExecuteFile(oldBytes);
+            ////Old way
+            //sw.Start();
+            //var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
+            //Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            ////ExecuteFile(oldBytes);
 
-            //New way
+            ////New way
             var renderer = new Renderer { Template = template, Debug = true };
-
-            sw.Reset();
-            sw.Start();
-            var bytes = await renderer.GetPDFDocumentAsync();
-            Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(bytes);
-
-            ////Directly to printer
-            //var printerSettings = new PrinterSettings
-            //{
-            //    PrinterName = "Microsoft XPS Document Writer",
-            //    PrintToFile = true,
-            //    PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
-            //};
 
             //sw.Reset();
             //sw.Start();
-            //renderer.Print(printerSettings);
-            //Debug.WriteLine("Print: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            //var bytes = await renderer.GetPDFDocumentAsync();
+            //Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            ////ExecuteFile(bytes);
+
+            //Directly to printer
+            var printerSettings = new PrinterSettings
+            {
+                PrinterName = "Microsoft XPS Document Writer",
+                PrintToFile = true,
+                PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
+            };
+
+            sw.Reset();
+            sw.Start();
+            await renderer.PrintAsync(printerSettings);
+            Debug.WriteLine("Print: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
         }
 
         public static void Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking()

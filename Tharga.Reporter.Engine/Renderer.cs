@@ -22,6 +22,7 @@ namespace Tharga.Reporter.Engine
         private DocumentProperties _documentProperties;
         private DocumentData _documentData;
         private Template _template;
+        private int _printPageCount;
 
         public Template Template { get { return _template; } set { _template = value; } }
         public DocumentProperties DocumentProperties { get { return _documentProperties; } set { _documentProperties = value; } }
@@ -38,14 +39,15 @@ namespace Tharga.Reporter.Engine
 
         public async Task<byte[]> GetPDFDocumentAsync()
         {
+            //TODO: Check if pre-render has already been performed
             var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
-
-            var pdfDocument = CreatePDFDocument();
+            
             if (hasMultiPageElements)
             {
-                RenderPDFDocument(pdfDocument, true);
-                pdfDocument = CreatePDFDocument();
+                var pdfDocumentPre = CreatePDFDocument();
+                RenderPDFDocument(pdfDocumentPre, true);
             }
+            var pdfDocument = CreatePDFDocument();
             RenderPDFDocument(pdfDocument, false);
 
             var memStream = new System.IO.MemoryStream();
@@ -121,7 +123,17 @@ namespace Tharga.Reporter.Engine
 
         public async Task PrintAsync(PrinterSettings printerSettings)
         {
-            var doc = GetDocument(true);
+            _printPageCount = 0;
+
+            //TODO: Check if pre-render has already been performed
+            var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
+            if (hasMultiPageElements)
+            {
+                var pdfDocument = CreatePDFDocument();
+                RenderPDFDocument(pdfDocument, true);
+            }
+
+            var doc = GetDocument(false);
 
             var docRenderer = new DocumentRenderer(doc);
             docRenderer.PrepareDocument();
@@ -145,7 +157,7 @@ namespace Tharga.Reporter.Engine
             gfx.ScaleTransform(scale);
 
             //TODO: Provide correct rendering method
-            DoRenderStuff(gfx, new XRect(unitSize), true, 1);
+            DoRenderStuff(gfx, new XRect(unitSize), false, _printPageCount++);
         }
 
         private static XSize GetSize(XSize rawSize)
