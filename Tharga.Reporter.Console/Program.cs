@@ -23,9 +23,9 @@ namespace Tharga.Reporter.Console
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
-            Multiple_sections();
+            //Multiple_sections();
             //Multipage_PDF_document_by_section();
-            //Multipage_PDF_by_spanning_text();
+            Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
@@ -458,12 +458,14 @@ namespace Tharga.Reporter.Console
 
             var template = new Template(section);
 
-            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray);
+            //var byteArray = Rendering.CreatePDFDocument(template, debug: true);
+            //ExecuteFile(byteArray);
 
-            //Render again should cause the same result
-            var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray2);
+            ////Render again should cause the same result
+            //var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
+            //ExecuteFile(byteArray2);
+
+            SampleOutput(template, new DocumentData());
         }
 
         private static string GetRandomText()

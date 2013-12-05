@@ -203,8 +203,7 @@ namespace Tharga.Reporter.Engine
 
             var postRendering = new List<Action>();
 
-            var pageNumber = 0;
-            var pageNumberInfo = new PageNumberInfo(++pageNumber);
+            var pageNumberInfo = new PageNumberInfo(page + 1);
 
             var section = GetSection(preRender, page);
             section.Pane.ClearRenderPointers();
