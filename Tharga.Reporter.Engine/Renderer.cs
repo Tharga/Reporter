@@ -40,16 +40,15 @@ namespace Tharga.Reporter.Engine
 
         #region Public access methods
 
-
-        public async Task CreatePdfAsync(string fileName, PageSize pageSize = PageSize.A4)
+        public void CreatePdfFile(string fileName, PageSize pageSize = PageSize.A4)
         {
             if (System.IO.File.Exists(fileName))
                 throw new InvalidOperationException("The file already exists.").AddData("fileName", fileName);
 
-            System.IO.File.WriteAllBytes(fileName, await GetPdfDocumentAsync(pageSize));
+            System.IO.File.WriteAllBytes(fileName, GetPdfBinary(pageSize));
         }
 
-        public async Task<byte[]> GetPdfDocumentAsync(PageSize pageSize = PageSize.A4)
+        public byte[] GetPdfBinary(PageSize pageSize = PageSize.A4)
         {
             PreRender(pageSize);
 
@@ -61,7 +60,7 @@ namespace Tharga.Reporter.Engine
             return memStream.ToArray();
         }
 
-        public async Task PrintAsync(PrinterSettings printerSettings)
+        public void Print(PrinterSettings printerSettings)
         {
             _printPageCount = 0;
 

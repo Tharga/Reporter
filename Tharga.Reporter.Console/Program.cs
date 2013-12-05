@@ -41,7 +41,7 @@ namespace Tharga.Reporter.Console
             section.Pane.ElementList.Add(new Text { Value = "Text on background", Top = "1cm", Left="50%", IsBackground = true });
             section.Pane.ElementList.Add(new Text { Value = "Text on foreground", Top = "1cm", IsBackground = false });
             var template = new Template(section);
-            await SampleOutput(template, null,false);
+            SampleOutput(template, null,false);
         }
 
         private async static void TextButNoData()
@@ -49,7 +49,7 @@ namespace Tharga.Reporter.Console
             var section = new Section();
             section.Pane.ElementList.Add(new Text {Value = "Data: {SomeData}"});
             var template = new Template(section);
-            await SampleOutput(template, null);
+            SampleOutput(template, null);
         }
 
         private async static void MultiPageAreaElement_Sample()
@@ -69,7 +69,7 @@ namespace Tharga.Reporter.Console
             var documentData = new DocumentData();
             documentData.Add("SomeData", "Reapadda");
 
-            await SampleOutput(template, documentData);
+            SampleOutput(template, documentData);
         }
 
         private async static void SinglePageAreaElement_Sample()
@@ -102,10 +102,10 @@ namespace Tharga.Reporter.Console
             var documentData = new DocumentData();
             documentData.Add("SomeData", "Reapadda");
 
-            await SampleOutput(template, documentData);
+            SampleOutput(template, documentData);
         }
 
-        private static async Task SampleOutput(Template template, DocumentData documentData, bool useBackground = true)
+        private static void SampleOutput(Template template, DocumentData documentData, bool useBackground = true)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace Tharga.Reporter.Console
                 //New way
                 stopWatch.Reset();
                 stopWatch.Start();
-                var bytes = await renderer.GetPdfDocumentAsync();
+                var bytes = renderer.GetPdfBinary();
                 System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
                 ExecuteFile(bytes);
 
@@ -136,7 +136,7 @@ namespace Tharga.Reporter.Console
                     };
                 stopWatch.Reset();
                 stopWatch.Start();
-                await renderer.PrintAsync(printerSettings);
+                renderer.Print(printerSettings);
                 System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             }
             catch (Exception exception)
@@ -294,7 +294,7 @@ namespace Tharga.Reporter.Console
             //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
             //ExecuteFile(byteArray);
 
-            await SampleOutput(template, documentData);
+            SampleOutput(template, documentData);
         }
 
         private async static void Create_PDF_document_with_basic_table()
@@ -318,7 +318,7 @@ namespace Tharga.Reporter.Console
 
             var template = new Template(section);
 
-            await SampleOutput(template, documentData);
+            SampleOutput(template, documentData);
         }
 
         //private static void Create_PDF_document_from_template()
@@ -372,7 +372,7 @@ namespace Tharga.Reporter.Console
         private async static void Blank_default_PDF_document()
         {
             var template = new Template(new Section());
-            await SampleOutput(template, null);
+            SampleOutput(template, null);
         }
 
         private async static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
@@ -563,7 +563,7 @@ namespace Tharga.Reporter.Console
             section3.Pane.ElementList.Add(new Text { Value = "CCC" });
             template.SectionList.Add(section3);
 
-            await SampleOutput(template, new DocumentData());
+            SampleOutput(template, new DocumentData());
         }
 
         private static void ExecuteFile(byte[] byteArray)
