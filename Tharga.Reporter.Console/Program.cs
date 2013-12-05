@@ -5,6 +5,7 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using PdfSharp;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -103,7 +104,7 @@ namespace Tharga.Reporter.Console
             //New way
             stopWatch.Reset();
             stopWatch.Start();
-            var bytes = await renderer.GetPDFDocumentAsync();
+            var bytes = await renderer.GetPDFDocumentAsync(PageSize.A4);
             Debug.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             ExecuteFile(bytes);
 

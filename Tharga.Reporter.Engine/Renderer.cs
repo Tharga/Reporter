@@ -24,25 +24,23 @@ namespace Tharga.Reporter.Engine
         private DocumentData _documentData;
         private Template _template;
         private int _printPageCount;
-        private bool _preRendered;
+        private bool _preRendered; //TODO: Have a record on the data used for pre-rendering. For instance pageSize (A4 or Letter), _template and _documentData.
 
         public Template Template { get { return _template; } set { _template = value; } }
         public DocumentProperties DocumentProperties { get { return _documentProperties; } set { _documentProperties = value; } }
         public DocumentData DocumentData { get { return _documentData; } set { _documentData = value; } }
         public bool Debug { get; set; }
 
-        public async Task CreatePdf(string fileName)
+        public async Task CreatePdf(string fileName, PageSize pageSize = PageSize.A4)
         {
             if (System.IO.File.Exists(fileName))
                 throw new InvalidOperationException("The file already exists.").AddData("fileName", fileName);
 
-            System.IO.File.WriteAllBytes(fileName, await GetPDFDocumentAsync());
+            System.IO.File.WriteAllBytes(fileName, await GetPDFDocumentAsync(pageSize));
         }
 
-        public async Task<byte[]> GetPDFDocumentAsync()
+        public async Task<byte[]> GetPDFDocumentAsync(PageSize pageSize = PageSize.A4)
         {
-            var pageSize = PageSize.A4;
-
             PreRender(pageSize);
 
             var pdfDocument = CreatePDFDocument();
