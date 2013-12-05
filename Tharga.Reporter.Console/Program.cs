@@ -19,7 +19,8 @@ namespace Tharga.Reporter.Console
         static void Main(string[] args)
         {
             //Blank_default_PDF_document();
-            TextButNoData();
+            //TextButNoData();
+            BackgroundObjectsOrNot();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
@@ -32,6 +33,15 @@ namespace Tharga.Reporter.Console
             //Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //SkallebergSample1();
+        }
+
+        private async static void BackgroundObjectsOrNot()
+        {
+            var section = new Section();
+            section.Pane.ElementList.Add(new Text { Value = "Text on background", Top = "1cm", Left="50%", IsBackground = true });
+            section.Pane.ElementList.Add(new Text { Value = "Text on foreground", Top = "1cm", IsBackground = false });
+            var template = new Template(section);
+            await SampleOutput(template, null,false);
         }
 
         private async static void TextButNoData()
@@ -95,18 +105,18 @@ namespace Tharga.Reporter.Console
             await SampleOutput(template, documentData);
         }
 
-        private static async Task SampleOutput(Template template, DocumentData documentData)
+        private static async Task SampleOutput(Template template, DocumentData documentData, bool useBackground = true)
         {
             try
             {
                 //Prep
-                var renderer = new Renderer(template, documentData, null, true);
+                var renderer = new Renderer(template, documentData, useBackground, null, true);
                 var stopWatch = new Stopwatch();
 
                 //Old way
                 stopWatch.Reset();
                 stopWatch.Start();
-                var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
+                var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData, background: useBackground);
                 System.Console.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
                 ExecuteFile(oldBytes);
 

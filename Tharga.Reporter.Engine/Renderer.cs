@@ -11,6 +11,7 @@ using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Engine.Entity.Util;
 using Section = Tharga.Reporter.Engine.Entity.Section;
 
 namespace Tharga.Reporter.Engine
@@ -21,16 +22,18 @@ namespace Tharga.Reporter.Engine
 
         private readonly Template _template;
         private readonly DocumentData _documentData;
+        private readonly bool _includeBackgroundObjects;
         private readonly DocumentProperties _documentProperties;
         private readonly bool _debug;
         
         private int _printPageCount;
         private bool _preRendered;
 
-        public Renderer(Template template, DocumentData documentData = null, DocumentProperties documentProperties = null, bool debug = false)
+        public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
         {
             _template = template;
             _documentData = documentData;
+            _includeBackgroundObjects = includeBackgroundObjects;
             _documentProperties = documentProperties;
             _debug = debug;
         }
@@ -221,8 +224,7 @@ namespace Tharga.Reporter.Engine
             var section = GetSection(preRender, page);
             section.Pane.ClearRenderPointers();
 
-            var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height),
-                                          section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
+            var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height), section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
 
             if (_debug)
             {
@@ -247,7 +249,7 @@ namespace Tharga.Reporter.Engine
             var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
             var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
 
-            var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debug);
+            var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debug, _includeBackgroundObjects);
 
             if (preRender)
             {
@@ -262,7 +264,7 @@ namespace Tharga.Reporter.Engine
                 if (section.Header != null)
                 {
                     var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debug);
+                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debug, _includeBackgroundObjects);
                     postRendering.Add(() => section.Header.Render(renderDataHeader, page));
 
                     if (_debug)
@@ -275,7 +277,7 @@ namespace Tharga.Reporter.Engine
                 if (section.Footer != null)
                 {
                     var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debug);
+                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debug, _includeBackgroundObjects);
                     postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
 
                     if (_debug)

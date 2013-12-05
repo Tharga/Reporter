@@ -5,6 +5,7 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Engine.Entity.Util;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
@@ -56,7 +57,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var bounds = GetBounds(renderData.ParentBounds);
 
-            var rd = new RenderData(renderData.Gfx, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug);
+            var rd = new RenderData(renderData.Gfx, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug, renderData.IncludeBackground);
             var pageCount = PreRenderChildren(rd);
 
             //TODO: Change the width and height to the actual area used
@@ -69,7 +70,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var bounds = GetBounds(renderData.ParentBounds);
             
-            var rd = new RenderData(renderData.Gfx, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug);
+            var rd = new RenderData(renderData.Gfx, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug,renderData.IncludeBackground);
             RenderChildren(rd, page);
 
             if (renderData.Debug)
