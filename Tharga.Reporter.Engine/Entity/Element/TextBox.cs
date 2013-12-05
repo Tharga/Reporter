@@ -213,7 +213,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var left = renderData.ElementBounds.Left;
             var top = renderData.ElementBounds.Top;
 
-            foreach (var line in _pageText[page])
+            foreach (var line in _pageText[page- renderData.Section.GetPageOffset()])
             {
                 renderData.Gfx.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
                 var newTextSize = renderData.Gfx.MeasureString(line, font, XStringFormats.TopLeft);

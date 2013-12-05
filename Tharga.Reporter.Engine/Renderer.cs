@@ -294,9 +294,11 @@ namespace Tharga.Reporter.Engine
                     foreach (var s in _template.SectionList)
                     {
                         tot += s.GetRenderPageCount();
-                        if (tot <= page + 1)
+                        if (tot >= page+1)
                         {
                             section = s;
+                            section.SetPageOffset(tot-s.GetRenderPageCount());
+                            break;
                         }
                     }
                 }

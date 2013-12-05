@@ -12,6 +12,7 @@ namespace Tharga.Reporter.Engine.Entity
         private string _name;
         private Font _defaultFont;
         private int? _renderPageCount = null;
+        private int? _pageOffset = null;
 
         public UnitRectangle Margin { get { return _margin ?? Margins.Create(UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0"), UnitValue.Parse("0")); } set { _margin = value; } }
         public Header Header { get; private set; }
@@ -100,6 +101,16 @@ namespace Tharga.Reporter.Engine.Entity
             }
 
             return section;
+        }
+
+        public int GetPageOffset()
+        {
+            return _pageOffset ?? 0;
+        }
+
+        public void SetPageOffset(int pageOffset)
+        {
+            _pageOffset = pageOffset;
         }
 
         internal void SetRenderPageCount(int renderPageCount)

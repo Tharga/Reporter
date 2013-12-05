@@ -534,7 +534,7 @@ namespace Tharga.Reporter.Console
 
             var section2 = new Section { Name = "Second" };
             section2.Margin = new UnitRectangle { Top = "2cm", Left = "2cm" };
-            section2.Pane.ElementList.Add(new Text { Value = "BBB" });
+            section2.Pane.ElementList.Add(new TextBox { Value = "BBB b BBB BBB BBB BBB BBB BBB BBB BBB BBB b b BBB b b BBB b b BBB BBB BBB BBB BBB b BBB BBB BBB BBB BBB BBB bbb bbb bbb BBB BBB BBB BBB BBB BBB BBB BBB b b b BBB BBB BBB BBB", Height = "1cm", Width="5cm" });
             template.SectionList.Add(section2);
 
             var section3 = new Section { Name = "Third" };
