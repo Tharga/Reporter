@@ -89,35 +89,42 @@ namespace Tharga.Reporter.Console
 
         private static async Task SampleOutput(Template template, DocumentData documentData)
         {
-            //Prep
-            var renderer = new Renderer {Template = template, Debug = true, DocumentData = documentData};
-            var stopWatch = new Stopwatch();
+            try
+            {
+                //Prep
+                var renderer = new Renderer {Template = template, Debug = true, DocumentData = documentData};
+                var stopWatch = new Stopwatch();
 
-            //Old way
-            stopWatch.Reset();
-            stopWatch.Start();
-            var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
-            Debug.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(oldBytes);
+                //Old way
+                stopWatch.Reset();
+                stopWatch.Start();
+                var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
+                System.Console.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                ExecuteFile(oldBytes);
 
-            //New way
-            stopWatch.Reset();
-            stopWatch.Start();
-            var bytes = await renderer.GetPDFDocumentAsync();
-            Debug.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(bytes);
+                //New way
+                stopWatch.Reset();
+                stopWatch.Start();
+                var bytes = await renderer.GetPDFDocumentAsync();
+                System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                ExecuteFile(bytes);
 
-            //Directly to printer
-            var printerSettings = new PrinterSettings
-                {
-                    PrinterName = "Microsoft XPS Document Writer",
-                    PrintToFile = true,
-                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-                };
-            stopWatch.Reset();
-            stopWatch.Start();
-            await renderer.PrintAsync(printerSettings);
-            Debug.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                //Directly to printer
+                var printerSettings = new PrinterSettings
+                    {
+                        PrinterName = "Microsoft XPS Document Writer",
+                        PrintToFile = true,
+                        PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+                    };
+                stopWatch.Reset();
+                stopWatch.Start();
+                await renderer.PrintAsync(printerSettings);
+                System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+            }
+            catch (Exception exception)
+            {
+                System.Console.WriteLine(exception.Message);
+            }
         }
 
         private static void SkallebergSample1()
@@ -270,7 +277,7 @@ namespace Tharga.Reporter.Console
             ExecuteFile(byteArray);
         }
 
-        private static void Create_PDF_document_with_basic_table()
+        private async static void Create_PDF_document_with_basic_table()
         {
             var section = new Section();
 
@@ -291,19 +298,7 @@ namespace Tharga.Reporter.Console
 
             var template = new Template(section);
 
-            SampleOutput(template, documentData);
-            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
-            //ExecuteFile(byteArray);
-
-
-            //var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
-            //x += UnitValue.Parse("4mm");
-            //var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
-
-            //if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
-            //    System.Diagnostics.Debug.WriteLine("Same");
-
-            //var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
+            await SampleOutput(template, documentData);
         }
 
         //private static void Create_PDF_document_from_template()
