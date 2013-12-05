@@ -25,12 +25,11 @@ namespace Tharga.Reporter.Console
             //Basic_PDF_document_with_some_text_on_it();
             //Multiple_sections();
             //Multipage_PDF_document_by_section();
-            Multipage_PDF_by_spanning_text();
+            //Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-            //Create_PDF_document_from_template();
-            //Create_PDF_document_with_basic_template();
+            Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //SkallebergSample1();
         }
@@ -271,7 +270,7 @@ namespace Tharga.Reporter.Console
             ExecuteFile(byteArray);
         }
 
-        private static void Create_PDF_document_with_basic_template()
+        private static void Create_PDF_document_with_basic_table()
         {
             var section = new Section();
 
@@ -291,18 +290,20 @@ namespace Tharga.Reporter.Console
             row2.Add("Col2", "some oter data");
 
             var template = new Template(section);
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
-            ExecuteFile(byteArray);
+
+            SampleOutput(template, documentData);
+            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
+            //ExecuteFile(byteArray);
 
 
-            var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
-            x += UnitValue.Parse("4mm");
-            var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
+            //var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
+            //x += UnitValue.Parse("4mm");
+            //var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
 
-            if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
-                System.Diagnostics.Debug.WriteLine("Same");
+            //if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
+            //    System.Diagnostics.Debug.WriteLine("Same");
 
-            var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
+            //var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
         }
 
         //private static void Create_PDF_document_from_template()
@@ -371,35 +372,36 @@ namespace Tharga.Reporter.Console
             var template = new Template(section);
 
 
-            var sw = new Stopwatch();
+            SampleOutput(template, new DocumentData());
+            //var sw = new Stopwatch();
 
-            //Old way
-            sw.Start();
-            var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
-            Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(oldBytes);
+            ////Old way
+            //sw.Start();
+            //var oldBytes = Rendering.CreatePDFDocument(template, debug: true);
+            //Debug.WriteLine("Old: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            //ExecuteFile(oldBytes);
 
-            //New way
-            var renderer = new Renderer { Template = template, Debug = true };
+            ////New way
+            //var renderer = new Renderer { Template = template, Debug = true };
 
-            sw.Reset();
-            sw.Start();
-            var bytes = await renderer.GetPDFDocumentAsync();
-            Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(bytes);
+            //sw.Reset();
+            //sw.Start();
+            //var bytes = await renderer.GetPDFDocumentAsync();
+            //Debug.WriteLine("New: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            //ExecuteFile(bytes);
 
-            //Directly to printer
-            var printerSettings = new PrinterSettings
-            {
-                PrinterName = "Microsoft XPS Document Writer",
-                PrintToFile = true,
-                PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
-            };
+            ////Directly to printer
+            //var printerSettings = new PrinterSettings
+            //{
+            //    PrinterName = "Microsoft XPS Document Writer",
+            //    PrintToFile = true,
+            //    PrintFileName = @"C:\Users\Daniel\Desktop\b2.xps",
+            //};
 
-            sw.Reset();
-            sw.Start();
-            await renderer.PrintAsync(printerSettings);
-            Debug.WriteLine("Print: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
+            //sw.Reset();
+            //sw.Start();
+            //await renderer.PrintAsync(printerSettings);
+            //Debug.WriteLine("Print: " + sw.Elapsed.TotalSeconds.ToString("0.0000"));
         }
 
         public static void Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking()
@@ -416,11 +418,12 @@ namespace Tharga.Reporter.Console
 
             var template = new Template(section);
 
-            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray);
+            SampleOutput(template, new DocumentData());
+            //var byteArray = Rendering.CreatePDFDocument(template, debug: true);
+            //ExecuteFile(byteArray);
 
-            var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray2);            
+            //var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
+            //ExecuteFile(byteArray2);            
         }
 
         public static void Multipage_PDF_by_spanning_text_using_a_reference_point()
@@ -436,11 +439,12 @@ namespace Tharga.Reporter.Console
 
             var template = new Template(section);
             
-            var byteArray = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray);
+            //var byteArray = Rendering.CreatePDFDocument(template, debug: true);
+            //ExecuteFile(byteArray);
 
-            var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
-            ExecuteFile(byteArray2);
+            //var byteArray2 = Rendering.CreatePDFDocument(template, debug: true);
+            //ExecuteFile(byteArray2);
+            SampleOutput(template, new DocumentData());
         }
 
         private static void Multipage_PDF_by_spanning_text()

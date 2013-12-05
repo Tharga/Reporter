@@ -213,12 +213,15 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var left = renderData.ElementBounds.Left;
             var top = renderData.ElementBounds.Top;
 
-            foreach (var line in _pageText[page- renderData.Section.GetPageOffset()])
+            if (_pageText.Count > page - renderData.Section.GetPageOffset())
             {
-                renderData.Gfx.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
-                var newTextSize = renderData.Gfx.MeasureString(line, font, XStringFormats.TopLeft);
-                top += newTextSize.Height;
-            }            
+                foreach (var line in _pageText[page - renderData.Section.GetPageOffset()])
+                {
+                    renderData.Gfx.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
+                    var newTextSize = renderData.Gfx.MeasureString(line, font, XStringFormats.TopLeft);
+                    top += newTextSize.Height;
+                }
+            }
         }
 
         private string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)

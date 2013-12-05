@@ -41,17 +41,19 @@ namespace Tharga.Reporter.Engine
 
         public async Task<byte[]> GetPDFDocumentAsync()
         {
-            PreRender();
+            var pageSize = PageSize.A4;
+
+            PreRender(pageSize);
 
             var pdfDocument = CreatePDFDocument();
-            RenderPDFDocument(pdfDocument, false);
+            RenderPDFDocument(pdfDocument, false, pageSize);
 
             var memStream = new System.IO.MemoryStream();
             pdfDocument.Save(memStream);
             return memStream.ToArray();
         }
 
-        private void RenderPDFDocument(PdfDocument pdfDocument, bool preRender)
+        private void RenderPDFDocument(PdfDocument pdfDocument, bool preRender, PageSize pageSize)
         {
             if ( _preRendered && preRender)
                 throw new InvalidOperationException("Prerender has already been performed.");
@@ -66,8 +68,9 @@ namespace Tharga.Reporter.Engine
                 var page = pdfDocument.AddPage();
 
                 //TODO: Use printer settings information to get this value (Same as when the document is actually printed)
+                page.Size = pageSize;
                 //page.Size = PdfSharp.PageSize.Letter;
-                page.Size = PdfSharp.PageSize.A4;
+                //page.Size = PdfSharp.PageSize.A4;
 
                 var gfx = XGraphics.FromPdfPage(page);
                 // HACK²
@@ -127,7 +130,11 @@ namespace Tharga.Reporter.Engine
         {
             _printPageCount = 0;
 
-            PreRender();
+            PageSize pageSize;
+            if (!Enum.TryParse(printerSettings.DefaultPageSettings.PaperSize.Kind.ToString(), out pageSize))
+                throw new InvalidOperationException(string.Format("Unable to parse {0} as PageSize.", printerSettings.DefaultPageSettings.PaperSize.Kind));
+
+            PreRender(pageSize);
 
             var doc = GetDocument(false);
 
@@ -143,7 +150,7 @@ namespace Tharga.Reporter.Engine
             printDocument.Print();
         }
 
-        private void PreRender()
+        private void PreRender(PageSize pageSize)
         {
             if (!_preRendered)
             {
@@ -151,7 +158,7 @@ namespace Tharga.Reporter.Engine
                 if (hasMultiPageElements)
                 {
                     var pdfDocument = CreatePDFDocument();
-                    RenderPDFDocument(pdfDocument, true);
+                    RenderPDFDocument(pdfDocument, true, pageSize);
                 }
             }
         }
