@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.Xml;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {

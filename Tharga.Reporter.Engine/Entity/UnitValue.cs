@@ -1,10 +1,8 @@
 using System;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
     //TODO: Move stuff to extensions
-    //TODO: Perhaps an immutable class is better after all...
     public struct UnitValue : IEquatable<UnitValue>
     {
         public enum EUnit { Point, Inch, Millimeter, Centimeter, Percentage };

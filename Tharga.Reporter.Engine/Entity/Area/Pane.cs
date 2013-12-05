@@ -5,11 +5,10 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
-    public class Pane : IElementContainer
+    public class Pane
     {
         private readonly ElementList _elementList = new ElementList();
 

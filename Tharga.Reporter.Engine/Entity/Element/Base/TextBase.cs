@@ -45,7 +45,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         public Alignment TextAlignment { get { return _textAlignment ?? _defaultTextAlignmen; } set { _textAlignment = value; } }
 
-        protected internal override void Render(IRenderData renderData)
+        internal override void Render(IRenderData renderData)
         {
             var bounds = GetBounds(renderData.ParentBounds);
 
@@ -75,7 +75,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        protected internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
+        internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
                                                 DocumentData documentData, out XRect elementBounds, bool includeBackground,
                                                 bool debug, PageNumberInfo pageNumberInfo, Section section)
         {

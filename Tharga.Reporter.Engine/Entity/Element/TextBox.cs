@@ -6,7 +6,6 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -44,13 +43,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        protected internal override void ClearRenderPointer()
+        internal override void ClearRenderPointer()
         {
             _words = null;
             _wordPointer = 0;
         }
 
-        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
+        internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             elementBounds = GetBounds(parentBounds);
 
@@ -123,7 +122,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return false;
         }
 
-        protected internal override int PreRender(IRenderData renderData)
+        //TODO: Make sure there is no output here
+        internal override int PreRender(IRenderData renderData)
         {
             if (_pageText!= null) throw new InvalidOperationException("Pre-render has already been performed.");
             _pageText = new List<string[]>();
@@ -189,7 +189,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return _pageText.Count;
         }
 
-        protected internal override void Render(IRenderData renderData, int page)
+        internal override void Render(IRenderData renderData, int page)
         {
             if (_pageText== null) throw new InvalidOperationException("Pre-render has not been performed.");
 

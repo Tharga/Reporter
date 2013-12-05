@@ -1,7 +1,6 @@
 using System;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -81,16 +80,15 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return xme;
         }
 
-        protected virtual void AppendData(XmlElement xme)
+        protected override void AppendData(XmlElement xme)
         {
-            _name = GetString(xme, "Name");
+            base.AppendData(xme);
             Left = GetValue(xme, "Left");
             Top = GetValue(xme, "Top");
             Right = GetValue(xme, "Right");
             Bottom = GetValue(xme, "Bottom");
             Width = GetValue(xme, "Width");
             Height = GetValue(xme, "Height");
-            _isBackground = GetBool(xme, "IsBackground");
         }
     }
 }

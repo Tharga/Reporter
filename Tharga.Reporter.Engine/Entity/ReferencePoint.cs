@@ -5,11 +5,10 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
-    public class ReferencePoint : MultiPageElement, IElementContainer
+    public class ReferencePoint : MultiPageElement
     {
         private const StackMethod _defaultStack = StackMethod.None;
 
@@ -21,13 +20,13 @@ namespace Tharga.Reporter.Engine.Entity.Area
         public StackMethod Stack { get { return _stack ?? _defaultStack; } set { _stack = value; } }
         public ElementList ElementList { get { return _elementList ?? (_elementList = new ElementList()); } set { _elementList = value; } } 
 
-        protected internal override void ClearRenderPointer()
-        {
-            foreach (var element in _elementList.Where(x => x is MultiPageAreaElement))
-                ((MultiPageAreaElement)element).ClearRenderPointer();
-        }
+        //protected internal override void ClearRenderPointer()
+        //{
+        //    foreach (var element in _elementList.Where(x => x is MultiPageAreaElement))
+        //        ((MultiPageAreaElement)element).ClearRenderPointer();
+        //}
 
-        protected internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
+        internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
             out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var bounds = GetBounds(parentBounds);
@@ -52,7 +51,8 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return needMorePages;
         }
 
-        protected internal override int PreRender(IRenderData renderData)
+        //TODO: Make sure there is no output here
+        internal override int PreRender(IRenderData renderData)
         {
             var bounds = GetBounds(renderData.ParentBounds);
 
@@ -65,7 +65,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return pageCount;
         }
 
-        protected internal override void Render(IRenderData renderData, int page)
+        internal override void Render(IRenderData renderData, int page)
         {
             var bounds = GetBounds(renderData.ParentBounds);
             

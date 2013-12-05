@@ -17,7 +17,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
         public UnitValue Thickness { get { return _thickness ?? _defaultThickness; } set { _thickness = value; }}
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
+        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             elementBounds = GetBounds(parentBounds);
 
@@ -33,7 +33,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        protected internal override void Render(IRenderData renderData)
+        internal override void Render(IRenderData renderData)
         {
             renderData.ElementBounds = GetBounds(renderData.ParentBounds);
 

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using Tharga.Reporter.Engine;
@@ -20,6 +19,7 @@ namespace Tharga.Reporter.Console
         static void Main(string[] args)
         {
             //Blank_default_PDF_document();
+            TextButNoData();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
@@ -29,9 +29,17 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-            Create_PDF_document_with_basic_table();
+            //Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //SkallebergSample1();
+        }
+
+        private async static void TextButNoData()
+        {
+            var section = new Section();
+            section.Pane.ElementList.Add(new Text {Value = "Data: {SomeData}"});
+            var template = new Template(section);
+            await SampleOutput(template, null);
         }
 
         private async static void MultiPageAreaElement_Sample()
@@ -92,7 +100,7 @@ namespace Tharga.Reporter.Console
             try
             {
                 //Prep
-                var renderer = new Renderer {Template = template, Debug = true, DocumentData = documentData};
+                var renderer = new Renderer(template, documentData, null, true);
                 var stopWatch = new Stopwatch();
 
                 //Old way
@@ -105,7 +113,7 @@ namespace Tharga.Reporter.Console
                 //New way
                 stopWatch.Reset();
                 stopWatch.Start();
-                var bytes = await renderer.GetPDFDocumentAsync();
+                var bytes = await renderer.GetPdfDocumentAsync();
                 System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
                 ExecuteFile(bytes);
 
@@ -167,7 +175,7 @@ namespace Tharga.Reporter.Console
             return documentData;
         }
 
-        private static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
+        private async static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
         {
             var coverPage = new Section {Name = "Cover"};
             coverPage.Pane.ElementList.Add(new Text{Value = "This is the cover page.",Top = UnitValue.Parse("50%"), Left = UnitValue.Parse("50%")});
@@ -272,9 +280,11 @@ namespace Tharga.Reporter.Console
             var template = new Template(coverPage);
             template.SectionList.Add(content);
             template.SectionList.Add(index);
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
 
-            ExecuteFile(byteArray);
+            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
+            //ExecuteFile(byteArray);
+
+            await SampleOutput(template, documentData);
         }
 
         private async static void Create_PDF_document_with_basic_table()
@@ -352,7 +362,7 @@ namespace Tharga.Reporter.Console
         private async static void Blank_default_PDF_document()
         {
             var template = new Template(new Section());
-            await SampleOutput(template, new DocumentData());
+            await SampleOutput(template, null);
         }
 
         private async static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
