@@ -152,6 +152,8 @@ namespace Tharga.Reporter.Engine
 
         private void PreRender(PageSize pageSize)
         {
+            //TODO: If prerender with one format (pageSize) and printing with another.
+            //or, if template or document data changed between render and pre-render then things will be messed up.
             if (!_preRendered)
             {
                 var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
