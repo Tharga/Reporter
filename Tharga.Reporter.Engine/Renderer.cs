@@ -13,6 +13,7 @@ using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
+using Section = Tharga.Reporter.Engine.Entity.Section;
 
 namespace Tharga.Reporter.Engine
 {
@@ -204,71 +205,70 @@ namespace Tharga.Reporter.Engine
 
             var pageNumber = 0;
             var pageNumberInfo = new PageNumberInfo(++pageNumber);
-            foreach (var section in _template.SectionList)
+
+            var section = GetSection(preRender, page);
+            section.Pane.ClearRenderPointers();
+
+            var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height),
+                                          section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
+
+            if (Debug)
             {
-                section.Pane.ClearRenderPointers();
+                var sectionName = string.IsNullOrEmpty(section.Name) ? "Unnamed section" : section.Name;
+                var textSize = gfx.MeasureString(sectionName, debugFont);
+                gfx.DrawString(sectionName, debugFont, debugBrush, 0, textSize.Height);
 
-                var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height),
-                              section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
+                //Left margin
+                gfx.DrawLine(debugPen, sectionBounds.Left, 0, sectionBounds.Left, size.Height);
 
-                if (Debug)
+                //Right margin
+                gfx.DrawLine(debugPen, sectionBounds.Right, 0, sectionBounds.Right, size.Height);
+
+                //Top margin
+                gfx.DrawLine(debugPen, 0, sectionBounds.Top, size.Width, sectionBounds.Top);
+
+                //Bottom margin
+                gfx.DrawLine(debugPen, 0, sectionBounds.Bottom, size.Width, sectionBounds.Bottom);
+            }
+
+            var headerHeight = section.Header.Height.GetXUnitValue(sectionBounds.Height);
+            var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
+            var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
+
+            var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, Debug);
+
+            if (preRender)
+            {
+                var pageCount = section.Pane.PreRender(renderData);
+                section.SetRenderPageCount(pageCount);
+            }
+            else
+            {
+                section.Pane.Render(renderData, page);
+
+                //Header
+                if (section.Header != null)
                 {
-                    var sectionName = string.IsNullOrEmpty(section.Name) ? "Unnamed section" : section.Name;
-                    var textSize = gfx.MeasureString(sectionName, debugFont);
-                    gfx.DrawString(sectionName, debugFont, debugBrush, 0, textSize.Height);
+                    var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
+                    postRendering.Add(() => section.Header.Render(renderDataHeader, page));
 
-                    //Left margin
-                    gfx.DrawLine(debugPen, sectionBounds.Left, 0, sectionBounds.Left, size.Height);
-
-                    //Right margin
-                    gfx.DrawLine(debugPen, sectionBounds.Right, 0, sectionBounds.Right, size.Height);
-
-                    //Top margin
-                    gfx.DrawLine(debugPen, 0, sectionBounds.Top, size.Width, sectionBounds.Top);
-
-                    //Bottom margin
-                    gfx.DrawLine(debugPen, 0, sectionBounds.Bottom, size.Width, sectionBounds.Bottom);
-                }
-
-                var headerHeight = section.Header.Height.GetXUnitValue(sectionBounds.Height);
-                var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
-                var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
-
-                var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, Debug);
-
-                if (preRender)
-                {
-                    var pageCount = section.Pane.PreRender(renderData);
-                    section.SetRenderPageCount(pageCount);
-                }
-                else
-                {
-                    section.Pane.Render(renderData, page);
-
-                    //Header
-                    if (section.Header != null)
+                    if (Debug)
                     {
-                        var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                        var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
-                        postRendering.Add(() => section.Header.Render(renderDataHeader, page));
-
-                        if (Debug)
-                        {
-                            gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
-                        }
+                        gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
                     }
+                }
 
-                    //Footer
-                    if (section.Footer != null)
+                //Footer
+                if (section.Footer != null)
+                {
+                    var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
+                    postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
+
+                    if (Debug)
                     {
-                        var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                        var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, Debug);
-                        postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
-
-                        if (Debug)
-                        {
-                            gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
-                        }
+                        gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
                     }
                 }
             }
@@ -277,6 +277,31 @@ namespace Tharga.Reporter.Engine
             {
                 action();
             }
+        }
+
+        private Section GetSection(bool preRender, int page)
+        {
+            var section = _template.SectionList.First();
+            if (page > 0)
+            {
+                if (preRender)
+                {
+                    section = _template.SectionList.ToArray()[page];
+                }
+                else
+                {
+                    var tot = 0;
+                    foreach (var s in _template.SectionList)
+                    {
+                        tot += s.GetRenderPageCount();
+                        if (tot <= page + 1)
+                        {
+                            section = s;
+                        }
+                    }
+                }
+            }
+            return section;
         }
 
         private Document GetDocument(bool preRender)

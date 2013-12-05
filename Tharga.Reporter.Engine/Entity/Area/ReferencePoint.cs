@@ -15,36 +15,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         public enum StackMethod { None, Vertical }
 
-        private ElementList _elementList; // = new ElementList();
+        private ElementList _elementList;
         private StackMethod? _stack;
 
         public StackMethod Stack { get { return _stack ?? _defaultStack; } set { _stack = value; } }
         public ElementList ElementList { get { return _elementList ?? (_elementList = new ElementList()); } set { _elementList = value; } } 
-
-        //TODO: Overriding theese is not a good idea. They should not even be here in the first place
-        //public override UnitValue? Bottom
-        //{
-        //    get { throw new NotSupportedException(); }
-        //    set { throw new NotSupportedException(); }
-        //}
-
-        //public override UnitValue? Height
-        //{
-        //    get { throw new NotSupportedException(); }
-        //    set { throw new NotSupportedException(); }
-        //}
-
-        //public override UnitValue? Width
-        //{
-        //    get { throw new NotSupportedException(); }
-        //    set { throw new NotSupportedException(); }
-        //}
-
-        //public override UnitValue? Right
-        //{
-        //    get { throw new NotSupportedException(); }
-        //    set { throw new NotSupportedException(); }
-        //}
 
         protected internal override void ClearRenderPointer()
         {
@@ -125,7 +100,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     }
                 }
 
-                //var elmBnd = new XRect();
                 if (element is SinglePageAreaElement)
                     ((SinglePageAreaElement)element).Render(renderData);
                 else if (element is MultiPageAreaElement)
@@ -136,7 +110,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     throw new ArgumentOutOfRangeException(string.Format("Unknown type {0}.", element.GetType()));
 
                 stackTop = new UnitValue(stackTop.Value + renderData.ElementBounds.Height, stackTop.Unit);
-                //stackTop.Value += elmBnd.Height;
 
                 if (resetLocation)
                     element.Top = null;
@@ -161,8 +134,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     }
                 }
 
-                //var elmBnd = new XRect();
-                var pageCount = 1;
+                int pageCount;
                 if (element is MultiPageAreaElement)
                     pageCount = ((MultiPageAreaElement) element).PreRender(renderData);
                 else if (element is MultiPageElement)
@@ -171,7 +143,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     throw new ArgumentOutOfRangeException(string.Format("Unknown type {0}.", element.GetType()));
 
                 stackTop = new UnitValue(stackTop.Value + renderData.ElementBounds.Height, stackTop.Unit);
-                //stackTop.Value += elmBnd.Height;
 
                 if (resetLocation)
                     element.Top = null;

@@ -22,7 +22,8 @@ namespace Tharga.Reporter.Console
             //Blank_default_PDF_document();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
-            Basic_PDF_document_with_some_text_on_it();
+            //Basic_PDF_document_with_some_text_on_it();
+            Multiple_sections();
             //Multipage_PDF_document_by_section();
             //Multipage_PDF_by_spanning_text();
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
@@ -496,8 +497,7 @@ namespace Tharga.Reporter.Console
 
             template.SectionList.Add(nextPage);
 
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData,debug: true);
-            ExecuteFile(byteArray);
+            SampleOutput(template, documentData);
         }
 
         private async static void Basic_PDF_document_with_some_text_on_it()
@@ -522,6 +522,27 @@ namespace Tharga.Reporter.Console
             documentData.Add("Data5", "Loblaw");
 
             SampleOutput(template, documentData);
+        }
+
+        private async static void Multiple_sections()
+        {
+            var section = new Section {Name = "First"};
+            section.Margin = new UnitRectangle{Top = "1cm", Left = "1cm"};
+            section.Pane.ElementList.Add(new Text {Value = "AAA"});
+
+            var template = new Template(section);
+
+            var section2 = new Section { Name = "Second" };
+            section2.Margin = new UnitRectangle { Top = "2cm", Left = "2cm" };
+            section2.Pane.ElementList.Add(new Text { Value = "BBB" });
+            template.SectionList.Add(section2);
+
+            var section3 = new Section { Name = "Third" };
+            section3.Margin = new UnitRectangle { Top = "3cm", Left = "3cm" };
+            section3.Pane.ElementList.Add(new Text { Value = "CCC" });
+            template.SectionList.Add(section3);
+
+            await SampleOutput(template, new DocumentData());
         }
 
         private static void ExecuteFile(byte[] byteArray)
