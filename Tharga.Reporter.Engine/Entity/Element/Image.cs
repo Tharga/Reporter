@@ -142,7 +142,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             imageData = null;
 
-            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?","_").Replace("=","_").Replace("&","_");
+            if (string.IsNullOrEmpty(imageUrl))
+                return false;
+
+            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?", "_").Replace("=", "_").Replace("&", "_");
             var cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
 
             if (!File.Exists(cacheFileName))

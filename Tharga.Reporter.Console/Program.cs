@@ -20,7 +20,7 @@ namespace Tharga.Reporter.Console
         {
             //Blank_default_PDF_document();
             //TextButNoData();
-            BackgroundObjectsOrNot();
+            //BackgroundObjectsOrNot();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
@@ -33,6 +33,18 @@ namespace Tharga.Reporter.Console
             //Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //SkallebergSample1();
+            SkallebergSample2();
+        }
+
+        private static void SkallebergSample2()
+        {
+            var templateData = System.IO.File.ReadAllText("C:\\Users\\Daniel\\AppData\\Local\\Temp\\NevadaReporter\\Archive\\DeliveryNoteTemplate.xml");
+            var xml = new System.Xml.XmlDocument();
+            xml.LoadXml(templateData);
+            var template = Template.Load(xml);
+
+            var documentData = new DocumentData();
+            SampleOutput(template, documentData);
         }
 
         private async static void BackgroundObjectsOrNot()
