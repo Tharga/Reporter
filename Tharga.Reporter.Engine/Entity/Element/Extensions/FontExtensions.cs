@@ -3,7 +3,7 @@ using PdfSharp.Drawing;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public static class FontExtensions
+    internal static class FontExtensions
     {
         internal static XFontStyle GetStyle(this Font font, Section section)
         {

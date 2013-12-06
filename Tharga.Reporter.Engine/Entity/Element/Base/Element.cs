@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -33,7 +32,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return xme;
         }
 
-        protected void AppendData(XmlElement xme)
+        protected virtual void AppendData(XmlElement xme)
         {
             _name = GetString(xme, "Name");
             _isBackground = GetBool(xme, "IsBackground");
@@ -99,7 +98,5 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 yield return element;
             }
         }
-
-        //public abstract int PageCount(IRenderData renderData);
     }
 }

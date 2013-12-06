@@ -1,7 +1,6 @@
 using System;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -9,11 +8,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
     {
         private readonly UnitRectangle _relativeAlignment;
 
-        protected bool? _isBackground;
-        protected string _name;
+        //protected bool? _isBackground;
+        //protected string _name;
 
-        public override string Name { get { return _name ?? string.Empty; } set { _name = value; } }
-        public override bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
+        //public override string Name { get { return _name ?? string.Empty; } set { _name = value; } }
+        //public override bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
 
         protected AreaElement()
         {
@@ -51,11 +50,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override XmlElement ToXme()
         {
-            var xmd = new XmlDocument();
-            var xme = xmd.CreateElement(GetType().ToShortTypeName());
+            var xme = base.ToXme();
+            //var xmd = new XmlDocument();
+            //var xme = xmd.CreateElement(GetType().ToShortTypeName());
 
-            if (_name != null)
-                xme.SetAttribute("Name", _name);
+            //if (_name != null)
+            //    xme.SetAttribute("Name", _name);
 
             if (Left != null)
                 xme.SetAttribute("Left", Left.Value.ToString());
@@ -75,22 +75,21 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (Height != null)
                 xme.SetAttribute("Height", Height.Value.ToString());
 
-            if (_isBackground != null)
-                xme.SetAttribute("IsBackground", _isBackground.Value.ToString());
+            //if (_isBackground != null)
+            //    xme.SetAttribute("IsBackground", _isBackground.Value.ToString());
 
             return xme;
         }
 
-        protected virtual void AppendData(XmlElement xme)
+        protected override void AppendData(XmlElement xme)
         {
-            _name = GetString(xme, "Name");
+            base.AppendData(xme);
             Left = GetValue(xme, "Left");
             Top = GetValue(xme, "Top");
             Right = GetValue(xme, "Right");
             Bottom = GetValue(xme, "Bottom");
             Width = GetValue(xme, "Width");
             Height = GetValue(xme, "Height");
-            _isBackground = GetBool(xme, "IsBackground");
         }
     }
 }

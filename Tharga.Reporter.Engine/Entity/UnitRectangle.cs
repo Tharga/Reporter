@@ -3,7 +3,6 @@ using System.Xml;
 
 namespace Tharga.Reporter.Engine.Entity
 {
-    //TOOD: Can this be made immutable? Should it be?
     public class UnitRectangle : IEquatable<UnitRectangle>
     {
         private UnitValue? _left;

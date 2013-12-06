@@ -17,7 +17,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
         public UnitValue Thickness { get { return _thickness ?? _defaultThickness; } set { _thickness = value; }}
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
+        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             elementBounds = GetBounds(parentBounds);
 
@@ -33,7 +33,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        protected internal override void Render(IRenderData renderData)
+        internal override void Render(IRenderData renderData)
         {
             renderData.ElementBounds = GetBounds(renderData.ParentBounds);
 
@@ -53,11 +53,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (_color != null)
                 xme.SetAttribute("Color", string.Format("{0}{1}{2}", _color.Value.R.ToString("X2"), _color.Value.G.ToString("X2"), _color.Value.B.ToString("X2")));
 
-            if (_isBackground != null)
-                xme.SetAttribute("IsBackground", IsBackground.ToString());
+            //if (_isBackground != null)
+            //    xme.SetAttribute("IsBackground", IsBackground.ToString());
 
-            if (_name != null)
-                xme.SetAttribute("Name", Name);
+            //if (_name != null)
+            //    xme.SetAttribute("Name", Name);
 
             if (_thickness != null)
                 xme.SetAttribute("Thickness", Thickness.ToString());

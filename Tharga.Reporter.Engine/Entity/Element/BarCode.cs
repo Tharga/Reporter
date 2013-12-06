@@ -8,7 +8,6 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -30,7 +29,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _font = value;
             }
         }
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
+        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var bounds = GetBounds(parentBounds);
             var imageData = GetImage(documentData, bounds, pageNumberInfo, section);
@@ -59,7 +58,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             imageData.Dispose();
         }
 
-        protected internal override void Render(IRenderData renderData)
+        internal override void Render(IRenderData renderData)
         {
             var bounds = GetBounds(renderData.ParentBounds);
             var imageData = GetImage(renderData.DocumentData, bounds, renderData.PageNumberInfo, renderData.Section);

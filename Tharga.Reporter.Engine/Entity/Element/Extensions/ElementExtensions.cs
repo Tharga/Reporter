@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
-    public static class ElementExtensions
+    internal static class ElementExtensions
     {
         internal static Color ToColor(this string value)
         {

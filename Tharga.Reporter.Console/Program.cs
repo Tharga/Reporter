@@ -2,10 +2,8 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
-using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
-using PdfSharp;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -21,6 +19,8 @@ namespace Tharga.Reporter.Console
         static void Main(string[] args)
         {
             //Blank_default_PDF_document();
+            //TextButNoData();
+            //BackgroundObjectsOrNot();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
@@ -30,9 +30,38 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-            Create_PDF_document_with_basic_table();
-            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            //Create_PDF_document_with_basic_table();
+            Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //SkallebergSample1();
+            //SkallebergSample2();
+        }
+
+        private static void SkallebergSample2()
+        {
+            var templateData = System.IO.File.ReadAllText("C:\\Users\\Daniel\\AppData\\Local\\Temp\\NevadaReporter\\Archive\\DeliveryNoteTemplate.xml");
+            var xml = new System.Xml.XmlDocument();
+            xml.LoadXml(templateData);
+            var template = Template.Load(xml);
+
+            var documentData = new DocumentData();
+            SampleOutput(template, documentData);
+        }
+
+        private async static void BackgroundObjectsOrNot()
+        {
+            var section = new Section();
+            section.Pane.ElementList.Add(new Text { Value = "Text on background", Top = "1cm", Left="50%", IsBackground = true });
+            section.Pane.ElementList.Add(new Text { Value = "Text on foreground", Top = "1cm", IsBackground = false });
+            var template = new Template(section);
+            SampleOutput(template, null,false);
+        }
+
+        private async static void TextButNoData()
+        {
+            var section = new Section();
+            section.Pane.ElementList.Add(new Text {Value = "Data: {SomeData}"});
+            var template = new Template(section);
+            SampleOutput(template, null);
         }
 
         private async static void MultiPageAreaElement_Sample()
@@ -52,7 +81,7 @@ namespace Tharga.Reporter.Console
             var documentData = new DocumentData();
             documentData.Add("SomeData", "Reapadda");
 
-            await SampleOutput(template, documentData);
+            SampleOutput(template, documentData);
         }
 
         private async static void SinglePageAreaElement_Sample()
@@ -85,40 +114,47 @@ namespace Tharga.Reporter.Console
             var documentData = new DocumentData();
             documentData.Add("SomeData", "Reapadda");
 
-            await SampleOutput(template, documentData);
+            SampleOutput(template, documentData);
         }
 
-        private static async Task SampleOutput(Template template, DocumentData documentData)
+        private static void SampleOutput(Template template, DocumentData documentData, bool useBackground = true)
         {
-            //Prep
-            var renderer = new Renderer {Template = template, Debug = true, DocumentData = documentData};
-            var stopWatch = new Stopwatch();
+            try
+            {
+                //Prep
+                var renderer = new Renderer(template, documentData, useBackground, null, true);
+                var stopWatch = new Stopwatch();
 
-            //Old way
-            stopWatch.Reset();
-            stopWatch.Start();
-            var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData);
-            Debug.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(oldBytes);
+                ////Old way
+                //stopWatch.Reset();
+                //stopWatch.Start();
+                //var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData, background: useBackground);
+                //System.Console.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                //ExecuteFile(oldBytes);
 
-            //New way
-            stopWatch.Reset();
-            stopWatch.Start();
-            var bytes = await renderer.GetPDFDocumentAsync(PageSize.A4);
-            Debug.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-            ExecuteFile(bytes);
+                //New way
+                stopWatch.Reset();
+                stopWatch.Start();
+                var bytes = renderer.GetPdfBinary();
+                System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                ExecuteFile(bytes);
 
-            //Directly to printer
-            var printerSettings = new PrinterSettings
+                //Directly to printer
+                var printerSettings = new PrinterSettings
                 {
                     PrinterName = "Microsoft XPS Document Writer",
                     PrintToFile = true,
                     PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
                 };
-            stopWatch.Reset();
-            stopWatch.Start();
-            await renderer.PrintAsync(printerSettings);
-            Debug.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                stopWatch.Reset();
+                stopWatch.Start();
+                renderer.Print(printerSettings);
+                System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+            }
+            catch (Exception exception)
+            {
+                System.Console.WriteLine(exception.Message);
+            }
         }
 
         private static void SkallebergSample1()
@@ -161,7 +197,7 @@ namespace Tharga.Reporter.Console
             return documentData;
         }
 
-        private static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
+        private async static void Create_PDF_document_with_template_that_spans_over_multiple_pages()
         {
             var coverPage = new Section {Name = "Cover"};
             coverPage.Pane.ElementList.Add(new Text{Value = "This is the cover page.",Top = UnitValue.Parse("50%"), Left = UnitValue.Parse("50%")});
@@ -266,12 +302,14 @@ namespace Tharga.Reporter.Console
             var template = new Template(coverPage);
             template.SectionList.Add(content);
             template.SectionList.Add(index);
-            var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
 
-            ExecuteFile(byteArray);
+            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
+            //ExecuteFile(byteArray);
+
+            SampleOutput(template, documentData);
         }
 
-        private static void Create_PDF_document_with_basic_table()
+        private async static void Create_PDF_document_with_basic_table()
         {
             var section = new Section();
 
@@ -293,18 +331,6 @@ namespace Tharga.Reporter.Console
             var template = new Template(section);
 
             SampleOutput(template, documentData);
-            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData);
-            //ExecuteFile(byteArray);
-
-
-            //var x = UnitValue.Parse("2cm") - UnitValue.Parse("1cm");
-            //x += UnitValue.Parse("4mm");
-            //var y = UnitValue.Parse("2cm") + UnitValue.Parse("1cm");
-
-            //if (UnitValue.Parse("1cm") == UnitValue.Parse("10mm"))
-            //    System.Diagnostics.Debug.WriteLine("Same");
-
-            //var z = UnitValue.Parse("100%").ToString() + UnitValue.Parse("1cm");
         }
 
         //private static void Create_PDF_document_from_template()
@@ -358,7 +384,7 @@ namespace Tharga.Reporter.Console
         private async static void Blank_default_PDF_document()
         {
             var template = new Template(new Section());
-            await SampleOutput(template, new DocumentData());
+            SampleOutput(template, null);
         }
 
         private async static void Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly()
@@ -549,7 +575,7 @@ namespace Tharga.Reporter.Console
             section3.Pane.ElementList.Add(new Text { Value = "CCC" });
             template.SectionList.Add(section3);
 
-            await SampleOutput(template, new DocumentData());
+            SampleOutput(template, new DocumentData());
         }
 
         private static void ExecuteFile(byte[] byteArray)

@@ -6,6 +6,7 @@ using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine
 {
+    [Obsolete("Use Renderer instead")]
     public class Rendering
     {
         private readonly Template _template;

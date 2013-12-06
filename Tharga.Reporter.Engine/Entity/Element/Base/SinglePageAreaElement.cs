@@ -6,8 +6,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public abstract class SinglePageAreaElement : AreaElement
     {
-        protected internal abstract void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section);
-        protected internal abstract void Render(IRenderData renderData);
-        //public override int PageCount(IRenderData renderData) { return 1; }
+        internal abstract void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section);
+        internal abstract void Render(IRenderData renderData);
     }
 }

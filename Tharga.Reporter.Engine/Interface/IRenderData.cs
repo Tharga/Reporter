@@ -1,9 +1,9 @@
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Engine.Entity
 {
-    public interface IRenderData
+    internal interface IRenderData
     {
         XRect ParentBounds { get; }
         XRect ElementBounds { get; set; }

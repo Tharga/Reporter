@@ -8,7 +8,6 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -18,7 +17,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         public string Source { get { return _source ?? string.Empty; } set { _source = value; } }
 
-        protected internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
+        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
             out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
             var bounds = GetBounds(parentBounds);
@@ -39,7 +38,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             imageData.Dispose();
         }
 
-        protected internal override void Render(IRenderData renderData)
+        internal override void Render(IRenderData renderData)
         {
             var bounds = GetBounds(renderData.ParentBounds);
             var imageData = GetImage(renderData.DocumentData, bounds);
@@ -143,7 +142,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             imageData = null;
 
-            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?","_").Replace("=","_").Replace("&","_");
+            if (string.IsNullOrEmpty(imageUrl))
+                return false;
+
+            var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?", "_").Replace("=", "_").Replace("&", "_");
             var cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
 
             if (!File.Exists(cacheFileName))

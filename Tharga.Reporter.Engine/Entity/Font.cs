@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Helper;
 
 namespace Tharga.Reporter.Engine.Entity
 {
