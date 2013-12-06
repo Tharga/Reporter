@@ -31,9 +31,9 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_with_basic_table();
-            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //SkallebergSample1();
-            SkallebergSample2();
+            //SkallebergSample2();
         }
 
         private static void SkallebergSample2()
@@ -125,12 +125,12 @@ namespace Tharga.Reporter.Console
                 var renderer = new Renderer(template, documentData, useBackground, null, true);
                 var stopWatch = new Stopwatch();
 
-                //Old way
-                stopWatch.Reset();
-                stopWatch.Start();
-                var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData, background: useBackground);
-                System.Console.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-                ExecuteFile(oldBytes);
+                ////Old way
+                //stopWatch.Reset();
+                //stopWatch.Start();
+                //var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData, background: useBackground);
+                //System.Console.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                //ExecuteFile(oldBytes);
 
                 //New way
                 stopWatch.Reset();
@@ -141,11 +141,11 @@ namespace Tharga.Reporter.Console
 
                 //Directly to printer
                 var printerSettings = new PrinterSettings
-                    {
-                        PrinterName = "Microsoft XPS Document Writer",
-                        PrintToFile = true,
-                        PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-                    };
+                {
+                    PrinterName = "Microsoft XPS Document Writer",
+                    PrintToFile = true,
+                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+                };
                 stopWatch.Reset();
                 stopWatch.Start();
                 renderer.Print(printerSettings);

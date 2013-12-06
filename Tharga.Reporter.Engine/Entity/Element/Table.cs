@@ -234,49 +234,50 @@ namespace Tharga.Reporter.Engine.Entity.Element
         //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
-            if (_pageRowSet != null) throw new InvalidOperationException("PreRendering has already been performed.");
-            _pageRowSet = new List<PageRowSet>();
-
-            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
-
-            if (!renderData.IncludeBackground && IsBackground) 
-                return 0;
-
-            var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-            var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
-
-            var headerSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-            var lineSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
-
-            if (renderData.DocumentData != null)
+            if (_pageRowSet == null)
             {
-                var dataTable = renderData.DocumentData.GetDataTable(Name);
+                _pageRowSet = new List<PageRowSet>();
 
-                var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-                var pageIndex = 1;
-                var firstLineOnPage = 0;
-                for (var i = 0; i < dataTable.Rows.Count; i++)
+                renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+                if (!renderData.IncludeBackground && IsBackground)
+                    return 0;
+
+                var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
+                var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
+
+                var headerSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
+                var lineSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
+
+                if (renderData.DocumentData != null)
                 {
-                    top += lineSize.Height;
-                    top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                    var dataTable = renderData.DocumentData.GetDataTable(Name);
 
-                    if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                        top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
-
-                    pageIndex++;
-
-                    if (top > renderData.ElementBounds.Height - lineSize.Height)
+                    var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                    var pageIndex = 1;
+                    var firstLineOnPage = 0;
+                    for (var i = 0; i < dataTable.Rows.Count; i++)
                     {
-                        _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = i});
-                        firstLineOnPage = i + 1;
-                        top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                        top += lineSize.Height;
+                        top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+
+                        if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
+                            top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
+
+                        pageIndex++;
+
+                        if (top > renderData.ElementBounds.Height - lineSize.Height)
+                        {
+                            _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = i});
+                            firstLineOnPage = i + 1;
+                            top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                        }
                     }
+
+                    if (firstLineOnPage != dataTable.Rows.Count)
+                        _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
                 }
-
-                if (firstLineOnPage != dataTable.Rows.Count)
-                    _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
             }
-
             return _pageRowSet.Count;
         }
 
