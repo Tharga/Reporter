@@ -103,6 +103,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
             out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
         {
+            throw new NotSupportedException();
             elementBounds = GetBounds(parentBounds);
 
             if (!includeBackground && IsBackground) return false;
@@ -376,12 +377,30 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var pageIndex = 1;
 
                 var pageRowSet = new PageRowSet{FromRow = 1};
-                if ( _pageRowSet.Count > page - renderData.Section.GetPageOffset())
-                    pageRowSet = _pageRowSet[page - renderData.Section.GetPageOffset()];
+                var index = page - renderData.Section.GetPageOffset();
+                if (_pageRowSet.Count > index)
+                {
+                    try
+                    {
+                        pageRowSet = _pageRowSet[index];                    
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new InvalidOperationException(string.Format("_pageRowSet.Count={0}, index={1}", _pageRowSet.Count, index), exception);
+                    }
+                }
 
                 for (var i = pageRowSet.FromRow; i < pageRowSet.ToRow + 1; i++)
                 {
-                    var row = dataTable.Rows[i];
+                    Dictionary<string, string> row = null;
+                    try
+                    {
+                        row = dataTable.Rows[i];
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new InvalidOperationException(string.Format("dataTable.Rows.Count={0}, i={1}", dataTable.Rows.Count, i), exception);
+                    }
 
                     left = 0;
                     foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
