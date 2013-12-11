@@ -121,20 +121,13 @@ namespace Tharga.Reporter.Test
         }
 
         [Test]
-        public void When_rendering_several_tables_after_eachother()
+        public void When_rendering_several_times_with_the_same_template()
         {
             //Arrange
             var table1 = new Table{ Name = "TableA", Top = "2cm", Height="5cm"};
             table1.Columns.Add("ColumnA1", new TableColumn("Column A", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
-            //var table2 = new Table { Name = "TableB", Top = "10cm", Height = "5cm" };
-            //table2.Columns.Add("ColumnB1", new TableColumn("Column B1", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
-            //table2.Columns.Add("ColumnB2", new TableColumn("Column B2", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
-            //var table3 = new Table { Name = "TableC", Top = "20cm", Height = "5cm" };
-            //table3.Columns.Add("ColumnC1", new TableColumn("Column C1", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
             var section = new Section();
             section.Pane.ElementList.Add(table1);
-            //section.Pane.ElementList.Add(table2);
-            //section.Pane.ElementList.Add(table3);
             var template = new Template(section);
             var documentData1 = new DocumentData();
             for (var i = 0; i < 30; i++)
@@ -157,19 +150,6 @@ namespace Tharga.Reporter.Test
                 row1.Add("ColumnA1", "DataA" + i);
             }
 
-            //for (var i = 0; i < 50; i++)
-            //{
-            //    var row = documentData.GetDataTable("TableB").AddRow();
-            //    row.Add("ColumnB1", "DataB" + i);
-            //    row.Add("ColumnB2", "DataB" + i);
-            //}
-
-            //for (var i = 0; i < 2; i++)
-            //{
-            //    var row3 = documentData.GetDataTable("TableC").AddRow();
-            //    row3.Add("ColumnC1", "DataC" + i);
-            //}
-
             var renderer1 = new Renderer(template, documentData1);
             var renderer2 = new Renderer(template, documentData2);
             var renderer3 = new Renderer(template, documentData3);
@@ -179,11 +159,7 @@ namespace Tharga.Reporter.Test
             var data2 = renderer2.GetPdfBinary();
             var data3 = renderer3.GetPdfBinary();
 
-            //renderer.Print(new PrinterSettings());
-
-            //var data1 = renderer.GetPdfBinary();
-
-            //Assert
+            //Assert           
         }
     }
 }
