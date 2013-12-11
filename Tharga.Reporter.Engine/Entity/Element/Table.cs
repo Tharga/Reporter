@@ -235,8 +235,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
         //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
-            if (_pageRowSet == null)
-            {
+            //TODO: Make sure the renderer is only ran once for every data-set.
+            //Make sure the renderer is re-run when data changes (but the template is the same)
+            //if (_pageRowSet != null) throw new InvalidOperationException("Prerender has already been performed!");
+            
                 _pageRowSet = new List<PageRowSet>();
 
                 renderData.ElementBounds = GetBounds(renderData.ParentBounds);
@@ -278,7 +280,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     if (firstLineOnPage != dataTable.Rows.Count)
                         _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
                 }
-            }
             return _pageRowSet.Count;
         }
 

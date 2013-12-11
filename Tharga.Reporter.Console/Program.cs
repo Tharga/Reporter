@@ -150,6 +150,28 @@ namespace Tharga.Reporter.Console
                 stopWatch.Start();
                 renderer.Print(printerSettings);
                 System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+
+
+                renderer = new Renderer(template, documentData, useBackground, null, true);
+
+                //New way
+                stopWatch.Reset();
+                stopWatch.Start();
+                var bytes2 = renderer.GetPdfBinary();
+                System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                ExecuteFile(bytes2);
+
+                //Directly to printer
+                var printerSettings2 = new PrinterSettings
+                {
+                    PrinterName = "Microsoft XPS Document Writer",
+                    PrintToFile = true,
+                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+                };
+                stopWatch.Reset();
+                stopWatch.Start();
+                renderer.Print(printerSettings2);
+                System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             }
             catch (Exception exception)
             {
