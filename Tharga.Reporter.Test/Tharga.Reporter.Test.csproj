@@ -71,6 +71,7 @@
     <Compile Include="Rectangle_Tests.cs" />
     <Compile Include="ReferencePoint_Test.cs" />
     <Compile Include="Section_Test.cs" />
+    <Compile Include="TableColumn_Tests.cs" />
     <Compile Include="Table_Tests.cs" />
     <Compile Include="Template_Tests.cs" />
     <Compile Include="TextBox_Tests.cs" />

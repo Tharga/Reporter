@@ -376,12 +376,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
                 var pageIndex = 1;
 
+                var defaultRowset = true;
                 var pageRowSet = new PageRowSet{FromRow = 1};
                 var index = page - renderData.Section.GetPageOffset();
                 if (_pageRowSet.Count > index)
                 {
                     try
                     {
+                        defaultRowset = false;
                         pageRowSet = _pageRowSet[index];                    
                     }
                     catch (Exception exception)
@@ -399,7 +401,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     }
                     catch (Exception exception)
                     {
-                        throw new InvalidOperationException(string.Format("dataTable.Rows.Count={0}, i={1}", dataTable.Rows.Count, i), exception);
+                        var msg = string.Format("Looping from {0} to {1}. Currently at {2}, collection has {3} lines.", pageRowSet.FromRow, pageRowSet.ToRow + 1, i, dataTable.Rows.Count);
+                        throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, _pageRowSet.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Section.GetPageOffset(), index, pageRowSet.FromRow, pageRowSet.ToRow, _pageRowSet.Count, defaultRowset), exception);
                     }
 
                     left = 0;

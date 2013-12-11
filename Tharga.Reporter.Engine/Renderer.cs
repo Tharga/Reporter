@@ -18,7 +18,7 @@ namespace Tharga.Reporter.Engine
 {
     public class Renderer
     {
-        public enum PageSize { A4 }
+        public enum PageSize { A4, Letter }
 
         private readonly Template _template;
         private readonly DocumentData _documentData;

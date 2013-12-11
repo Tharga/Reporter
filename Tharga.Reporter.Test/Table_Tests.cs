@@ -1,36 +1,13 @@
 ﻿using System.Drawing;
+using System.Drawing.Printing;
 using NUnit.Framework;
+using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
 using Font = Tharga.Reporter.Engine.Entity.Font;
 
 namespace Tharga.Reporter.Test
 {
-    [TestFixture]
-    public class TableColumn_Tests
-    {
-        [Test]
-        public void Default_Table()
-        {
-            //Arrange
-            var table = new TableColumn("A", "2cm", Table.WidthMode.Specific, Table.Alignment.Left, "***");
-            var xme = table.ToXme();
-
-            //Act
-            var otherLine = TableColumn.Load(xme);
-
-            //Assert
-            Assert.AreEqual(table.Width, otherLine.Width);
-            Assert.AreEqual(table.Align, otherLine.Align);
-            Assert.AreEqual(table.DisplayName, otherLine.DisplayName);
-            Assert.AreEqual(table.Hide, otherLine.Hide);
-            Assert.AreEqual(table.HideValue, otherLine.HideValue);
-            Assert.AreEqual(table.WidthMode, otherLine.WidthMode);
-            Assert.AreEqual(table.ToString(), otherLine.ToString());
-            Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        }
-    }
-
     [TestFixture]
     public class Table_Tests
     {
@@ -123,6 +100,74 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(table.ToString(), otherLine.ToString());           
             Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
+        }
+
+        [Test]
+        [Ignore] //TODO: Fix
+        public void When_rendering_an_empty_table()
+        {
+            //Arrange
+            var table = new Table();
+            var section = new Section();
+            section.Pane.ElementList.Add(table);
+            var template = new Template(section);
+            var documentData = new DocumentData();
+            var renderer = new Renderer(template, documentData);
+
+            //Act
+            var data = renderer.GetPdfBinary();
+
+            //Assert
+        }
+
+        [Test]
+        public void When_rendering_several_tables_after_eachother()
+        {
+            //Arrange
+            var table1 = new Table{ Name = "TableA", Top = "2cm", Height="5cm"};
+            table1.Columns.Add("ColumnA1", new TableColumn("Column A", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
+            var table2 = new Table { Name = "TableB", Top = "10cm", Height = "5cm" };
+            table2.Columns.Add("ColumnB1", new TableColumn("Column B1", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
+            table2.Columns.Add("ColumnB2", new TableColumn("Column B2", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
+            var table3 = new Table { Name = "TableC", Top = "20cm", Height = "5cm" };
+            table3.Columns.Add("ColumnC1", new TableColumn("Column C1", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
+            var section = new Section();
+            section.Pane.ElementList.Add(table1);
+            section.Pane.ElementList.Add(table2);
+            section.Pane.ElementList.Add(table3);
+            var template = new Template(section);
+            var documentData = new DocumentData();
+            for (var i = 0; i < 30; i++)
+            {
+                var row1 = documentData.GetDataTable("TableA").AddRow();
+                row1.Add("ColumnA1", "DataA" + i);
+            }
+
+            for (var i = 0; i < 50; i++)
+            {
+                var row = documentData.GetDataTable("TableB").AddRow();
+                row.Add("ColumnB1", "DataB" + i);
+                row.Add("ColumnB2", "DataB" + i);
+            }
+
+            for (var i = 0; i < 2; i++)
+            {
+                var row3 = documentData.GetDataTable("TableC").AddRow();
+                row3.Add("ColumnC1", "DataC" + i);
+            }
+
+            var renderer = new Renderer(template, documentData);
+
+            //Act
+            //var data1 = renderer1.GetPdfBinary();
+            //var data2 = renderer2.GetPdfBinary();
+            //var data3 = renderer.GetPdfBinary();
+
+            //renderer.Print(new PrinterSettings());
+
+            var data1 = renderer.GetPdfBinary();
+
+            //Assert
         }
     }
 }
