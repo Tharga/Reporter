@@ -49,6 +49,9 @@
     <Reference Include="MigraDoc.RtfRendering">
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.RtfRendering.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1312.1323\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.dll</HintPath>
@@ -82,6 +85,7 @@
     <Compile Include="Entity\Element\Image.cs" />
     <Compile Include="Entity\Util\PageRowSet.cs" />
     <Compile Include="Extensions\PdfSharpExtensions.cs" />
+    <Compile Include="Interface\IGraphics.cs" />
     <Compile Include="Interface\IRenderData.cs" />
     <Compile Include="Entity\Element\Line.cs" />
     <Compile Include="Entity\Element\Base\MultiPageAreaElement.cs" />

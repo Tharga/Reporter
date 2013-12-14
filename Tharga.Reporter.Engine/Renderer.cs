@@ -11,6 +11,7 @@ using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Entity.Util;
+using Tharga.Reporter.Engine.Interface;
 using Section = Tharga.Reporter.Engine.Entity.Section;
 
 namespace Tharga.Reporter.Engine
@@ -27,14 +28,22 @@ namespace Tharga.Reporter.Engine
         
         private int _printPageCount;
         private bool _preRendered;
+        private readonly IGraphicsFactory _graphicsFactory;
 
-        public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
+        internal Renderer(IGraphicsFactory graphicsFactory, Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
         {
             _template = template;
             _documentData = documentData;
             _includeBackgroundObjects = includeBackgroundObjects;
             _documentProperties = documentProperties;
             _debug = debug;
+            _graphicsFactory = graphicsFactory;
+        }
+
+        public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
+            : this(new MyGraphicsFactory(), template, documentData, includeBackgroundObjects, documentProperties, debug)
+        {
+
         }
 
         #region Public access methods
@@ -102,12 +111,7 @@ namespace Tharga.Reporter.Engine
 
                 page.Size = pageSize.ToPageSize();
 
-                var gfx = XGraphics.FromPdfPage(page);
-                // HACK²
-                gfx.MUH = PdfFontEncoding.Unicode;
-                gfx.MFEH = PdfFontEmbedding.Default;
-
-                docRenderer.RenderPage(gfx, ii + 1);
+                var gfx = _graphicsFactory.PrepareGraphics(page, docRenderer, ii);
 
                 DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height), preRender, ii, _template.SectionList.Sum(x => x.GetRenderPageCount()));
             }
@@ -182,7 +186,7 @@ namespace Tharga.Reporter.Engine
             var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
             gfx.ScaleTransform(scale);
 
-            DoRenderStuff(gfx, new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
+            DoRenderStuff(new MyGraphics(gfx), new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
         }
 
         private static XSize GetSize(XSize rawSize)
@@ -211,7 +215,7 @@ namespace Tharga.Reporter.Engine
             return xSize;
         }
 
-        private void DoRenderStuff(XGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
+        private void DoRenderStuff(IGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
         {
             var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
             var debugFont = new XFont("Verdana", 10);
@@ -338,6 +342,103 @@ namespace Tharga.Reporter.Engine
             }
 
             return doc;
+        }
+    }
+
+    internal class MyGraphicsFactory : IGraphicsFactory
+    {
+        public IGraphics PrepareGraphics(PdfPage page, DocumentRenderer docRenderer, int ii)
+        {
+            var gfx = XGraphics.FromPdfPage(page);
+            gfx.MUH = PdfFontEncoding.Unicode;
+            gfx.MFEH = PdfFontEmbedding.Default;
+            docRenderer.RenderPage(gfx, ii + 1);
+            return new MyGraphics(gfx);
+        }
+    }
+
+    internal class MyGraphics : IGraphics
+    {
+        private readonly XGraphics _gfx;
+
+        public MyGraphics(XGraphics gfx)
+        {
+            _gfx = gfx;
+        }
+
+        public XSize MeasureString(string code, XFont legendFont)
+        {
+            return _gfx.MeasureString(code, legendFont);
+        }
+
+        public XSize MeasureString(string code, XFont legendFont, XStringFormat topLeft)
+        {
+            return _gfx.MeasureString(code, legendFont, topLeft);
+        }
+
+        public void DrawImage(XImage image, XRect xRect)
+        {
+            _gfx.DrawImage(image, xRect);
+        }
+
+        public void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, XPoint xPoint, XStringFormat topLeft)
+        {
+            _gfx.DrawString(code, legendFont, legendBrush, xPoint, topLeft);
+        }
+
+        public void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, XRect rect)
+        {
+            _gfx.DrawString(code, legendFont, legendBrush, rect);
+        }
+
+        public void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, double x, double y)
+        {
+            _gfx.DrawString(code, legendFont, legendBrush, x, y);
+        }
+
+        public void DrawString(string text, XFont font, XSolidBrush brush, XRect elementBounds, XStringFormat formats)
+        {
+            _gfx.DrawString(text, font, brush, elementBounds, formats);
+        }
+
+        public void DrawString(string line, XFont font, XBrush brush, double left, double top, XStringFormat formats)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawString(string text, XFont font, XBrush brush, XPoint point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLine(XPen debugPen, double left, double p2, double p3, double height)
+        {
+            _gfx.DrawLine(debugPen, left, p2, p3, height);
+        }
+
+        public void DrawRectangle(XPen debugPen, double left, double top, double width, double height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRectangle(XPen pen, XBrush brush, XRect rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRectangle(XPen pen, XRect rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRectangle(XPen borderPen, XBrush brush, double p1, double p2, double p3, double p4)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawEllipse(XPen pen, double d, double d1, int i, int i1)
+        {
+            throw new NotImplementedException();
         }
     }
 }

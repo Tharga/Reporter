@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -33,10 +34,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (BackgroundColor != null)
                 {
                     var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
-                    renderData.Gfx.DrawRectangle(pen, brush, renderData.ElementBounds);
+                    renderData.Graphics.DrawRectangle(pen, brush, renderData.ElementBounds);
                 }
                 else
-                    renderData.Gfx.DrawRectangle(pen, renderData.ElementBounds);
+                    renderData.Graphics.DrawRectangle(pen, renderData.ElementBounds);
             }
         }
 

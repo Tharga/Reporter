@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {

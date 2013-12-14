@@ -1,9 +1,14 @@
 ﻿using System.Drawing;
 using System.Drawing.Printing;
+using MigraDoc.Rendering;
+using Moq;
 using NUnit.Framework;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Engine.Interface;
 using Font = Tharga.Reporter.Engine.Entity.Font;
 
 namespace Tharga.Reporter.Test
@@ -150,9 +155,17 @@ namespace Tharga.Reporter.Test
                 row1.Add("ColumnA1", "DataA" + i);
             }
 
-            var renderer1 = new Renderer(template, documentData1);
-            var renderer2 = new Renderer(template, documentData2);
-            var renderer3 = new Renderer(template, documentData3);
+            var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
+            graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize());
+            graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize());
+            graphicsMock.Setup(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<XStringFormat>()));
+
+            var graphicsFactoryMock = new Mock<IGraphicsFactory>(MockBehavior.Strict);
+            graphicsFactoryMock.Setup(x => x.PrepareGraphics(It.IsAny<PdfPage>(), It.IsAny<DocumentRenderer>(), It.IsAny<int>())).Returns(graphicsMock.Object);
+
+            var renderer1 = new Renderer(graphicsFactoryMock.Object, template, documentData1);
+            var renderer2 = new Renderer(graphicsFactoryMock.Object, template, documentData2);
+            var renderer3 = new Renderer(graphicsFactoryMock.Object, template, documentData3);
 
             //Act
             var data1 = renderer1.GetPdfBinary();

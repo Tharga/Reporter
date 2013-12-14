@@ -36,3 +36,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("Tharga.Reporter.Tests")]
+//[assembly: InternalsVisibleTo("Castle.DynamicProxy.Generators")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+//[assembly: InternalsVisibleTo("Castle.DynamicProxy")]

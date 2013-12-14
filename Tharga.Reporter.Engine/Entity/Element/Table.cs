@@ -5,8 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -100,138 +99,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             _rowPointer = 0;
         }
 
-        internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            throw new NotSupportedException();
-            elementBounds = GetBounds(parentBounds);
-
-            if (!includeBackground && IsBackground) return false;
-
-            using (var gfx = XGraphics.FromPdfPage(page))
-            {
-                var debugPen = new XPen(XColor.FromArgb(Color.Yellow), 0.1);
-                var headerFont = new XFont(_headerFont.GetName(section), _headerFont.GetSize(section), _headerFont.GetStyle(section));
-                var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(section)));
-                var lineFont = new XFont(_contentFont.GetName(section), _contentFont.GetSize(section), _contentFont.GetStyle(section));
-                var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(section)));
-
-                var headerSize = gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-                var lineSize = gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
-
-                RenderBorder(elementBounds, gfx, headerSize);
-
-                var dataTable = documentData.GetDataTable(Name);
-                var columnPadding = ColumnPadding.GetXUnitValue(elementBounds.Width);
-
-                var springCount = _columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
-
-                //Calculate column width
-                foreach (var column in _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
-                {
-                    var stringSize = gfx.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
-
-                    if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(elementBounds.Width))
-                        column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
-
-                    if (column.Value.HideValue != null)
-                        column.Value.Hide = true;
-
-                    foreach (var row in dataTable.Rows)
-                    {
-                        var cellData = GetValue(column.Key, row);
-                        stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                        if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(elementBounds.Width))
-                            column.Value.Width = UnitValue.Parse((stringSize.Width + (columnPadding*2)).ToString(CultureInfo.InvariantCulture) + "px");
-
-                        var parsedHideValue = GetValue(column.Value.HideValue, row);
-                        if (parsedHideValue != cellData)
-                            column.Value.Hide = false;
-                    }
-
-                    if (column.Value.Hide)
-                        column.Value.Width = new UnitValue();
-                }
-
-                var totalWidth = elementBounds.Width;
-                var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.Value.GetXUnitValue(totalWidth));
-
-                if (springCount > 0)
-                {
-                    foreach (var column in _columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
-                    {
-                        column.Value.Width = UnitValue.Parse(((elementBounds.Width - nonSpringWidth)/springCount).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
-
-                //Create header
-                double left = 0;
-                var tableColumns = _columns.Values.Where(x => !x.Hide).ToList();
-                foreach (var column in tableColumns)
-                {
-                    var alignmentJusttification = 0D;
-                    if (column.Align == Alignment.Right)
-                    {
-                        var stringSize = gfx.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
-                        alignmentJusttification = column.Width.Value.GetXUnitValue(elementBounds.Width) - stringSize.Width - columnPadding;
-                    }
-                    else
-                        alignmentJusttification += columnPadding;
-                    gfx.DrawString(column.DisplayName, headerFont, headerBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top, XStringFormats.TopLeft);
-                    left += column.Width.Value.GetXUnitValue(elementBounds.Width);
-
-                    if (debug)
-                        gfx.DrawLine(debugPen, elementBounds.Left + left, elementBounds.Top, elementBounds.Left + left, elementBounds.Bottom);
-                }
-
-                var top = headerSize.Height + RowPadding.GetXUnitValue(elementBounds.Height);
-                var pageIndex = 1;
-                for (var i = _rowPointer; i < dataTable.Rows.Count; i++)
-                {
-                    var row = dataTable.Rows[i];
-
-                    left = 0;
-                    foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
-                    {
-                        var cellData = GetValue(column.Key, row);
-
-                        var alignmentJusttification = 0D;
-                        if (column.Value.Align == Alignment.Right)
-                        {
-                            var stringSize = gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            alignmentJusttification = column.Value.Width.Value.GetXUnitValue(elementBounds.Width) - stringSize.Width - columnPadding;
-                        }
-                        else
-                            alignmentJusttification += columnPadding;
-
-                        var parsedHideValue = GetValue(column.Value.HideValue, row);
-                        if (parsedHideValue == cellData)
-                            cellData = "";
-
-                        gfx.DrawString(cellData, lineFont, lineBrush, elementBounds.Left + left + alignmentJusttification, elementBounds.Top + top, XStringFormats.TopLeft);
-                        left += column.Value.Width.Value.GetXUnitValue(elementBounds.Width);
-                    }
-                    top += lineSize.Height;
-                    top += RowPadding.GetXUnitValue(elementBounds.Height);
-
-                    if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                        top += SkipLine.Height.GetXUnitValue(elementBounds.Height);
-
-                    pageIndex++;
-
-                    if (top > elementBounds.Height - lineSize.Height)
-                    {
-                        _rowPointer = i + 1;
-                        return true;
-                    }
-                }
-
-                if (debug)
-                    gfx.DrawRectangle(debugPen, elementBounds);
-            }
-            return false;
-        }
-
         //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
@@ -249,8 +116,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
                 var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
 
-                var headerSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-                var lineSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
+                var headerSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
+                var lineSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
 
                 if (renderData.DocumentData != null)
                 {
@@ -300,13 +167,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
             var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(renderData.Section)));
 
-            var headerSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-            var lineSize = renderData.Gfx.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
+            var headerSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
+            var lineSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
 
-            RenderBorder(renderData.ElementBounds, renderData.Gfx, headerSize);
+            RenderBorder(renderData.ElementBounds, renderData.Graphics, headerSize);
 
             if (renderData.Debug)
-                renderData.Gfx.DrawString(string.Format("Table: {0}", Name), debugFont, debugBrush, renderData.ElementBounds.Center);
+                renderData.Graphics.DrawString(string.Format("Table: {0}", Name), debugFont, debugBrush, renderData.ElementBounds.Center);
 
             if (renderData.DocumentData != null)
             {
@@ -318,7 +185,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 //Calculate column width
                 foreach (var column in _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
                 {
-                    var stringSize = renderData.Gfx.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
+                    var stringSize = renderData.Graphics.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
 
                     if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
                         column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
@@ -329,7 +196,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     foreach (var row in dataTable.Rows)
                     {
                         var cellData = GetValue(column.Key, row);
-                        stringSize = renderData.Gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                        stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
                         if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
                             column.Value.Width = UnitValue.Parse((stringSize.Width + (columnPadding*2)).ToString(CultureInfo.InvariantCulture) + "px");
 
@@ -361,17 +228,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     var alignmentJusttification = 0D;
                     if (column.Align == Alignment.Right)
                     {
-                        var stringSize = renderData.Gfx.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
+                        var stringSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
                         alignmentJusttification = column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
                     }
                     else
                         alignmentJusttification += columnPadding;
 
-                    renderData.Gfx.DrawString(column.DisplayName, headerFont, headerBrush, renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top, XStringFormats.TopLeft);
+                    renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top, XStringFormats.TopLeft);
                     left += column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
 
                     if (renderData.Debug)
-                        renderData.Gfx.DrawLine(debugPen, renderData.ElementBounds.Left + left, renderData.ElementBounds.Top, renderData.ElementBounds.Left + left, renderData.ElementBounds.Bottom);
+                        renderData.Graphics.DrawLine(debugPen, renderData.ElementBounds.Left + left, renderData.ElementBounds.Top, renderData.ElementBounds.Left + left, renderData.ElementBounds.Bottom);
                 }
 
                 var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
@@ -414,7 +281,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         var alignmentJusttification = 0D;
                         if (column.Value.Align == Alignment.Right)
                         {
-                            var stringSize = renderData.Gfx.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                            var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
                             alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
                         }
                         else
@@ -424,7 +291,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         if (parsedHideValue == cellData)
                             cellData = "";
 
-                        renderData.Gfx.DrawString(cellData, lineFont, lineBrush, renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top, XStringFormats.TopLeft);
+                        renderData.Graphics.DrawString(cellData, lineFont, lineBrush, renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top, XStringFormats.TopLeft);
                         left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
                     }
                     top += lineSize.Height;
@@ -438,10 +305,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
 
             if (renderData.Debug)
-                renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds);
+                renderData.Graphics.DrawRectangle(debugPen, renderData.ElementBounds);
         }
 
-        private void RenderBorder(XRect elementBounds, XGraphics gfx, XSize headerSize)
+        private void RenderBorder(XRect elementBounds, IGraphics gfx, XSize headerSize)
         {
             if (ContentBorderColor != null || ContentBackgroundColor != null)
             {

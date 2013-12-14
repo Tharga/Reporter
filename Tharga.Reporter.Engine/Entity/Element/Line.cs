@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -24,7 +25,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 var borderWidth = UnitValue.Parse(Thickness);
                 var pen = new XPen(XColor.FromArgb(Color), borderWidth.GetXUnitValue(0));
 
-                renderData.Gfx.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);
+                renderData.Graphics.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);
             }
         }
 

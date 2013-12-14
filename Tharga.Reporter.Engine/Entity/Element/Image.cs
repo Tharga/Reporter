@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -25,7 +26,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 using (var image = XImage.FromGdiPlusImage(imageData))
                 {
-                    renderData.Gfx.DrawImage(image, renderData.ElementBounds);
+                    renderData.Graphics.DrawImage(image, renderData.ElementBounds);
                 }
             }
 

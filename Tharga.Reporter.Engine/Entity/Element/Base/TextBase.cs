@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -53,7 +54,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
-            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+            var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
 
             var offset = 0D;
             if (TextAlignment == Alignment.Right)
@@ -77,12 +78,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     || Visibility == PageVisibility.WhenSinglePage && renderData.PageNumberInfo.TotalPages == 1
                     || Visibility == PageVisibility.WhenMultiplePages && renderData.PageNumberInfo.TotalPages > 1)
                 {
-                    renderData.Gfx.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
+                    renderData.Graphics.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
 
                     if (renderData.Debug)
                     {
                         var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
-                        renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
+                        renderData.Graphics.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
                     }
                 }
             }

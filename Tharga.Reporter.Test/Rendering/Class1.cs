@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Moq;
 using NUnit.Framework;
+using PdfSharp.Drawing;
+using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Engine.Interface;
+using Text = Tharga.Reporter.Engine.Entity.Element.Text;
 
 namespace Tharga.Reporter.Test.Rendering
 {
@@ -11,9 +12,20 @@ namespace Tharga.Reporter.Test.Rendering
     class Class1
     {
         [Test]
-        public void Test()
+        public void When_rendering_text()
         {
-            Assert.Fail("Some error");
+            //Arrange
+            var text = new Text();
+            var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
+            renderDataMock.Setup(x => x.ParentBounds).Returns(new XRect());
+            renderDataMock.Setup(x => x.Section).Returns(new Section());
+            renderDataMock.Setup(x => x.DocumentData).Returns((DocumentData)null);
+            renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 2));
+
+            //Act
+            text.Render(renderDataMock.Object);
+
+            //Assert
         }
     }
 }

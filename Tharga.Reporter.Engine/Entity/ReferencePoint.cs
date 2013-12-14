@@ -5,6 +5,7 @@ using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Entity.Util;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Area
 {
@@ -25,7 +26,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var bounds = GetBounds(renderData.ParentBounds);
 
-            var rd = new RenderData(renderData.Gfx, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug, renderData.IncludeBackground);
+            var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug, renderData.IncludeBackground);
             var pageCount = PreRenderChildren(rd);
 
             //TODO: Change the width and height to the actual area used
@@ -37,17 +38,17 @@ namespace Tharga.Reporter.Engine.Entity.Area
         internal override void Render(IRenderData renderData, int page)
         {
             var bounds = GetBounds(renderData.ParentBounds);
-            
-            var rd = new RenderData(renderData.Gfx, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug,renderData.IncludeBackground);
+
+            var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug, renderData.IncludeBackground);
             RenderChildren(rd, page);
 
             if (renderData.Debug)
             {
                 var pen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
                 const int radius = 10;
-                renderData.Gfx.DrawEllipse(pen, bounds.Left - radius, bounds.Top - radius, radius * 2, radius * 2);
-                renderData.Gfx.DrawLine(pen, bounds.Left - radius - 2, bounds.Top, bounds.Left + radius + 2, bounds.Top);
-                renderData.Gfx.DrawLine(pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
+                renderData.Graphics.DrawEllipse(pen, bounds.Left - radius, bounds.Top - radius, radius * 2, radius * 2);
+                renderData.Graphics.DrawLine(pen, bounds.Left - radius - 2, bounds.Top, bounds.Left + radius + 2, bounds.Top);
+                renderData.Graphics.DrawLine(pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
             }
 
             //TODO: Change the width and height to the actual area used

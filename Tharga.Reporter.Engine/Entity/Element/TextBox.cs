@@ -6,6 +6,7 @@ using System.Xml;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -49,79 +50,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             _wordPointer = 0;
         }
 
-        internal override bool Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            elementBounds = GetBounds(parentBounds);
-
-            if (!includeBackground && IsBackground) return false;
-
-            using (var gfx = XGraphics.FromPdfPage(page))
-            {
-                if (debug)
-                {
-                    var debugPen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
-                    gfx.DrawRectangle(debugPen, elementBounds);
-                }
-
-                var font = new XFont(_font.GetName(section), _font.GetSize(section), _font.GetStyle(section));
-                var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(section)));
-
-                var text = GetValue(documentData, pageNumberInfo);
-                var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
-
-                var left = elementBounds.Left;
-                var top = elementBounds.Top;
-
-                //Cut the string, so that it can fit within the rectangle
-                if (textSize.Width > elementBounds.Width)
-                {
-                    _words = text.Split(' ');
-                    
-                    var sb = new StringBuilder();
-                    for (var i = _wordPointer; i < _words.Length; i++)
-                    {
-                        var word = _words[i];
-
-                        var ready = sb.ToString();
-                        sb.AppendFormat("{0} ", word);
-                        var newTextSize = gfx.MeasureString(sb.ToString(), font, XStringFormats.TopLeft);
-                        if (newTextSize.Width > elementBounds.Width)
-                        {
-                            if (string.IsNullOrEmpty(ready))
-                            {
-                                //One singe word that is too long, print it anyway
-                                gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
-                            }
-                            else
-                            {
-                                gfx.DrawString(ready, font, brush, left, top, XStringFormats.TopLeft);
-                                sb.Clear();
-                                sb.AppendFormat("{0} ", word);
-                            }
-                            top += newTextSize.Height;
-
-                            if (top > elementBounds.Bottom - newTextSize.Height)
-                            {
-                                //TODO: Span to next page!
-                                //TODO: store a pointer in this section that can be resumed on next page
-                                //_wordsLeft = words.GetRange()
-                                _wordPointer = i;
-                                return true;
-                            }
-                        }
-                    }
-
-                    //Print what is left of the text
-                    gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
-                    //_wordPointer = 0; //This would make the text continue from start on the following pages.
-                    _wordPointer = _words.Length; //This would make the text be blank on any trailing pages.
-                }
-                else
-                    gfx.DrawString(text, font, brush, left, top, XStringFormats.TopLeft);
-            }
-            return false;
-        }
-
         //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
@@ -136,7 +64,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
-            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+            var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
 
             var left = renderData.ElementBounds.Left;
             var top = renderData.ElementBounds.Top;
@@ -152,7 +80,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 {
                     var textSoFar = sb.ToString();
                     sb.AppendFormat("{0} ", nextWord);
-                    var nextTextSize = renderData.Gfx.MeasureString(sb.ToString(), font, XStringFormats.TopLeft);
+                    var nextTextSize = renderData.Graphics.MeasureString(sb.ToString(), font, XStringFormats.TopLeft);
                     if (nextTextSize.Width > renderData.ElementBounds.Width) //Now we are over the limit (Previous state will fit)
                     {
                         if (string.IsNullOrEmpty(textSoFar))
@@ -199,14 +127,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (renderData.Debug)
             {
                 var debugPen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
-                renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds);
+                renderData.Graphics.DrawRectangle(debugPen, renderData.ElementBounds);
             }
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
             var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
-            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+            var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
 
             var left = renderData.ElementBounds.Left;
             var top = renderData.ElementBounds.Top;
@@ -215,8 +143,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 foreach (var line in _pageText[page - renderData.Section.GetPageOffset()])
                 {
-                    renderData.Gfx.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
-                    var newTextSize = renderData.Gfx.MeasureString(line, font, XStringFormats.TopLeft);
+                    renderData.Graphics.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
+                    var newTextSize = renderData.Graphics.MeasureString(line, font, XStringFormats.TopLeft);
                     top += newTextSize.Height;
                 }
             }

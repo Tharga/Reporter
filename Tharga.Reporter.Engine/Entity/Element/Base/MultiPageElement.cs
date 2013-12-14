@@ -1,3 +1,5 @@
+using Tharga.Reporter.Engine.Interface;
+
 namespace Tharga.Reporter.Engine.Entity.Element
 {
     public abstract class MultiPageElement : Element
