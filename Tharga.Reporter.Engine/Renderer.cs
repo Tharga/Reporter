@@ -27,6 +27,7 @@ namespace Tharga.Reporter.Engine
         private readonly bool _debug;
         
         private int _printPageCount;
+        //private int? _totalPages;
         private bool _preRendered;
 
         public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
@@ -110,11 +111,14 @@ namespace Tharga.Reporter.Engine
 
                 docRenderer.RenderPage(gfx, ii + 1);
 
-                DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height), preRender, ii);
+                DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height), preRender, ii, _template.SectionList.Sum(x => x.GetRenderPageCount()));
             }
 
             if (preRender)
+            {
                 _preRendered = true;
+                //_totalPages = _template.SectionList.Sum(x => x.GetRenderPageCount());
+            }
         }
 
         private PdfDocument CreatePdfDocument()
@@ -181,7 +185,7 @@ namespace Tharga.Reporter.Engine
             var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
             gfx.ScaleTransform(scale);
 
-            DoRenderStuff(gfx, new XRect(unitSize), false, _printPageCount++);
+            DoRenderStuff(gfx, new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
         }
 
         private static XSize GetSize(XSize rawSize)
@@ -210,7 +214,7 @@ namespace Tharga.Reporter.Engine
             return xSize;
         }
 
-        private void DoRenderStuff(XGraphics gfx, XRect size, bool preRender, int page)
+        private void DoRenderStuff(XGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
         {
             var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
             var debugFont = new XFont("Verdana", 10);
@@ -218,7 +222,7 @@ namespace Tharga.Reporter.Engine
 
             var postRendering = new List<Action>();
 
-            var pageNumberInfo = new PageNumberInfo(page + 1);
+            var pageNumberInfo = new PageNumberInfo(page + 1, totalPages);
 
             var section = GetSection(preRender, page);
             section.Pane.ClearRenderPointers();

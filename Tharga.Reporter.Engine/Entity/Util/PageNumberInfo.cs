@@ -4,13 +4,17 @@ namespace Tharga.Reporter.Engine.Entity.Area
 {
     public class PageNumberInfo
     {
-        public readonly int PageNumber;
-        public static int? TotalPages;
+        private readonly int _pageNumber;
+        private readonly int? _totalPages;
 
-        public PageNumberInfo(int pageNumber)
+        public PageNumberInfo(int pageNumber, int? totalPages)
         {
-            PageNumber = pageNumber;
+            _pageNumber = pageNumber;
+            _totalPages = totalPages;
         }
+
+        public int PageNumber { get { return _pageNumber; } }
+        public int? TotalPages { get { return _totalPages; } }
 
         //TODO: Write tests for this
         public string GetPageNumberInfo(string dataName)

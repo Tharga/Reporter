@@ -43,6 +43,7 @@ namespace Tharga.Reporter.Engine
             return engine.Render();
         }        
 
+        [Obsolete]
         private byte[] Render()
         {
 
@@ -94,7 +95,7 @@ namespace Tharga.Reporter.Engine
                 {
                     //Add a new page for the section
                     var page = pdfDocument.AddPage();
-                    var pageNumberInfo = new PageNumberInfo(++pageNumber);
+                    var pageNumberInfo = new PageNumberInfo(++pageNumber,null);
 
                     //TODO: read page size from section
                     //page.Size = PdfSharp.PageSize.Letter;
@@ -193,7 +194,7 @@ namespace Tharga.Reporter.Engine
                 }
             }
 
-            PageNumberInfo.TotalPages = pageNumber;
+            //PageNumberInfo.TotalPages = pageNumber;
 
             foreach (var action in postRendering)
             {

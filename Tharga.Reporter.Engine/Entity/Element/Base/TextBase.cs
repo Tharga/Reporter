@@ -79,16 +79,30 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (renderData.IncludeBackground || !IsBackground)
             {
-                renderData.Gfx.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
+                if (renderData.PageNumberInfo.TotalPages == null)
+                    throw new InvalidOperationException("The prerendering step did not set the number of total pages!");
 
-                if (renderData.Debug)
+                //Depending on visibility mode
+                if (TextVisibility == Visibility.All
+                    || TextVisibility == Visibility.FirstPage && renderData.PageNumberInfo.PageNumber == 1
+                    || TextVisibility == Visibility.AllButFirst && renderData.PageNumberInfo.PageNumber != 1
+                    || TextVisibility == Visibility.LastPage && renderData.PageNumberInfo.PageNumber == renderData.PageNumberInfo.TotalPages
+                    || TextVisibility == Visibility.AllButLast && renderData.PageNumberInfo.PageNumber != renderData.PageNumberInfo.TotalPages
+                    || TextVisibility == Visibility.WhenSinglePage && renderData.PageNumberInfo.TotalPages == 1
+                    || TextVisibility == Visibility.WhenMultiplePages && renderData.PageNumberInfo.TotalPages > 1)
                 {
-                    var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
-                    renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
+                    renderData.Gfx.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
+
+                    if (renderData.Debug)
+                    {
+                        var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
+                        renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
+                    }
                 }
             }
         }
 
+        [Obsolete]
         internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
                                                 DocumentData documentData, out XRect elementBounds, bool includeBackground,
                                                 bool debug, PageNumberInfo pageNumberInfo, Section section)

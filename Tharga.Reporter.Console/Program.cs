@@ -39,6 +39,9 @@ namespace Tharga.Reporter.Console
 
         private static void Different_text_on_different_pages()
         {
+            //TODO: Create a sample with multiple sections (And different settings) with out multi-page-elements
+            //TODO: Create a sample with a single section (And different settings) with out multi-page-elements
+            
             var section = new Section();
 
             section.Margin = new UnitRectangle {Left = "2cm", Right = "2cm", Top = "2cm", Bottom = "2cm"};
@@ -176,28 +179,6 @@ namespace Tharga.Reporter.Console
                 stopWatch.Start();
                 renderer.Print(printerSettings);
                 System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-
-
-                renderer = new Renderer(template, documentData, useBackground, null, true);
-
-                ////New way
-                //stopWatch.Reset();
-                //stopWatch.Start();
-                //var bytes2 = renderer.GetPdfBinary();
-                //System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-                //ExecuteFile(bytes2);
-
-                ////Directly to printer
-                //var printerSettings2 = new PrinterSettings
-                //{
-                //    PrinterName = "Microsoft XPS Document Writer",
-                //    PrintToFile = true,
-                //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-                //};
-                //stopWatch.Reset();
-                //stopWatch.Start();
-                //renderer.Print(printerSettings2);
-                //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             }
             catch (Exception exception)
             {
