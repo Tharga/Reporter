@@ -8,6 +8,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public abstract class TextBase : SinglePageAreaElement
     {
+        public enum Visibility
+        {
+            All,
+            FirstPage,
+            LastPage,
+            AllButFirst,
+            AllButLast,
+            WhenMultiplePages,
+            WhenSinglePage
+        };
+
         private readonly Font _defaultFont = new Font();
         private const Alignment _defaultTextAlignmen = Alignment.Left;
 
@@ -16,6 +27,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private Font _font;
         private string _fontClass;
         private Alignment? _textAlignment;
+        private Visibility? _textVisibility;
 
         public Font Font
         {
@@ -44,6 +56,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         public Alignment TextAlignment { get { return _textAlignment ?? _defaultTextAlignmen; } set { _textAlignment = value; } }
+
+        public Visibility TextVisibility { get { return _textVisibility ?? Visibility.All; } set { _textVisibility = value; } }
 
         internal override void Render(IRenderData renderData)
         {
@@ -135,6 +149,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var xmlFontClass = xme.Attributes["FontClass"];
             if (xmlFontClass != null)
                 FontClass = xmlFontClass.Value;
+
+            var xmlVisibility = xme.Attributes["Visibility"];
+            if (xmlVisibility != null)
+                TextVisibility = (Visibility) Enum.Parse(typeof (Visibility), xmlVisibility.Value, true);
         }
                 
         internal override XmlElement ToXme()
@@ -153,6 +171,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (_fontClass != null)
                 xme.SetAttribute("FontClass", _fontClass);
+
+            if (_textVisibility != null)
+                xme.SetAttribute("Visibility", _textVisibility.Value.ToString());
 
             return xme;
         }

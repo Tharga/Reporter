@@ -18,27 +18,27 @@ namespace Tharga.Reporter.Test
             var xme = text.ToXme();
 
             //Act
-            var otherLine = Text.Load(xme);
+            var other = Text.Load(xme);
 
             //Assert
-            Assert.AreEqual(text.Left, otherLine.Left);
-            Assert.AreEqual(text.Right, otherLine.Right);
-            Assert.AreEqual(text.Width, otherLine.Width);
-            Assert.AreEqual(text.Top, otherLine.Top);
-            Assert.AreEqual(text.Bottom, otherLine.Bottom);
-            Assert.AreEqual(text.Height, otherLine.Height);
-            Assert.AreEqual(text.Font.FontName, otherLine.Font.FontName);
-            Assert.AreEqual(text.Font.Size, otherLine.Font.Size);
-            Assert.AreEqual(text.Font.Color, otherLine.Font.Color);
-            Assert.AreEqual(text.FontClass, otherLine.FontClass);
-            Assert.AreEqual(text.HideValue, otherLine.HideValue);
-            Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.TextAlignment, otherLine.TextAlignment);
-            Assert.AreEqual(text.Value, otherLine.Value);
-            Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
-            Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.ToString(), otherLine.ToString());
-            Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
+            Assert.AreEqual(text.Left, other.Left);
+            Assert.AreEqual(text.Right, other.Right);
+            Assert.AreEqual(text.Width, other.Width);
+            Assert.AreEqual(text.Top, other.Top);
+            Assert.AreEqual(text.Bottom, other.Bottom);
+            Assert.AreEqual(text.Height, other.Height);
+            Assert.AreEqual(text.Font.FontName, other.Font.FontName);
+            Assert.AreEqual(text.Font.Size, other.Font.Size);
+            Assert.AreEqual(text.Font.Color, other.Font.Color);
+            Assert.AreEqual(text.FontClass, other.FontClass);
+            Assert.AreEqual(text.HideValue, other.HideValue);
+            Assert.AreEqual(text.TextAlignment, other.TextAlignment);
+            Assert.AreEqual(text.Value, other.Value);
+            Assert.AreEqual(text.IsBackground, other.IsBackground);
+            Assert.AreEqual(text.Name, other.Name);
+            Assert.AreEqual(text.TextVisibility, other.TextVisibility);
+            Assert.AreEqual(text.ToString(), other.ToString());
+            Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
         }
 
         [Test]
@@ -52,27 +52,27 @@ namespace Tharga.Reporter.Test
             var xme = text.ToXme();
 
             //Act
-            var otherLine = Text.Load(xme);
+            var other = Text.Load(xme);
 
             //Assert
-            Assert.AreEqual(text.Left, otherLine.Left);
-            Assert.AreEqual(text.Right, otherLine.Right);
-            Assert.AreEqual(text.Width, otherLine.Width);
-            Assert.AreEqual(text.Top, otherLine.Top);
-            Assert.AreEqual(text.Bottom, otherLine.Bottom);
-            Assert.AreEqual(text.Height, otherLine.Height);
-            Assert.AreEqual(text.Font.FontName, otherLine.Font.FontName);
-            Assert.AreEqual(text.Font.Size, otherLine.Font.Size);
-            Assert.AreEqual(text.Font.Color.ToArgb(), otherLine.Font.Color.ToArgb());
-            Assert.AreEqual(text.FontClass, otherLine.FontClass);
-            Assert.AreEqual(text.HideValue, otherLine.HideValue);
-            Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.TextAlignment, otherLine.TextAlignment);
-            Assert.AreEqual(text.Value, otherLine.Value);
-            Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
-            Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.ToString(), otherLine.ToString());
-            Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
+            Assert.AreEqual(text.Left, other.Left);
+            Assert.AreEqual(text.Right, other.Right);
+            Assert.AreEqual(text.Width, other.Width);
+            Assert.AreEqual(text.Top, other.Top);
+            Assert.AreEqual(text.Bottom, other.Bottom);
+            Assert.AreEqual(text.Height, other.Height);
+            Assert.AreEqual(text.Font.FontName, other.Font.FontName);
+            Assert.AreEqual(text.Font.Size, other.Font.Size);
+            Assert.AreEqual(text.Font.Color.ToArgb(), other.Font.Color.ToArgb());
+            Assert.AreEqual(text.FontClass, other.FontClass);
+            Assert.AreEqual(text.HideValue, other.HideValue);
+            Assert.AreEqual(text.TextVisibility, other.TextVisibility);
+            Assert.AreEqual(text.TextAlignment, other.TextAlignment);
+            Assert.AreEqual(text.Value, other.Value);
+            Assert.AreEqual(text.IsBackground, other.IsBackground);
+            Assert.AreEqual(text.Name, other.Name);
+            Assert.AreEqual(text.ToString(), other.ToString());
+            Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
         }
 
         [Test]
@@ -95,32 +95,33 @@ namespace Tharga.Reporter.Test
                             FontName = "Verdana",
                             Color = Color.MistyRose,
                             Size = 13,
-                        }
+                        },
+                    TextVisibility = TextBase.Visibility.AllButLast,
                 };
             var xme = text.ToXme();
 
             //Act
-            var otherLine = Text.Load(xme);
+            var other = Text.Load(xme);
 
             //Assert
-            Assert.AreEqual(text.Left, otherLine.Left);
-            Assert.AreEqual(text.Right, otherLine.Right);
-            Assert.AreEqual(text.Width, otherLine.Width);
-            Assert.AreEqual(text.Top, otherLine.Top);
-            Assert.AreEqual(text.Bottom, otherLine.Bottom);
-            Assert.AreEqual(text.Height, otherLine.Height);
-            Assert.AreEqual(text.Font.FontName, otherLine.Font.FontName);
-            Assert.AreEqual(text.Font.Size, otherLine.Font.Size);
-            Assert.AreEqual(text.Font.Color.ToArgb(), otherLine.Font.Color.ToArgb());
-            Assert.AreEqual(text.FontClass, otherLine.FontClass);
-            Assert.AreEqual(text.HideValue, otherLine.HideValue);
-            Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.TextAlignment, otherLine.TextAlignment);
-            Assert.AreEqual(text.Value, otherLine.Value);
-            Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
-            Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.ToString(), otherLine.ToString());
-            Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
+            Assert.AreEqual(text.Left, other.Left);
+            Assert.AreEqual(text.Right, other.Right);
+            Assert.AreEqual(text.Width, other.Width);
+            Assert.AreEqual(text.Top, other.Top);
+            Assert.AreEqual(text.Bottom, other.Bottom);
+            Assert.AreEqual(text.Height, other.Height);
+            Assert.AreEqual(text.Font.FontName, other.Font.FontName);
+            Assert.AreEqual(text.Font.Size, other.Font.Size);
+            Assert.AreEqual(text.Font.Color.ToArgb(), other.Font.Color.ToArgb());
+            Assert.AreEqual(text.FontClass, other.FontClass);
+            Assert.AreEqual(text.HideValue, other.HideValue);
+            Assert.AreEqual(text.TextVisibility, other.TextVisibility); 
+            Assert.AreEqual(text.TextAlignment, other.TextAlignment);
+            Assert.AreEqual(text.Value, other.Value);
+            Assert.AreEqual(text.IsBackground, other.IsBackground);
+            Assert.AreEqual(text.Name, other.Name);
+            Assert.AreEqual(text.ToString(), other.ToString());
+            Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
         }
     }
 }

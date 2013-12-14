@@ -125,68 +125,65 @@ namespace Tharga.Reporter.Engine.Entity.Element
         //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
-            if (_pageText == null)
+            _pageText = new List<string[]>();
+
+            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+            if (!renderData.IncludeBackground && IsBackground)
+                return 0;
+
+            var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+
+            var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
+            var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
+
+            var left = renderData.ElementBounds.Left;
+            var top = renderData.ElementBounds.Top;
+
+            if (textSize.Width > renderData.ElementBounds.Width)
             {
-                _pageText = new List<string[]>();
+                //Need to set data over more than one page
+                var words = text.Split(' ');
 
-                renderData.ElementBounds = GetBounds(renderData.ParentBounds);
-
-                if (!renderData.IncludeBackground && IsBackground)
-                    return 0;
-
-                var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-                var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
-
-                var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
-                var textSize = renderData.Gfx.MeasureString(text, font, XStringFormats.TopLeft);
-
-                var left = renderData.ElementBounds.Left;
-                var top = renderData.ElementBounds.Top;
-
-                if (textSize.Width > renderData.ElementBounds.Width)
+                var sb = new StringBuilder();
+                var lines = new List<string>();
+                foreach (var nextWord in words)
                 {
-                    //Need to set data over more than one page
-                    var words = text.Split(' ');
-
-                    var sb = new StringBuilder();
-                    var lines = new List<string>();
-                    foreach (var nextWord in words)
+                    var textSoFar = sb.ToString();
+                    sb.AppendFormat("{0} ", nextWord);
+                    var nextTextSize = renderData.Gfx.MeasureString(sb.ToString(), font, XStringFormats.TopLeft);
+                    if (nextTextSize.Width > renderData.ElementBounds.Width) //Now we are over the limit (Previous state will fit)
                     {
-                        var textSoFar = sb.ToString();
-                        sb.AppendFormat("{0} ", nextWord);
-                        var nextTextSize = renderData.Gfx.MeasureString(sb.ToString(), font, XStringFormats.TopLeft);
-                        if (nextTextSize.Width > renderData.ElementBounds.Width) //Now we are over the limit (Previous state will fit)
+                        if (string.IsNullOrEmpty(textSoFar))
                         {
-                            if (string.IsNullOrEmpty(textSoFar))
-                            {
-                                //One singe word that is too long, print it anyway
-                                //renderData.Gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
-                                lines.Add(sb.ToString());
-                            }
-                            else
-                            {
-                                //renderData.Gfx.DrawString(ready, font, brush, left, top, XStringFormats.TopLeft);
-                                lines.Add(textSoFar);
-                                sb.Clear();
-                                sb.AppendFormat("{0} ", nextWord);
-                            }
-                            top += nextTextSize.Height;
+                            //One singe word that is too long, print it anyway
+                            //renderData.Gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
+                            lines.Add(sb.ToString());
+                        }
+                        else
+                        {
+                            //renderData.Gfx.DrawString(ready, font, brush, left, top, XStringFormats.TopLeft);
+                            lines.Add(textSoFar);
+                            sb.Clear();
+                            sb.AppendFormat("{0} ", nextWord);
+                        }
+                        top += nextTextSize.Height;
 
-                            if (top > renderData.ElementBounds.Bottom - nextTextSize.Height)
-                            {
-                                //Now we have reached the limit of the page
-                                _pageText.Add(lines.ToArray());
-                                lines.Clear();
-                                top = renderData.ElementBounds.Top;
-                            }
+                        if (top > renderData.ElementBounds.Bottom - nextTextSize.Height)
+                        {
+                            //Now we have reached the limit of the page
+                            _pageText.Add(lines.ToArray());
+                            lines.Clear();
+                            top = renderData.ElementBounds.Top;
                         }
                     }
-                    lines.Add(sb.ToString());
-                    _pageText.Add(lines.ToArray());
                 }
-                else
-                    _pageText.Add(new[] {text});
+                lines.Add(sb.ToString());
+                _pageText.Add(lines.ToArray());
             }
+            else
+                _pageText.Add(new[] {text});
             return _pageText.Count;
         }
 

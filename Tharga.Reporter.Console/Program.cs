@@ -31,9 +31,35 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_with_basic_table();
-            Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            Different_text_on_different_pages();
             //SkallebergSample1();
             //SkallebergSample2();
+        }
+
+        private static void Different_text_on_different_pages()
+        {
+            var section = new Section();
+
+            section.Margin = new UnitRectangle {Left = "2cm", Right = "2cm", Top = "2cm", Bottom = "2cm"};
+            section.Header.Height = "3cm";
+            section.Footer.Height = "3cm";
+
+            section.Pane.ElementList.Add(new TextBox {Value = GetRandomText(), Top = "10%"});
+
+            var refP = new ReferencePoint {};
+            refP.ElementList.Add(new Text { Top="0", Value = "Sida {PageNumber} av {TotalPages}. (All)", TextVisibility = TextBase.Visibility.All });
+            refP.ElementList.Add(new Text { Top = "12", Value = "Sida {PageNumber} av {TotalPages}. (FirstPage)", TextVisibility = TextBase.Visibility.FirstPage });
+            refP.ElementList.Add(new Text { Top = "24", Value = "Sida {PageNumber} av {TotalPages}. (LastPage)", TextVisibility = TextBase.Visibility.LastPage });
+            refP.ElementList.Add(new Text { Top = "36", Value = "Sida {PageNumber} av {TotalPages}. (AllButFirst)", TextVisibility = TextBase.Visibility.AllButFirst });
+            refP.ElementList.Add(new Text { Top = "48", Value = "Sida {PageNumber} av {TotalPages}. (AllButLast)", TextVisibility = TextBase.Visibility.AllButLast });
+            refP.ElementList.Add(new Text { Top = "0", Left="6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenMultiplePages)", TextVisibility = TextBase.Visibility.WhenMultiplePages });
+            refP.ElementList.Add(new Text { Top = "12", Left = "6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenSinglePage)", TextVisibility = TextBase.Visibility.WhenSinglePage });
+            section.Header.ElementList.Add(refP);
+
+            var templage = new Template(section);
+
+            SampleOutput(templage, null, true);
         }
 
         private static void SkallebergSample2()
@@ -154,24 +180,24 @@ namespace Tharga.Reporter.Console
 
                 renderer = new Renderer(template, documentData, useBackground, null, true);
 
-                //New way
-                stopWatch.Reset();
-                stopWatch.Start();
-                var bytes2 = renderer.GetPdfBinary();
-                System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-                ExecuteFile(bytes2);
+                ////New way
+                //stopWatch.Reset();
+                //stopWatch.Start();
+                //var bytes2 = renderer.GetPdfBinary();
+                //System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                //ExecuteFile(bytes2);
 
-                //Directly to printer
-                var printerSettings2 = new PrinterSettings
-                {
-                    PrinterName = "Microsoft XPS Document Writer",
-                    PrintToFile = true,
-                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-                };
-                stopWatch.Reset();
-                stopWatch.Start();
-                renderer.Print(printerSettings2);
-                System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+                ////Directly to printer
+                //var printerSettings2 = new PrinterSettings
+                //{
+                //    PrinterName = "Microsoft XPS Document Writer",
+                //    PrintToFile = true,
+                //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+                //};
+                //stopWatch.Reset();
+                //stopWatch.Start();
+                //renderer.Print(printerSettings2);
+                //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
             }
             catch (Exception exception)
             {

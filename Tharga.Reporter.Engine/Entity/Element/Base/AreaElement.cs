@@ -51,11 +51,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         internal override XmlElement ToXme()
         {
             var xme = base.ToXme();
-            //var xmd = new XmlDocument();
-            //var xme = xmd.CreateElement(GetType().ToShortTypeName());
-
-            //if (_name != null)
-            //    xme.SetAttribute("Name", _name);
 
             if (Left != null)
                 xme.SetAttribute("Left", Left.Value.ToString());

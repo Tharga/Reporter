@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using NUnit.Framework;
+using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Element;
 using Font = Tharga.Reporter.Engine.Entity.Font;
@@ -117,6 +118,28 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.Name, otherLine.Name);
             Assert.AreEqual(text.ToString(), otherLine.ToString());
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
+        }
+    
+        [Test]
+        public void When_using_onte_template_and_rendering_several_times_with_different_data()
+        {
+            //Arrange
+            var section = new Section();
+            section.Pane.ElementList.Add(new TextBox {Value = "{Data}", Width = "2cm", Height = "2cm"});
+            var templage = new Template(section);
+            var data1 = new DocumentData();
+            data1.Add("Data", "AAA BBB CCC DDD EEE FFF GGG HHH III JJJ KKK LLL MMM NNN OOO PPP QQQ RRR SSS TTT");
+            var renderer1 = new Renderer(templage, data1);
+            var binary1 = renderer1.GetPdfBinary();
+
+            var data2 = new DocumentData();
+            data2.Add("Data", "AAA BBB CCC DDD EEE FFF GGG HHH III JJJ KKK LLL MMM NNN OOO PPP QQQ RRR SSS TTT UUU VVV XXX YYY ZZZ");
+            var renderer2 = new Renderer(templage, data2);
+
+            //Act
+            var binary2 = renderer2.GetPdfBinary();
+
+            //Assert
         }
     }
 }
