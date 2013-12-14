@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
-using System.Threading.Tasks;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
 using MigraDoc.Rendering.Printing;
@@ -27,7 +26,6 @@ namespace Tharga.Reporter.Engine
         private readonly bool _debug;
         
         private int _printPageCount;
-        //private int? _totalPages;
         private bool _preRendered;
 
         public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
@@ -117,7 +115,6 @@ namespace Tharga.Reporter.Engine
             if (preRender)
             {
                 _preRendered = true;
-                //_totalPages = _template.SectionList.Sum(x => x.GetRenderPageCount());
             }
         }
 

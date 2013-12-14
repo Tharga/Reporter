@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Text;
-using System.Threading.Tasks;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -48,7 +47,7 @@ namespace Tharga.Reporter.Console
             section.Header.Height = "3cm";
             section.Footer.Height = "3cm";
 
-            section.Pane.ElementList.Add(new TextBox {Value = GetRandomText(), Top = "10%"});
+            //section.Pane.ElementList.Add(new TextBox {Value = GetRandomText(), Top = "10%"});
 
             var refP = new ReferencePoint {};
             refP.ElementList.Add(new Text { Top="0", Value = "Sida {PageNumber} av {TotalPages}. (All)", TextVisibility = TextBase.Visibility.All });
@@ -60,7 +59,9 @@ namespace Tharga.Reporter.Console
             refP.ElementList.Add(new Text { Top = "12", Left = "6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenSinglePage)", TextVisibility = TextBase.Visibility.WhenSinglePage });
             section.Header.ElementList.Add(refP);
 
+            //var section1 = new Section();
             var templage = new Template(section);
+            //templage.SectionList.Add(section1);
 
             SampleOutput(templage, null, true);
         }
@@ -154,13 +155,6 @@ namespace Tharga.Reporter.Console
                 var renderer = new Renderer(template, documentData, useBackground, null, true);
                 var stopWatch = new Stopwatch();
 
-                ////Old way
-                //stopWatch.Reset();
-                //stopWatch.Start();
-                //var oldBytes = Rendering.CreatePDFDocument(template, debug: true, documentData: documentData, background: useBackground);
-                //System.Console.WriteLine("Old: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-                //ExecuteFile(oldBytes);
-
                 //New way
                 stopWatch.Reset();
                 stopWatch.Start();
@@ -184,31 +178,6 @@ namespace Tharga.Reporter.Console
             {
                 System.Console.WriteLine(exception.Message);
             }
-        }
-
-        private static void SkallebergSample1()
-        {
-            var documentData = GetDocumentData();
-
-            var section = SkallSim1.GetDeliveryNoteSection(Color.FromArgb(255, 0, 0, 0));
-            var template = new Template(section);
-
-            var xme = template.ToXml();
-
-            var t2 = Template.Load(xme);
-            var xme2 = t2.ToXml();
-
-            if (xme.OuterXml != xme2.OuterXml)
-                Debug.WriteLine("Oups!");
-
-            var byteArrayA = Rendering.CreatePDFDocument(t2, debug: false, documentData: documentData, background: false);
-            ExecuteFile(byteArrayA);
-
-            var byteArray = Rendering.CreatePDFDocument(template, debug: false, documentData: documentData, background: false);
-            ExecuteFile(byteArray);
-
-            if (byteArrayA.Length != byteArray.Length)
-                Debug.WriteLine("Oups!");
         }
 
         private static DocumentData GetDocumentData()

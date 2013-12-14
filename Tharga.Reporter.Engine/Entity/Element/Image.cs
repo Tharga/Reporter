@@ -6,8 +6,6 @@ using System.Net;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -16,27 +14,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private string _source;
 
         public string Source { get { return _source ?? string.Empty; } set { _source = value; } }
-
-        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            var bounds = GetBounds(parentBounds);
-            var imageData = GetImage(documentData, bounds);
-            elementBounds = GetImageBounds(imageData, bounds);
-
-            if (includeBackground || !IsBackground)
-            {
-                using (var gfx = XGraphics.FromPdfPage(page))
-                {
-                    using (var image = XImage.FromGdiPlusImage(imageData))
-                    {
-                        gfx.DrawImage(image, elementBounds);
-                    }
-                }
-            }
-
-            imageData.Dispose();
-        }
 
         internal override void Render(IRenderData renderData)
         {

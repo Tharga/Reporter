@@ -82,7 +82,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (renderData.PageNumberInfo.TotalPages == null)
                     throw new InvalidOperationException("The prerendering step did not set the number of total pages!");
 
-                //Depending on visibility mode
+                //TODO: Move this to be performed on all elements
                 if (TextVisibility == Visibility.All
                     || TextVisibility == Visibility.FirstPage && renderData.PageNumberInfo.PageNumber == 1
                     || TextVisibility == Visibility.AllButFirst && renderData.PageNumberInfo.PageNumber != 1
@@ -97,42 +97,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     {
                         var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
                         renderData.Gfx.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
-                    }
-                }
-            }
-        }
-
-        [Obsolete]
-        internal override void Render(PdfSharp.Pdf.PdfPage page, XRect parentBounds,
-                                                DocumentData documentData, out XRect elementBounds, bool includeBackground,
-                                                bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            var bounds = GetBounds(parentBounds);
-
-            using (var gfx = XGraphics.FromPdfPage(page))
-            {
-                var font = new XFont(_font.GetName(section), _font.GetSize(section), _font.GetStyle(section));
-                var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(section)));
-
-                var text = GetValue(documentData, pageNumberInfo);
-                var textSize = gfx.MeasureString(text, font, XStringFormats.TopLeft);
-
-                var offset = 0D;
-                if (TextAlignment == Alignment.Right)
-                {
-                    offset = bounds.Width - textSize.Width;
-                }
-
-                elementBounds = new XRect(bounds.Left + offset, bounds.Y, textSize.Width, textSize.Height);
-
-                if (includeBackground || !IsBackground)
-                {
-                    gfx.DrawString(text, font, brush, elementBounds, XStringFormats.TopLeft);
-
-                    if (debug)
-                    {
-                        var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
-                        gfx.DrawRectangle(debugPen, elementBounds.Left, elementBounds.Top, textSize.Width, textSize.Height);
                     }
                 }
             }

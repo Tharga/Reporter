@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Element;
 
 namespace Tharga.Reporter.Engine.Entity.Area
@@ -61,36 +59,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
                     maxTotalPages = totalPages;
             }
             return maxTotalPages;
-        }
-
-        internal bool Render(PdfPage page, XRect bounds, DocumentData documentData, bool background, bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            var needAnotherPage = false;
-            foreach (var element in _elementList)
-            {
-                XRect bnd;
-                if (element as MultiPageElement != null)
-                {
-                    var needMore = ((MultiPageElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo,section);
-                    if (needMore)
-                        needAnotherPage = true;
-                }
-                else if (element as MultiPageAreaElement != null)
-                {
-                    var needMore = ((MultiPageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo,section);
-                    if (needMore)
-                        needAnotherPage = true;
-                }
-                else if (element as SinglePageAreaElement != null)
-                {
-                    ((SinglePageAreaElement)element).Render(page, bounds, documentData, out bnd, background, debug, pageNumberInfo, section);
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException(string.Format("Unknown type {0} for pane to render.", element.GetType().Name));
-                }
-            }
-            return needAnotherPage;
         }
 
         public virtual XmlElement ToXme()

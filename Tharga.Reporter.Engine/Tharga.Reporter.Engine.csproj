@@ -97,7 +97,6 @@
     <Compile Include="Entity\Util\SkipLine.cs" />
     <Compile Include="Extensions\ExteptionExtension.cs" />
     <Compile Include="Renderer.cs" />
-    <Compile Include="Rendering.cs" />
     <Compile Include="Entity\Element\Base\AreaElement.cs" />
     <Compile Include="Entity\Area\Footer.cs" />
     <Compile Include="Entity\Area\Header.cs" />

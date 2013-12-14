@@ -1,8 +1,6 @@
 using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 {
@@ -22,28 +20,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public Rectangle()
         {
             BorderWidth = UnitValue.Parse("1px");
-        }
-
-        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData,
-            out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            elementBounds = GetBounds(parentBounds);
-
-            if (includeBackground || !IsBackground)
-            {
-                using (var gfx = XGraphics.FromPdfPage(page))
-                {
-                    var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
-
-                    if (BackgroundColor != null)
-                    {
-                        var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
-                        gfx.DrawRectangle(pen, brush, elementBounds);
-                    }
-                    else
-                        gfx.DrawRectangle(pen, elementBounds);
-                }
-            }
         }
 
         internal override void Render(IRenderData renderData)

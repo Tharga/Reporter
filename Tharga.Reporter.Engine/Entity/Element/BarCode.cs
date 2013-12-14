@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
-using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
@@ -29,34 +28,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _font = value;
             }
         }
-        internal override void Render(PdfPage page, XRect parentBounds, DocumentData documentData, out XRect elementBounds, bool includeBackground, bool debug, PageNumberInfo pageNumberInfo, Section section)
-        {
-            var bounds = GetBounds(parentBounds);
-            var imageData = GetImage(documentData, bounds, pageNumberInfo, section);
-            elementBounds = bounds;
-
-            if (includeBackground || !IsBackground)
-            {
-                using (var gfx = XGraphics.FromPdfPage(page))
-                {
-                    var legendFont = new XFont(_font.GetName(section), _font.GetSize(section), _font.GetStyle(section));
-                    var legendBrush = new XSolidBrush(XColor.FromArgb(_font.GetColor(section)));
-                    var legendFontSize = gfx.MeasureString(Code, legendFont);
-
-                    using (var image = XImage.FromGdiPlusImage(imageData))
-                    {
-                        gfx.DrawImage(image, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, elementBounds.Height - legendFontSize.Height));
-                    }
-
-                    //TODO: Possible to hide the text (Just show the barcode)
-                    var code = GetCode(documentData, pageNumberInfo);
-                    //gfx.DrawString(code, legendFont, legendBrush, elementBounds, XStringFormats.BottomCenter);
-                    gfx.DrawString(code, legendFont, legendBrush, new XPoint(elementBounds.Left, elementBounds.Bottom - legendFontSize.Height), XStringFormats.TopLeft);
-                }
-            }
-
-            imageData.Dispose();
-        }
 
         internal override void Render(IRenderData renderData)
         {
@@ -77,7 +48,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                 //TODO: Possible to hide the text (Just show the barcode)
                 var code = GetCode(renderData.DocumentData, renderData.PageNumberInfo);
-                //gfx.DrawString(code, legendFont, legendBrush, elementBounds, XStringFormats.BottomCenter);
                 renderData.Gfx.DrawString(code, legendFont, legendBrush, new XPoint(renderData.ElementBounds.Left, renderData.ElementBounds.Bottom - legendFontSize.Height), XStringFormats.TopLeft);
             }
             imageData.Dispose();
