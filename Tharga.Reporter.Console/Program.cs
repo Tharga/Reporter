@@ -40,24 +40,29 @@ namespace Tharga.Reporter.Console
         {
             //TODO: Create a sample with multiple sections (And different settings) with out multi-page-elements
             //TODO: Create a sample with a single section (And different settings) with out multi-page-elements
-            
+
             var section = new Section();
 
             section.Margin = new UnitRectangle {Left = "2cm", Right = "2cm", Top = "2cm", Bottom = "2cm"};
             section.Header.Height = "3cm";
             section.Footer.Height = "3cm";
 
-            //section.Pane.ElementList.Add(new TextBox {Value = GetRandomText(), Top = "10%"});
+            section.Pane.ElementList.Add(new TextBox {Value = GetRandomText(), Top = "10%"});
 
-            var refP = new ReferencePoint {};
-            refP.ElementList.Add(new Text { Top="0", Value = "Sida {PageNumber} av {TotalPages}. (All)", Visibility = PageVisibility.All });
-            refP.ElementList.Add(new Text { Top = "12", Value = "Sida {PageNumber} av {TotalPages}. (FirstPage)", Visibility = PageVisibility.FirstPage });
-            refP.ElementList.Add(new Text { Top = "24", Value = "Sida {PageNumber} av {TotalPages}. (LastPage)", Visibility = PageVisibility.LastPage });
-            refP.ElementList.Add(new Text { Top = "36", Value = "Sida {PageNumber} av {TotalPages}. (AllButFirst)", Visibility = PageVisibility.AllButFirst });
-            refP.ElementList.Add(new Text { Top = "48", Value = "Sida {PageNumber} av {TotalPages}. (AllButLast)", Visibility = PageVisibility.AllButLast });
-            refP.ElementList.Add(new Text { Top = "0", Left="6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenMultiplePages)", Visibility = PageVisibility.WhenMultiplePages });
-            refP.ElementList.Add(new Text { Top = "12", Left = "6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenSinglePage)", Visibility = PageVisibility.WhenSinglePage });
+            var refP = new ReferencePoint {Stack = ReferencePoint.StackMethod.Vertical, Top="3mm", Left="3mm"};
+            refP.ElementList.Add(new Text {Value = "1. Sida {PageNumber} av {TotalPages}. (All)", Visibility = PageVisibility.All});
+            refP.ElementList.Add(new Text {Value = "2. Sida {PageNumber} av {TotalPages}. (FirstPage)", Visibility = PageVisibility.FirstPage});
+            refP.ElementList.Add(new Text {Value = "3. Sida {PageNumber} av {TotalPages}. (LastPage)", Visibility = PageVisibility.LastPage});
+            refP.ElementList.Add(new Text {Value = "4. Sida {PageNumber} av {TotalPages}. (AllButFirst)", Visibility = PageVisibility.AllButFirst});
+            refP.ElementList.Add(new Text {Value = "5. Sida {PageNumber} av {TotalPages}. (AllButLast)", Visibility = PageVisibility.AllButLast});
             section.Header.ElementList.Add(refP);
+
+            var refP2 = new ReferencePoint {Stack = ReferencePoint.StackMethod.Vertical, Top = "3mm", Left = "6cm"};
+            refP2.ElementList.Add(new Text {Value = "11. Sida {PageNumber} av {TotalPages}. (WhenMultiplePages)", Visibility = PageVisibility.WhenMultiplePages});
+            refP2.ElementList.Add(new Text {Value = "12. Sida {PageNumber} av {TotalPages}. (WhenSinglePage)", Visibility = PageVisibility.WhenSinglePage});
+            section.Header.ElementList.Add(refP2);
+
+            section.Footer.ElementList.Add(new Line {Visibility = PageVisibility.FirstPage});
 
             //var section1 = new Section();
             var templage = new Template(section);
@@ -160,7 +165,7 @@ namespace Tharga.Reporter.Console
                 stopWatch.Start();
                 var bytes = renderer.GetPdfBinary();
                 System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-                ExecuteFile(bytes);
+                FileMan.ExecuteFile(bytes);
 
                 //Directly to printer
                 var printerSettings = new PrinterSettings
@@ -574,28 +579,6 @@ namespace Tharga.Reporter.Console
             template.SectionList.Add(section3);
 
             SampleOutput(template, new DocumentData());
-        }
-
-        private static void ExecuteFile(byte[] byteArray)
-        {
-            var fileName = string.Format("{0}.pdf", System.IO.Path.GetTempFileName());
-            System.IO.File.WriteAllBytes(fileName, byteArray);
-            Process.Start(fileName);
-
-            System.Threading.Thread.Sleep(5000);
-            
-            while(System.IO.File.Exists(fileName))
-            {
-                try
-                {
-                    System.IO.File.Delete(fileName);
-                }
-                catch (System.IO.IOException)
-                {
-                    System.Console.WriteLine("Waiting for the document to close before it can be deleted...");
-                    System.Threading.Thread.Sleep(5000);
-                }
-            }
         }
     }
 }

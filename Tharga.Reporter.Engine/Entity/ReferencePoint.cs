@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
@@ -26,7 +25,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var bounds = GetBounds(renderData.ParentBounds);
 
-            var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug, renderData.IncludeBackground);
+            var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground);
             var pageCount = PreRenderChildren(rd);
 
             //TODO: Change the width and height to the actual area used
@@ -39,16 +38,15 @@ namespace Tharga.Reporter.Engine.Entity.Area
         {
             var bounds = GetBounds(renderData.ParentBounds);
 
-            var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.Debug, renderData.IncludeBackground);
+            var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground);
             RenderChildren(rd, page);
 
-            if (renderData.Debug)
+            if (renderData.DebugData != null)
             {
-                var pen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
                 const int radius = 10;
-                renderData.Graphics.DrawEllipse(pen, bounds.Left - radius, bounds.Top - radius, radius * 2, radius * 2);
-                renderData.Graphics.DrawLine(pen, bounds.Left - radius - 2, bounds.Top, bounds.Left + radius + 2, bounds.Top);
-                renderData.Graphics.DrawLine(pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
+                renderData.Graphics.DrawEllipse(renderData.DebugData.Pen, bounds.Left - radius, bounds.Top - radius, radius * 2, radius * 2);
+                renderData.Graphics.DrawLine(renderData.DebugData.Pen, bounds.Left - radius - 2, bounds.Top, bounds.Left + radius + 2, bounds.Top);
+                renderData.Graphics.DrawLine(renderData.DebugData.Pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
             }
 
             //TODO: Change the width and height to the actual area used
@@ -182,12 +180,9 @@ namespace Tharga.Reporter.Engine.Entity.Area
             if (xmeStack != null)
                 referencePoint.Stack = (StackMethod)Enum.Parse(typeof(StackMethod), xmeStack.Value);
 
-            //TODO: Add range
             var elements = Pane.GetElements(xme);
             foreach (var element in elements)
-            {
                 referencePoint.ElementList.Add(element);
-            }
 
             return referencePoint;
         }

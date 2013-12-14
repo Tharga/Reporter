@@ -18,6 +18,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override void Render(IRenderData renderData)
         {
+            if (IsNotVisible(renderData)) return;
+
             renderData.ElementBounds = GetBounds(renderData.ParentBounds);
 
             if (renderData.IncludeBackground || !IsBackground)

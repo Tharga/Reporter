@@ -12,59 +12,34 @@ namespace Tharga.Reporter.Engine
             _gfx = gfx;
         }
 
-        public XSize MeasureString(string code, XFont legendFont)
+        public XSize MeasureString(string s, XFont font)
         {
-            return _gfx.MeasureString(code, legendFont);
+            return _gfx.MeasureString(s, font);
         }
 
-        public XSize MeasureString(string code, XFont legendFont, XStringFormat topLeft)
+        public XSize MeasureString(string s, XFont font, XStringFormat format)
         {
-            return _gfx.MeasureString(code, legendFont, topLeft);
+            return _gfx.MeasureString(s, font, format);
         }
 
-        public void DrawImage(XImage image, XRect xRect)
+        public void DrawString(string s, XFont font, XBrush brush, XPoint point)
         {
-            _gfx.DrawImage(image, xRect);
+            _gfx.DrawString(s, font, brush, point);
         }
 
-        public void DrawString(string code, XFont legendFont, XBrush legendBrush, XPoint xPoint, XStringFormat topLeft)
+        public void DrawString(string s, XFont font, XBrush brush, XPoint point, XStringFormat format)
         {
-            _gfx.DrawString(code, legendFont, legendBrush, xPoint, topLeft);
+            _gfx.DrawString(s, font, brush, point, format);
         }
 
-        public void DrawString(string code, XFont legendFont, XBrush legendBrush, XRect rect)
+        public void DrawString(string s, XFont font, XBrush brush, XRect rect, XStringFormat format)
         {
-            _gfx.DrawString(code, legendFont, legendBrush, rect);
+            _gfx.DrawString(s, font, brush, rect, format);
         }
 
-        public void DrawString(string code, XFont legendFont, XBrush legendBrush, double x, double y)
+        public void DrawLine(XPen pen, double x1, double y1, double x2, double y2)
         {
-            _gfx.DrawString(code, legendFont, legendBrush, x, y);
-        }
-
-        public void DrawString(string text, XFont font, XBrush brush, XRect elementBounds, XStringFormat formats)
-        {
-            _gfx.DrawString(text, font, brush, elementBounds, formats);
-        }
-
-        public void DrawString(string line, XFont font, XBrush brush, double left, double top, XStringFormat formats)
-        {
-            _gfx.DrawString(line, font, brush, left, top, formats);
-        }
-
-        public void DrawString(string text, XFont font, XBrush brush, XPoint point)
-        {
-            _gfx.DrawString(text, font, brush, point);
-        }
-
-        public void DrawLine(XPen debugPen, double left, double p2, double p3, double height)
-        {
-            _gfx.DrawLine(debugPen, left, p2, p3, height);
-        }
-
-        public void DrawRectangle(XPen pen, XBrush brush, XRect rect)
-        {
-            _gfx.DrawRectangle(pen, brush, rect);
+            _gfx.DrawLine(pen, x1, y1, x2, y2);
         }
 
         public void DrawRectangle(XPen pen, XRect rect)
@@ -72,9 +47,19 @@ namespace Tharga.Reporter.Engine
             _gfx.DrawRectangle(pen, rect);
         }
 
-        public void DrawEllipse(XPen pen, double d, double d1, int i, int i1)
+        public void DrawRectangle(XPen pen, XBrush brush, XRect rect)
         {
-            _gfx.DrawEllipse(pen, d, d1, i, i1);
+            _gfx.DrawRectangle(pen, brush, rect);
+        }
+
+        public void DrawEllipse(XPen pen, double x, double y, int width, int height)
+        {
+            _gfx.DrawEllipse(pen, x, y, width, height);
+        }
+
+        public void DrawImage(XImage image, XRect rect)
+        {
+            _gfx.DrawImage(image, rect);
         }
     }
 }

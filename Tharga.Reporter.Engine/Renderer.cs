@@ -24,7 +24,8 @@ namespace Tharga.Reporter.Engine
         private readonly DocumentData _documentData;
         private readonly bool _includeBackgroundObjects;
         private readonly DocumentProperties _documentProperties;
-        private readonly bool _debug;
+        //private readonly bool _debug;
+        private readonly IDebugData _debugData;
         
         private int _printPageCount;
         private bool _preRendered;
@@ -36,7 +37,8 @@ namespace Tharga.Reporter.Engine
             _documentData = documentData;
             _includeBackgroundObjects = includeBackgroundObjects;
             _documentProperties = documentProperties;
-            _debug = debug;
+            if (debug)
+                _debugData = new DebugData();
             _graphicsFactory = graphicsFactory;
         }
 
@@ -217,9 +219,9 @@ namespace Tharga.Reporter.Engine
 
         private void DoRenderStuff(IGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
         {
-            var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
-            var debugFont = new XFont("Verdana", 10);
-            var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Gray));
+            //var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
+            //var debugFont = new XFont("Verdana", 10);
+            //var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Gray));
 
             var postRendering = new List<Action>();
 
@@ -230,30 +232,30 @@ namespace Tharga.Reporter.Engine
 
             var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height), section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
 
-            if (_debug)
+            if (_debugData != null)
             {
                 var sectionName = string.IsNullOrEmpty(section.Name) ? "Unnamed section" : section.Name;
-                var textSize = gfx.MeasureString(sectionName, debugFont);
-                gfx.DrawString(sectionName, debugFont, debugBrush, 0, textSize.Height);
+                var textSize = gfx.MeasureString(sectionName, _debugData.Font);
+                gfx.DrawString(sectionName, _debugData.Font, _debugData.Brush, new XPoint(0, textSize.Height));
 
                 //Left margin
-                gfx.DrawLine(debugPen, sectionBounds.Left, 0, sectionBounds.Left, size.Height);
+                gfx.DrawLine(_debugData.Pen, sectionBounds.Left, 0, sectionBounds.Left, size.Height);
 
                 //Right margin
-                gfx.DrawLine(debugPen, sectionBounds.Right, 0, sectionBounds.Right, size.Height);
+                gfx.DrawLine(_debugData.Pen, sectionBounds.Right, 0, sectionBounds.Right, size.Height);
 
                 //Top margin
-                gfx.DrawLine(debugPen, 0, sectionBounds.Top, size.Width, sectionBounds.Top);
+                gfx.DrawLine(_debugData.Pen, 0, sectionBounds.Top, size.Width, sectionBounds.Top);
 
                 //Bottom margin
-                gfx.DrawLine(debugPen, 0, sectionBounds.Bottom, size.Width, sectionBounds.Bottom);
+                gfx.DrawLine(_debugData.Pen, 0, sectionBounds.Bottom, size.Width, sectionBounds.Bottom);
             }
 
             var headerHeight = section.Header.Height.GetXUnitValue(sectionBounds.Height);
             var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
             var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
 
-            var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debug, _includeBackgroundObjects);
+            var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects);
 
             if (preRender)
             {
@@ -268,12 +270,12 @@ namespace Tharga.Reporter.Engine
                 if (section.Header != null)
                 {
                     var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debug, _includeBackgroundObjects);
+                    var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects);
                     postRendering.Add(() => section.Header.Render(renderDataHeader, page));
 
-                    if (_debug)
+                    if (_debugData != null)
                     {
-                        gfx.DrawLine(debugPen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
+                        gfx.DrawLine(_debugData.Pen, bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
                     }
                 }
 
@@ -281,12 +283,12 @@ namespace Tharga.Reporter.Engine
                 if (section.Footer != null)
                 {
                     var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debug, _includeBackgroundObjects);
+                    var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects);
                     postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
 
-                    if (_debug)
+                    if (_debugData != null)
                     {
-                        gfx.DrawLine(debugPen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
+                        gfx.DrawLine(_debugData.Pen, bounds.Left, bounds.Top, bounds.Right, bounds.Top);
                     }
                 }
             }
@@ -343,5 +345,19 @@ namespace Tharga.Reporter.Engine
 
             return doc;
         }
+    }
+
+    internal class DebugData : IDebugData
+    {
+        public DebugData()
+        {
+            Pen = new XPen(XColor.FromArgb(System.Drawing.Color.Blue), 0.1);
+            Brush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Blue));
+            Font = new XFont("Verdana", 10);
+        }
+
+        public XPen Pen { get; private set; }
+        public XBrush Brush { get; private set; }
+        public XFont Font { get; private set; }
     }
 }

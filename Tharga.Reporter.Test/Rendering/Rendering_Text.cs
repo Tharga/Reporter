@@ -30,7 +30,7 @@ namespace Tharga.Reporter.Tests.Rendering
             renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
             renderDataMock.Setup(x => x.IncludeBackground).Returns(false);
             renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect());
-            renderDataMock.Setup(x => x.Debug).Returns(false);
+            renderDataMock.Setup(x => x.DebugData).Returns((IDebugData)null);
 
             //Act
             text.Render(renderDataMock.Object);

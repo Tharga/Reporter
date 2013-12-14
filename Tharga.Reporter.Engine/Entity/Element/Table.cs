@@ -172,8 +172,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             RenderBorder(renderData.ElementBounds, renderData.Graphics, headerSize);
 
-            if (renderData.Debug)
-                renderData.Graphics.DrawString(string.Format("Table: {0}", Name), debugFont, debugBrush, renderData.ElementBounds.Center);
+            if (renderData.DebugData != null)
+                renderData.Graphics.DrawString(string.Format("Table: {0}", Name), renderData.DebugData.Font, renderData.DebugData.Brush, renderData.ElementBounds.Center);
 
             if (renderData.DocumentData != null)
             {
@@ -234,11 +234,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     else
                         alignmentJusttification += columnPadding;
 
-                    renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top, XStringFormats.TopLeft);
+                    renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top), XStringFormats.TopLeft);
                     left += column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
 
-                    if (renderData.Debug)
-                        renderData.Graphics.DrawLine(debugPen, renderData.ElementBounds.Left + left, renderData.ElementBounds.Top, renderData.ElementBounds.Left + left, renderData.ElementBounds.Bottom);
+                    if (renderData.DebugData != null)
+                        renderData.Graphics.DrawLine(renderData.DebugData.Pen, renderData.ElementBounds.Left + left, renderData.ElementBounds.Top, renderData.ElementBounds.Left + left, renderData.ElementBounds.Bottom);
                 }
 
                 var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
@@ -291,7 +291,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         if (parsedHideValue == cellData)
                             cellData = "";
 
-                        renderData.Graphics.DrawString(cellData, lineFont, lineBrush, renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top, XStringFormats.TopLeft);
+                        renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
                         left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
                     }
                     top += lineSize.Height;
@@ -304,8 +304,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 }
             }
 
-            if (renderData.Debug)
-                renderData.Graphics.DrawRectangle(debugPen, renderData.ElementBounds);
+            if (renderData.DebugData != null)
+                renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
         }
 
         private void RenderBorder(XRect elementBounds, IGraphics gfx, XSize headerSize)

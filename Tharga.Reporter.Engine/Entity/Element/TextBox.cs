@@ -124,10 +124,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (!renderData.IncludeBackground && IsBackground)
                 return;
 
-            if (renderData.Debug)
+            if (renderData.DebugData != null)
             {
-                var debugPen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
-                renderData.Graphics.DrawRectangle(debugPen, renderData.ElementBounds);
+                //var Pen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
+                renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
             }
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
@@ -143,7 +143,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             {
                 foreach (var line in _pageText[page - renderData.Section.GetPageOffset()])
                 {
-                    renderData.Graphics.DrawString(line, font, brush, left, top, XStringFormats.TopLeft);
+                    renderData.Graphics.DrawString(line, font, brush, new XPoint(left, top), XStringFormats.TopLeft);
                     var newTextSize = renderData.Graphics.MeasureString(line, font, XStringFormats.TopLeft);
                     top += newTextSize.Height;
                 }

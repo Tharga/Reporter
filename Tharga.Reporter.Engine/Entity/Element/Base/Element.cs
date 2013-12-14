@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Engine.Entity.Element
 { 
@@ -48,6 +49,22 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
 
         protected abstract XRect GetBounds(XRect parentBounds);
+
+        internal bool IsNotVisible(IRenderData renderData)
+        {
+            if (Visibility != PageVisibility.All
+                && (Visibility != PageVisibility.FirstPage || renderData.PageNumberInfo.PageNumber != 1)
+                && (Visibility != PageVisibility.AllButFirst || renderData.PageNumberInfo.PageNumber == 1)
+                && (Visibility != PageVisibility.LastPage || renderData.PageNumberInfo.PageNumber != renderData.PageNumberInfo.TotalPages)
+                && (Visibility != PageVisibility.AllButLast || renderData.PageNumberInfo.PageNumber == renderData.PageNumberInfo.TotalPages)
+                && (Visibility != PageVisibility.WhenSinglePage || renderData.PageNumberInfo.TotalPages != 1)
+                && (Visibility != PageVisibility.WhenMultiplePages || !(renderData.PageNumberInfo.TotalPages > 1)))
+            {
+                renderData.ElementBounds = new XRect { X = renderData.ElementBounds.X, Y = renderData.ElementBounds.Y, Width = 0, Height = 0 };
+                return true;
+            }
+            return false;
+        }
 
         protected string GetString(XmlElement xme, string name)
         {

@@ -48,6 +48,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override void Render(IRenderData renderData)
         {
+            if (IsNotVisible(renderData)) return;
+
             var bounds = GetBounds(renderData.ParentBounds);
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
@@ -69,22 +71,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (renderData.PageNumberInfo.TotalPages == null)
                     throw new InvalidOperationException("The prerendering step did not set the number of total pages!");
 
-                //TODO: Move this to be performed on all elements
-                if (Visibility == PageVisibility.All
-                    || Visibility == PageVisibility.FirstPage && renderData.PageNumberInfo.PageNumber == 1
-                    || Visibility == PageVisibility.AllButFirst && renderData.PageNumberInfo.PageNumber != 1
-                    || Visibility == PageVisibility.LastPage && renderData.PageNumberInfo.PageNumber == renderData.PageNumberInfo.TotalPages
-                    || Visibility == PageVisibility.AllButLast && renderData.PageNumberInfo.PageNumber != renderData.PageNumberInfo.TotalPages
-                    || Visibility == PageVisibility.WhenSinglePage && renderData.PageNumberInfo.TotalPages == 1
-                    || Visibility == PageVisibility.WhenMultiplePages && renderData.PageNumberInfo.TotalPages > 1)
-                {
-                    renderData.Graphics.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
+                renderData.Graphics.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
 
-                    if (renderData.Debug)
-                    {
-                        var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
-                        renderData.Graphics.DrawRectangle(debugPen, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height));
-                    }
+                if (renderData.DebugData != null)
+                {
+                    renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height));
                 }
             }
         }
