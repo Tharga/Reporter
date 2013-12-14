@@ -36,7 +36,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.Value, other.Value);
             Assert.AreEqual(text.IsBackground, other.IsBackground);
             Assert.AreEqual(text.Name, other.Name);
-            Assert.AreEqual(text.TextVisibility, other.TextVisibility);
+            Assert.AreEqual(text.Visibility, other.Visibility);
             Assert.AreEqual(text.ToString(), other.ToString());
             Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
         }
@@ -66,7 +66,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.Font.Color.ToArgb(), other.Font.Color.ToArgb());
             Assert.AreEqual(text.FontClass, other.FontClass);
             Assert.AreEqual(text.HideValue, other.HideValue);
-            Assert.AreEqual(text.TextVisibility, other.TextVisibility);
+            Assert.AreEqual(text.Visibility, other.Visibility);
             Assert.AreEqual(text.TextAlignment, other.TextAlignment);
             Assert.AreEqual(text.Value, other.Value);
             Assert.AreEqual(text.IsBackground, other.IsBackground);
@@ -96,7 +96,7 @@ namespace Tharga.Reporter.Test
                             Color = Color.MistyRose,
                             Size = 13,
                         },
-                    TextVisibility = TextBase.Visibility.AllButLast,
+                    Visibility = PageVisibility.AllButLast,
                 };
             var xme = text.ToXme();
 
@@ -115,7 +115,7 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.Font.Color.ToArgb(), other.Font.Color.ToArgb());
             Assert.AreEqual(text.FontClass, other.FontClass);
             Assert.AreEqual(text.HideValue, other.HideValue);
-            Assert.AreEqual(text.TextVisibility, other.TextVisibility); 
+            Assert.AreEqual(text.Visibility, other.Visibility); 
             Assert.AreEqual(text.TextAlignment, other.TextAlignment);
             Assert.AreEqual(text.Value, other.Value);
             Assert.AreEqual(text.IsBackground, other.IsBackground);

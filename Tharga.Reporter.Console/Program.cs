@@ -50,13 +50,13 @@ namespace Tharga.Reporter.Console
             //section.Pane.ElementList.Add(new TextBox {Value = GetRandomText(), Top = "10%"});
 
             var refP = new ReferencePoint {};
-            refP.ElementList.Add(new Text { Top="0", Value = "Sida {PageNumber} av {TotalPages}. (All)", TextVisibility = TextBase.Visibility.All });
-            refP.ElementList.Add(new Text { Top = "12", Value = "Sida {PageNumber} av {TotalPages}. (FirstPage)", TextVisibility = TextBase.Visibility.FirstPage });
-            refP.ElementList.Add(new Text { Top = "24", Value = "Sida {PageNumber} av {TotalPages}. (LastPage)", TextVisibility = TextBase.Visibility.LastPage });
-            refP.ElementList.Add(new Text { Top = "36", Value = "Sida {PageNumber} av {TotalPages}. (AllButFirst)", TextVisibility = TextBase.Visibility.AllButFirst });
-            refP.ElementList.Add(new Text { Top = "48", Value = "Sida {PageNumber} av {TotalPages}. (AllButLast)", TextVisibility = TextBase.Visibility.AllButLast });
-            refP.ElementList.Add(new Text { Top = "0", Left="6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenMultiplePages)", TextVisibility = TextBase.Visibility.WhenMultiplePages });
-            refP.ElementList.Add(new Text { Top = "12", Left = "6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenSinglePage)", TextVisibility = TextBase.Visibility.WhenSinglePage });
+            refP.ElementList.Add(new Text { Top="0", Value = "Sida {PageNumber} av {TotalPages}. (All)", Visibility = PageVisibility.All });
+            refP.ElementList.Add(new Text { Top = "12", Value = "Sida {PageNumber} av {TotalPages}. (FirstPage)", Visibility = PageVisibility.FirstPage });
+            refP.ElementList.Add(new Text { Top = "24", Value = "Sida {PageNumber} av {TotalPages}. (LastPage)", Visibility = PageVisibility.LastPage });
+            refP.ElementList.Add(new Text { Top = "36", Value = "Sida {PageNumber} av {TotalPages}. (AllButFirst)", Visibility = PageVisibility.AllButFirst });
+            refP.ElementList.Add(new Text { Top = "48", Value = "Sida {PageNumber} av {TotalPages}. (AllButLast)", Visibility = PageVisibility.AllButLast });
+            refP.ElementList.Add(new Text { Top = "0", Left="6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenMultiplePages)", Visibility = PageVisibility.WhenMultiplePages });
+            refP.ElementList.Add(new Text { Top = "12", Left = "6cm", Value = "Sida {PageNumber} av {TotalPages}. (WhenSinglePage)", Visibility = PageVisibility.WhenSinglePage });
             section.Header.ElementList.Add(refP);
 
             //var section1 = new Section();

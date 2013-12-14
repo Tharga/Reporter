@@ -63,19 +63,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BarCode_Tests.cs" />
-    <Compile Include="Font_Tests.cs" />
-    <Compile Include="Image_Tests.cs" />
-    <Compile Include="Line_Tests.cs" />
+    <Compile Include="Rendering\Class1.cs" />
+    <Compile Include="Serializing\Font_Tests.cs" />
+    <Compile Include="Serializing\Image_Tests.cs" />
+    <Compile Include="Serializing\Line_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="Rectangle_Tests.cs" />
-    <Compile Include="ReferencePoint_Test.cs" />
-    <Compile Include="Section_Test.cs" />
-    <Compile Include="TableColumn_Tests.cs" />
-    <Compile Include="Table_Tests.cs" />
-    <Compile Include="Template_Tests.cs" />
-    <Compile Include="TextBox_Tests.cs" />
-    <Compile Include="Text_Tests.cs" />
+    <Compile Include="Serializing\Rectangle_Tests.cs" />
+    <Compile Include="Serializing\ReferencePoint_Test.cs" />
+    <Compile Include="Serializing\Section_Test.cs" />
+    <Compile Include="Serializing\TableColumn_Tests.cs" />
+    <Compile Include="Serializing\Table_Tests.cs" />
+    <Compile Include="Serializing\Template_Tests.cs" />
+    <Compile Include="Serializing\TextBox_Tests.cs" />
+    <Compile Include="Serializing\Text_Tests.cs" />
     <Compile Include="UnitValue_implicit_string_parse.cs" />
   </ItemGroup>
   <ItemGroup>

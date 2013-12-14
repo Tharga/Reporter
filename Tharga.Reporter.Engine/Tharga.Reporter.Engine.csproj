@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entity\Area\ElementList.cs" />
+    <Compile Include="Entity\Element\Base\PageVisibility.cs" />
     <Compile Include="Entity\Util\PageNumberInfo.cs" />
     <Compile Include="Entity\ReferencePoint.cs" />
     <Compile Include="Entity\DocumentData.cs" />

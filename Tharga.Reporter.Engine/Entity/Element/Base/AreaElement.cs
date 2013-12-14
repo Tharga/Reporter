@@ -8,12 +8,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
     {
         private readonly UnitRectangle _relativeAlignment;
 
-        //protected bool? _isBackground;
-        //protected string _name;
-
-        //public override string Name { get { return _name ?? string.Empty; } set { _name = value; } }
-        //public override bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
-
         protected AreaElement()
         {
             _relativeAlignment = new UnitRectangle();

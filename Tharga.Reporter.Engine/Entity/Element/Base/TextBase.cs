@@ -8,26 +8,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
 {
     public abstract class TextBase : SinglePageAreaElement
     {
-        public enum Visibility
-        {
-            All,
-            FirstPage,
-            LastPage,
-            AllButFirst,
-            AllButLast,
-            WhenMultiplePages,
-            WhenSinglePage
-        };
-
         private readonly Font _defaultFont = new Font();
-        private const Alignment _defaultTextAlignmen = Alignment.Left;
+        private readonly Alignment _defaultTextAlignmen = Alignment.Left;
 
         public enum Alignment { Left, Right }
 
         private Font _font;
         private string _fontClass;
         private Alignment? _textAlignment;
-        private Visibility? _textVisibility;
 
         public Font Font
         {
@@ -57,8 +45,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         public Alignment TextAlignment { get { return _textAlignment ?? _defaultTextAlignmen; } set { _textAlignment = value; } }
 
-        public Visibility TextVisibility { get { return _textVisibility ?? Visibility.All; } set { _textVisibility = value; } }
-
         internal override void Render(IRenderData renderData)
         {
             var bounds = GetBounds(renderData.ParentBounds);
@@ -83,13 +69,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     throw new InvalidOperationException("The prerendering step did not set the number of total pages!");
 
                 //TODO: Move this to be performed on all elements
-                if (TextVisibility == Visibility.All
-                    || TextVisibility == Visibility.FirstPage && renderData.PageNumberInfo.PageNumber == 1
-                    || TextVisibility == Visibility.AllButFirst && renderData.PageNumberInfo.PageNumber != 1
-                    || TextVisibility == Visibility.LastPage && renderData.PageNumberInfo.PageNumber == renderData.PageNumberInfo.TotalPages
-                    || TextVisibility == Visibility.AllButLast && renderData.PageNumberInfo.PageNumber != renderData.PageNumberInfo.TotalPages
-                    || TextVisibility == Visibility.WhenSinglePage && renderData.PageNumberInfo.TotalPages == 1
-                    || TextVisibility == Visibility.WhenMultiplePages && renderData.PageNumberInfo.TotalPages > 1)
+                if (Visibility == PageVisibility.All
+                    || Visibility == PageVisibility.FirstPage && renderData.PageNumberInfo.PageNumber == 1
+                    || Visibility == PageVisibility.AllButFirst && renderData.PageNumberInfo.PageNumber != 1
+                    || Visibility == PageVisibility.LastPage && renderData.PageNumberInfo.PageNumber == renderData.PageNumberInfo.TotalPages
+                    || Visibility == PageVisibility.AllButLast && renderData.PageNumberInfo.PageNumber != renderData.PageNumberInfo.TotalPages
+                    || Visibility == PageVisibility.WhenSinglePage && renderData.PageNumberInfo.TotalPages == 1
+                    || Visibility == PageVisibility.WhenMultiplePages && renderData.PageNumberInfo.TotalPages > 1)
                 {
                     renderData.Gfx.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
 
@@ -127,10 +113,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var xmlFontClass = xme.Attributes["FontClass"];
             if (xmlFontClass != null)
                 FontClass = xmlFontClass.Value;
-
-            var xmlVisibility = xme.Attributes["Visibility"];
-            if (xmlVisibility != null)
-                TextVisibility = (Visibility) Enum.Parse(typeof (Visibility), xmlVisibility.Value, true);
         }
                 
         internal override XmlElement ToXme()
@@ -149,9 +131,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (_fontClass != null)
                 xme.SetAttribute("FontClass", _fontClass);
-
-            if (_textVisibility != null)
-                xme.SetAttribute("Visibility", _textVisibility.Value.ToString());
 
             return xme;
         }

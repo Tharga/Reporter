@@ -5,18 +5,20 @@ using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
 
 namespace Tharga.Reporter.Engine.Entity.Element
-{
+{ 
     public abstract class Element
     {
         private UnitValue? _left;
         private UnitValue? _top;
         private string _name;
         private bool? _isBackground;
+        private PageVisibility? _visibility;
 
         public virtual UnitValue? Top { get { return _top ?? "0"; } set { _top = value; } }
         public virtual UnitValue? Left { get { return _left ?? "0"; } set { _left = value; } }
         public virtual string Name { get { return _name ?? string.Empty; } set { _name = value; } }
         public virtual bool IsBackground { get { return _isBackground ?? false; } set { _isBackground = value; } }
+        public PageVisibility Visibility { get { return _visibility ?? PageVisibility.All; } set { _visibility = value; } }
 
         internal virtual XmlElement ToXme()
         {
@@ -29,6 +31,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (_isBackground != null)
                 xme.SetAttribute("IsBackground", _isBackground.ToString());
 
+            if (_visibility != null)
+                xme.SetAttribute("Visibility", _visibility.Value.ToString());
+
             return xme;
         }
 
@@ -36,6 +41,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             _name = GetString(xme, "Name");
             _isBackground = GetBool(xme, "IsBackground");
+
+            var xmlVisibility = xme.Attributes["Visibility"];
+            if (xmlVisibility != null)
+                Visibility = (PageVisibility)Enum.Parse(typeof(PageVisibility), xmlVisibility.Value, true);
         }
 
         protected abstract XRect GetBounds(XRect parentBounds);
