@@ -16,6 +16,12 @@ namespace Tharga.Reporter.Test
     public class TextBox_Tests
     {
         [Test]
+        public void x()
+        {
+            Assert.Fail("XXX");
+        }
+
+        [Test]
         public void Default_Text()
         {
             //Arrange
