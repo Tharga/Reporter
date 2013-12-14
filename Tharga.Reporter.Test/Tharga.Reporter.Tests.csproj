@@ -63,9 +63,6 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.XML" />
-    <Reference Include="Tharga.Toolkit">
-      <HintPath>..\packages\Tharga.Toolkit.1.0.5002.37662\lib\net45\Tharga.Toolkit.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -74,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BarCode_Tests.cs" />
-    <Compile Include="Rendering\Class1.cs" />
+    <Compile Include="Rendering\Rendering_Text.cs" />
     <Compile Include="Serializing\Font_Tests.cs" />
     <Compile Include="Serializing\Image_Tests.cs" />
     <Compile Include="Serializing\Line_Tests.cs" />

@@ -7,10 +7,10 @@ namespace Tharga.Reporter.Engine.Interface
         XSize MeasureString(string code, XFont legendFont);
         XSize MeasureString(string code, XFont legendFont, XStringFormat topLeft);
         void DrawImage(XImage image, XRect xRect);
-        void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, XPoint xPoint, XStringFormat topLeft);
-        void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, XRect rect);
-        void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, double x, double y);
-        void DrawString(string text, XFont font, XSolidBrush brush, XRect elementBounds, XStringFormat formats);
+        void DrawString(string code, XFont legendFont, XBrush legendBrush, XPoint xPoint, XStringFormat topLeft);
+        void DrawString(string code, XFont legendFont, XBrush legendBrush, XRect rect);
+        void DrawString(string code, XFont legendFont, XBrush legendBrush, double x, double y);
+        void DrawString(string text, XFont font, XBrush brush, XRect elementBounds, XStringFormat formats);
         void DrawString(string line, XFont font, XBrush brush, double left, double top, XStringFormat formats);
         void DrawString(string text, XFont font, XBrush brush, XPoint point);
         void DrawLine(XPen debugPen, double left, double p2, double p3, double height);

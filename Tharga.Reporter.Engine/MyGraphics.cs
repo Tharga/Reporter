@@ -27,22 +27,22 @@ namespace Tharga.Reporter.Engine
             _gfx.DrawImage(image, xRect);
         }
 
-        public void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, XPoint xPoint, XStringFormat topLeft)
+        public void DrawString(string code, XFont legendFont, XBrush legendBrush, XPoint xPoint, XStringFormat topLeft)
         {
             _gfx.DrawString(code, legendFont, legendBrush, xPoint, topLeft);
         }
 
-        public void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, XRect rect)
+        public void DrawString(string code, XFont legendFont, XBrush legendBrush, XRect rect)
         {
             _gfx.DrawString(code, legendFont, legendBrush, rect);
         }
 
-        public void DrawString(string code, XFont legendFont, XSolidBrush legendBrush, double x, double y)
+        public void DrawString(string code, XFont legendFont, XBrush legendBrush, double x, double y)
         {
             _gfx.DrawString(code, legendFont, legendBrush, x, y);
         }
 
-        public void DrawString(string text, XFont font, XSolidBrush brush, XRect elementBounds, XStringFormat formats)
+        public void DrawString(string text, XFont font, XBrush brush, XRect elementBounds, XStringFormat formats)
         {
             _gfx.DrawString(text, font, brush, elementBounds, formats);
         }
