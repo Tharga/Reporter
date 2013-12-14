@@ -317,10 +317,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (ContentBackgroundColor != null)
                 {
                     var brush = new XSolidBrush(XColor.FromArgb(ContentBackgroundColor.Value));
-                    gfx.DrawRectangle(borderPen, brush, elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height);
+                    gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
                 }
                 else
-                    gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height);
+                    gfx.DrawRectangle(borderPen, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
             }
 
             if (HeaderBorderColor != null || HeaderBackgroundColor != null)
@@ -330,10 +330,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (HeaderBackgroundColor != null)
                 {
                     var brush = new XSolidBrush(XColor.FromArgb(HeaderBackgroundColor.Value));
-                    gfx.DrawRectangle(borderPen, brush, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);
+                    gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
                 }
                 else
-                    gfx.DrawRectangle(borderPen, elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height);                
+                    gfx.DrawRectangle(borderPen, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
             }
         }
 

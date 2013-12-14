@@ -83,7 +83,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     if (renderData.Debug)
                     {
                         var debugPen = new XPen(XColor.FromArgb(Color.LightBlue), 0.1);
-                        renderData.Graphics.DrawRectangle(debugPen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height);
+                        renderData.Graphics.DrawRectangle(debugPen, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, textSize.Width, textSize.Height));
                     }
                 }
             }
