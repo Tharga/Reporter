@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace Tharga.Reporter.Engine.Entity
 {
@@ -35,6 +37,35 @@ namespace Tharga.Reporter.Engine.Entity
             //var dr = tbl.AddRow();
             //dr.AddData("ColumnName", "value");
             //dr.AddData("ColumnName", "value");
+        }
+
+        public XmlDocument ToXml()
+        {
+            var xmd = new XmlDocument();
+            var xmeList = xmd.CreateElement("Data");
+            xmd.AppendChild(xmeList);
+
+            foreach (var item in _data)
+            {
+                var xme = xmd.CreateElement(item.Key);
+                xme.InnerText = item.Value;
+                xmeList.AppendChild(xme);
+            }
+
+            return xmd;
+        }
+
+        public static DocumentData Load(XmlDocument xmd)
+        {
+            var documentData = new DocumentData();
+
+            var nodes = xmd.SelectNodes("Data");
+            foreach (XmlNode node in nodes[0])
+            {
+                documentData.Add(node.Name, node.InnerText);
+            }
+
+            return documentData;
         }
     }
 }

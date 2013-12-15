@@ -4,7 +4,7 @@ namespace Tharga.Reporter.Engine.Entity
 {
     public class DocumentDataTable
     {
-        private List<Dictionary<string, string>> _data = new List<Dictionary<string, string>>();
+        private readonly List<Dictionary<string, string>> _data = new List<Dictionary<string, string>>();
 
         public string TableName { get; private set; }
         public List<Dictionary<string,string>> Rows
