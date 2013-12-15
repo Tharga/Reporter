@@ -4,24 +4,20 @@ namespace Tharga.Reporter.Engine.Entity
 {
     public class DocumentDataTable
     {
-        private readonly List<Dictionary<string, string>> _data = new List<Dictionary<string, string>>();
+        private readonly string _tableName;
+        private readonly List<KeyValuePair<string, string>> _data = new List<KeyValuePair<string, string>>();
 
-        public string TableName { get; private set; }
-        public List<Dictionary<string,string>> Rows
-        {
-            get { return _data; }
-        }
+        public string TableName { get { return _tableName; } }
+        public List<KeyValuePair<string, string>> Rows { get { return _data; } }
 
         internal DocumentDataTable(string tableName)
         {
-            TableName = tableName;
+            _tableName = tableName;
         }
 
-        public Dictionary<string, string> AddRow()
+        public void AddRow(string key, string value)
         {
-            var row = new Dictionary<string, string>();
-            _data.Add(row);
-            return row;
+            _data.Add(new KeyValuePair<string, string>(key, value));
         }
     }
 }

@@ -123,8 +123,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         protected override XRect GetBounds(XRect parentBounds)
         {
-            //if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
-            //var relativeAlignment = _relativeAlignment;
             var relativeAlignment = new UnitRectangle(Left.Value, Top.Value, "0", "0");
 
             var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
@@ -144,7 +142,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return new XRect(left, top, width, height);
         }
 
-        //TODO: Write tests for this
         internal override XmlElement ToXme()
         {
             var xme = base.ToXme();

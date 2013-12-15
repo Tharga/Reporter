@@ -54,7 +54,7 @@ namespace Tharga.Reporter.Engine
             return fullName.Substring(pos + 1);
         }
 
-        public static string ParseValue(this string value, Dictionary<string, string> row)
+        public static string ParseValue(this string value, KeyValuePair<string, string> row)
         {
             if (string.IsNullOrEmpty(value))
                 return value;
@@ -68,7 +68,7 @@ namespace Tharga.Reporter.Engine
             {
                 var posE = parsedValue.IndexOf("}", pos, StringComparison.Ordinal);
                 var dataName = parsedValue.Substring(pos + 1, posE - pos - 1);
-                var dataValue = row.ContainsKey(dataName) ? row[dataName] : string.Format("[Data row '{0}' is missing]", dataName);
+                var dataValue = row.Key == dataName ? row.Value : string.Format("[Data row '{0}' is missing]", dataName);
                 startIndex = pos + dataValue.Length;
                 parsedValue = string.Format("{0}{1}{2}", parsedValue.Substring(0, pos), dataValue, parsedValue.Substring(posE + 1));
 

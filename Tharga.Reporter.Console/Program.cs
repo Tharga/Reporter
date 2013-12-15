@@ -298,9 +298,8 @@ namespace Tharga.Reporter.Console
             var tableData = documentData.GetDataTable("MyTable");
             for (var i = 0; i < 100; i++)
             {
-                var row = tableData.AddRow();
-                row.Add("Col1", string.Format("some data for row {0}", i));
-                row.Add("Col2", "some oter data");
+                tableData.AddRow("Col1", string.Format("some data for row {0}", i));
+                tableData.AddRow("Col2", "some oter data");
             }
             var template = new Template(coverPage);
             template.SectionList.Add(content);
@@ -323,13 +322,11 @@ namespace Tharga.Reporter.Console
 
             var documentData = new DocumentData();
             var tableData = documentData.GetDataTable("MyTable");
-            var row = tableData.AddRow();
-            row.Add("Col1", "some data for row 1");
-            row.Add("Col2", "some oter data");
+            tableData.AddRow("Col1", "some data for row 1");
+            tableData.AddRow("Col2", "some oter data");
 
-            var row2 = tableData.AddRow();
-            row2.Add("Col1", "some data for row 2");
-            row2.Add("Col2", "some oter data");
+            tableData.AddRow("Col1", "some data for row 2");
+            tableData.AddRow("Col2", "some oter data");
 
             var template = new Template(section);
 

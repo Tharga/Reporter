@@ -115,30 +115,32 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (renderData.DocumentData != null)
             {
                 var dataTable = renderData.DocumentData.GetDataTable(Name);
-
-                var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-                var pageIndex = 1;
-                var firstLineOnPage = 0;
-                for (var i = 0; i < dataTable.Rows.Count; i++)
+                if (dataTable != null)
                 {
-                    top += lineSize.Height;
-                    top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-
-                    if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                        top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
-
-                    pageIndex++;
-
-                    if (top > renderData.ElementBounds.Height - lineSize.Height)
+                    var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                    var pageIndex = 1;
+                    var firstLineOnPage = 0;
+                    for (var i = 0; i < dataTable.Rows.Count; i++)
                     {
-                        _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = i});
-                        firstLineOnPage = i + 1;
-                        top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-                    }
-                }
+                        top += lineSize.Height;
+                        top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
 
-                if (firstLineOnPage != dataTable.Rows.Count)
-                    _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
+                        if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
+                            top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
+
+                        pageIndex++;
+
+                        if (top > renderData.ElementBounds.Height - lineSize.Height)
+                        {
+                            _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = i});
+                            firstLineOnPage = i + 1;
+                            top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                        }
+                    }
+
+                    if (firstLineOnPage != dataTable.Rows.Count)
+                        _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
+                }
             }
             return _pageRowSet.Count;
         }
@@ -174,129 +176,132 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (renderData.DocumentData != null)
             {
                 var dataTable = renderData.DocumentData.GetDataTable(Name);
-                var columnPadding = ColumnPadding.GetXUnitValue(renderData.ElementBounds.Width);
-
-                var springCount = _columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
-
-                //Calculate column width
-                foreach (var column in _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
+                if (dataTable != null)
                 {
-                    var stringSize = renderData.Graphics.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
+                    var columnPadding = ColumnPadding.GetXUnitValue(renderData.ElementBounds.Width);
 
-                    if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                        column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
+                    var springCount = _columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
 
-                    if (column.Value.HideValue != null)
-                        column.Value.Hide = true;
-
-                    foreach (var row in dataTable.Rows)
+                    //Calculate column width
+                    foreach (var column in _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
                     {
-                        var cellData = GetValue(column.Key, row);
-                        stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                        var stringSize = renderData.Graphics.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
+
                         if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                            column.Value.Width = UnitValue.Parse((stringSize.Width + (columnPadding*2)).ToString(CultureInfo.InvariantCulture) + "px");
+                            column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
 
-                        var parsedHideValue = GetValue(column.Value.HideValue, row);
-                        if (parsedHideValue != cellData)
-                            column.Value.Hide = false;
-                    }
+                        if (column.Value.HideValue != null)
+                            column.Value.Hide = true;
 
-                    if (column.Value.Hide)
-                        column.Value.Width = new UnitValue();
-                }
-
-                var totalWidth = renderData.ElementBounds.Width;
-                var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.Value.GetXUnitValue(totalWidth));
-
-                if (springCount > 0)
-                {
-                    foreach (var column in _columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
-                    {
-                        column.Value.Width = UnitValue.Parse(((renderData.ElementBounds.Width - nonSpringWidth)/springCount).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
-
-                //Create header
-                double left = 0;
-                var tableColumns = _columns.Values.Where(x => !x.Hide).ToList();
-                foreach (var column in tableColumns)
-                {
-                    var alignmentJusttification = 0D;
-                    if (column.Align == Alignment.Right)
-                    {
-                        var stringSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
-                        alignmentJusttification = column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
-                    }
-                    else
-                        alignmentJusttification += columnPadding;
-
-                    renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top), XStringFormats.TopLeft);
-                    left += column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
-
-                    if (renderData.DebugData != null)
-                        renderData.Graphics.DrawLine(renderData.DebugData.Pen, renderData.ElementBounds.Left + left, renderData.ElementBounds.Top, renderData.ElementBounds.Left + left, renderData.ElementBounds.Bottom);
-                }
-
-                var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-                var pageIndex = 1;
-
-                var defaultRowset = true;
-                var pageRowSet = new PageRowSet{FromRow = 1};
-                var index = page - renderData.Section.GetPageOffset();
-                if (_pageRowSet.Count > index)
-                {
-                    try
-                    {
-                        defaultRowset = false;
-                        pageRowSet = _pageRowSet[index];                    
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new InvalidOperationException(string.Format("_pageRowSet.Count={0}, index={1}", _pageRowSet.Count, index), exception);
-                    }
-                }
-
-                for (var i = pageRowSet.FromRow; i < pageRowSet.ToRow + 1; i++)
-                {
-                    Dictionary<string, string> row = null;
-                    try
-                    {
-                        row = dataTable.Rows[i];
-                    }
-                    catch (Exception exception)
-                    {
-                        var msg = string.Format("Looping from {0} to {1}. Currently at {2}, collection has {3} lines.", pageRowSet.FromRow, pageRowSet.ToRow + 1, i, dataTable.Rows.Count);
-                        throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, _pageRowSet.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Section.GetPageOffset(), index, pageRowSet.FromRow, pageRowSet.ToRow, _pageRowSet.Count, defaultRowset), exception);
-                    }
-
-                    left = 0;
-                    foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
-                    {
-                        var cellData = GetValue(column.Key, row);
-
-                        var alignmentJusttification = 0D;
-                        if (column.Value.Align == Alignment.Right)
+                        foreach (var row in dataTable.Rows)
                         {
-                            var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                            var cellData = GetValue(column.Key, row);
+                            stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                            if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
+                                column.Value.Width = UnitValue.Parse((stringSize.Width + (columnPadding*2)).ToString(CultureInfo.InvariantCulture) + "px");
+
+                            var parsedHideValue = GetValue(column.Value.HideValue, row);
+                            if (parsedHideValue != cellData)
+                                column.Value.Hide = false;
+                        }
+
+                        if (column.Value.Hide)
+                            column.Value.Width = new UnitValue();
+                    }
+
+                    var totalWidth = renderData.ElementBounds.Width;
+                    var nonSpringWidth = _columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.Value.GetXUnitValue(totalWidth));
+
+                    if (springCount > 0)
+                    {
+                        foreach (var column in _columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
+                        {
+                            column.Value.Width = UnitValue.Parse(((renderData.ElementBounds.Width - nonSpringWidth)/springCount).ToString(CultureInfo.InvariantCulture));
+                        }
+                    }
+
+                    //Create header
+                    double left = 0;
+                    var tableColumns = _columns.Values.Where(x => !x.Hide).ToList();
+                    foreach (var column in tableColumns)
+                    {
+                        var alignmentJusttification = 0D;
+                        if (column.Align == Alignment.Right)
+                        {
+                            var stringSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
+                            alignmentJusttification = column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
                         }
                         else
                             alignmentJusttification += columnPadding;
 
-                        var parsedHideValue = GetValue(column.Value.HideValue, row);
-                        if (parsedHideValue == cellData)
-                            cellData = "";
+                        renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top), XStringFormats.TopLeft);
+                        left += column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
 
-                        renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
-                        left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                        if (renderData.DebugData != null)
+                            renderData.Graphics.DrawLine(renderData.DebugData.Pen, renderData.ElementBounds.Left + left, renderData.ElementBounds.Top, renderData.ElementBounds.Left + left, renderData.ElementBounds.Bottom);
                     }
-                    top += lineSize.Height;
-                    top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
 
-                    if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                        top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
+                    var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                    var pageIndex = 1;
 
-                    pageIndex++;
+                    var defaultRowset = true;
+                    var pageRowSet = new PageRowSet {FromRow = 1};
+                    var index = page - renderData.Section.GetPageOffset();
+                    if (_pageRowSet.Count > index)
+                    {
+                        try
+                        {
+                            defaultRowset = false;
+                            pageRowSet = _pageRowSet[index];
+                        }
+                        catch (Exception exception)
+                        {
+                            throw new InvalidOperationException(string.Format("_pageRowSet.Count={0}, index={1}", _pageRowSet.Count, index), exception);
+                        }
+                    }
+
+                    for (var i = pageRowSet.FromRow; i < pageRowSet.ToRow + 1; i++)
+                    {
+                        KeyValuePair<string, string> row;
+                        try
+                        {
+                            row = dataTable.Rows[i];
+                        }
+                        catch (Exception exception)
+                        {
+                            var msg = string.Format("Looping from {0} to {1}. Currently at {2}, collection has {3} lines.", pageRowSet.FromRow, pageRowSet.ToRow + 1, i, dataTable.Rows.Count);
+                            throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, _pageRowSet.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Section.GetPageOffset(), index, pageRowSet.FromRow, pageRowSet.ToRow, _pageRowSet.Count, defaultRowset), exception);
+                        }
+
+                        left = 0;
+                        foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
+                        {
+                            var cellData = GetValue(column.Key, row);
+
+                            var alignmentJusttification = 0D;
+                            if (column.Value.Align == Alignment.Right)
+                            {
+                                var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                                alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                            }
+                            else
+                                alignmentJusttification += columnPadding;
+
+                            var parsedHideValue = GetValue(column.Value.HideValue, row);
+                            if (parsedHideValue == cellData)
+                                cellData = "";
+
+                            renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
+                            left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                        }
+                        top += lineSize.Height;
+                        top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+
+                        if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
+                            top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
+
+                        pageIndex++;
+                    }
                 }
             }
 
@@ -333,7 +338,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        private string GetValue(string input, Dictionary<string, string> row)
+        private string GetValue(string input, KeyValuePair<string, string> row)
         {
             var result = input.ParseValue(row);
             return result;

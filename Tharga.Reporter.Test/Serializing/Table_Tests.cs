@@ -156,24 +156,27 @@ namespace Tharga.Reporter.Test
             section.Pane.ElementList.Add(table1);
             var template = new Template(section);
             var documentData1 = new DocumentData();
+            var tbl1 = new DocumentDataTable("TableA");
+            documentData1.Add(tbl1);
             for (var i = 0; i < 30; i++)
             {
-                var row1 = documentData1.GetDataTable("TableA").AddRow();
-                row1.Add("ColumnA1", "DataA" + i);
+                tbl1.AddRow("ColumnA1", "DataA" + i);
             }
 
             var documentData2 = new DocumentData();
+            var tbl2 = new DocumentDataTable("TableA");
+            documentData2.Add(tbl2);
             for (var i = 0; i < 10; i++)
             {
-                var row1 = documentData2.GetDataTable("TableA").AddRow();
-                row1.Add("ColumnA1", "DataA" + i);
+                tbl2.AddRow("ColumnA1", "DataA" + i);
             }
 
             var documentData3 = new DocumentData();
+            var tbl3 = new DocumentDataTable("TableA");
+            documentData3.Add(tbl3);
             for (var i = 0; i < 20; i++)
             {
-                var row1 = documentData2.GetDataTable("TableA").AddRow();
-                row1.Add("ColumnA1", "DataA" + i);
+                tbl3.AddRow("ColumnA1", "DataA" + i);
             }
 
             var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);

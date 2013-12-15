@@ -19,37 +19,46 @@ namespace Tharga.Reporter.Engine.Entity
             return !_data.ContainsKey(key) ? null : _data[key];
         }
 
+        public void Add(DocumentDataTable table)
+        {
+            var tbl = GetDataTable(table.TableName);
+            if (tbl != null)
+                throw new InvalidOperationException(string.Format("There is already a table named {0} in the document data.", tbl.TableName));
+            _dataTable.Add(table);
+        }
+
         public DocumentDataTable GetDataTable(string tableName)
         {
-            var table = _dataTable.Find(itm => itm.TableName == tableName);
-            if (table == null)
-            {
-                table = new DocumentDataTable(tableName);
-                _dataTable.Add(table);
-            }
+            var table = _dataTable.Find(itm => string.Compare(itm.TableName, tableName, StringComparison.InvariantCultureIgnoreCase) == 0);
             return table;
-
-            //0-n tables per document
-            //0-n rows
-            //0-1 columns
-
-            //var tbl = new DataTable("Table Name");
-            //var dr = tbl.AddRow();
-            //dr.AddData("ColumnName", "value");
-            //dr.AddData("ColumnName", "value");
         }
 
         public XmlDocument ToXml()
         {
             var xmd = new XmlDocument();
-            var xmeList = xmd.CreateElement("Data");
+            var xmeList = xmd.CreateElement("DocumentData");
             xmd.AppendChild(xmeList);
 
+            var xmeItemList = xmd.CreateElement("Data");
+            xmd.LastChild.AppendChild(xmeItemList);            
             foreach (var item in _data)
             {
                 var xme = xmd.CreateElement(item.Key);
                 xme.InnerText = item.Value;
-                xmeList.AppendChild(xme);
+                xmeItemList.AppendChild(xme);
+            }
+
+            foreach (var table in _dataTable)
+            {
+                var xmeTable = xmd.CreateElement("Table");
+                xmeTable.SetAttribute("Name", table.TableName);
+                xmd.LastChild.AppendChild(xmeTable);
+                foreach (var row in table.Rows)
+                {
+                    var xmeRow = xmd.CreateElement(row.Key);
+                    xmeRow.InnerText = row.Value;
+                    xmeTable.AppendChild(xmeRow);
+                }
             }
 
             return xmd;
@@ -59,10 +68,22 @@ namespace Tharga.Reporter.Engine.Entity
         {
             var documentData = new DocumentData();
 
-            var nodes = xmd.SelectNodes("Data");
+            var nodes = xmd.GetElementsByTagName("Data");
             foreach (XmlNode node in nodes[0])
             {
                 documentData.Add(node.Name, node.InnerText);
+            }
+
+            var tables = xmd.GetElementsByTagName("Table");
+            foreach (XmlElement table in tables)
+            {
+                var tableName = table.GetAttribute("Name");
+                var t = new DocumentDataTable(tableName);
+                documentData.Add(t);
+                foreach (XmlElement row in table.ChildNodes)
+                {
+                    t.Rows.Add(new KeyValuePair<string, string>(row.Name, row.InnerText));
+                }
             }
 
             return documentData;
