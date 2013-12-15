@@ -81,8 +81,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BarCode_Tests.cs" />
-    <Compile Include="Rendering\AaaTest.cs" />
+    <Compile Include="Serializing\BarCode_Tests.cs" />
+    <Compile Include="AaaTest.cs" />
     <Compile Include="Rendering\Rendering_Text.cs" />
     <Compile Include="Rendering\When_rendering_a_rectangle_with_visibility_first_page_on_the_first_page.cs" />
     <Compile Include="Rendering\When_rendering_a_rectangle_with_visibility_first_page_on_the_second_page.cs" />
