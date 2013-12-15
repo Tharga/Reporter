@@ -262,7 +262,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                     for (var i = pageRowSet.FromRow; i < pageRowSet.ToRow + 1; i++)
                     {
-                        KeyValuePair<string, string> row;
+                        Dictionary<string, string> row;
                         try
                         {
                             row = dataTable.Rows[i];
@@ -338,7 +338,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        private string GetValue(string input, KeyValuePair<string, string> row)
+        private string GetValue(string input, Dictionary<string, string> row)
         {
             var result = input.ParseValue(row);
             return result;

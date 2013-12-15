@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Printing;
 using MigraDoc.Rendering;
 using Moq;
@@ -160,7 +161,9 @@ namespace Tharga.Reporter.Test
             documentData1.Add(tbl1);
             for (var i = 0; i < 30; i++)
             {
-                tbl1.AddRow("ColumnA1", "DataA" + i);
+                var row1 = new Dictionary<string, string>();
+                row1.Add("ColumnA1", "DataA" + i);
+                tbl1.AddRow(row1);
             }
 
             var documentData2 = new DocumentData();
@@ -168,7 +171,9 @@ namespace Tharga.Reporter.Test
             documentData2.Add(tbl2);
             for (var i = 0; i < 10; i++)
             {
-                tbl2.AddRow("ColumnA1", "DataA" + i);
+                var row2 = new Dictionary<string, string>();
+                row2.Add("ColumnA1", "DataA" + i);
+                tbl2.AddRow(row2);
             }
 
             var documentData3 = new DocumentData();
@@ -176,7 +181,9 @@ namespace Tharga.Reporter.Test
             documentData3.Add(tbl3);
             for (var i = 0; i < 20; i++)
             {
-                tbl3.AddRow("ColumnA1", "DataA" + i);
+                var row3 = new Dictionary<string, string>();
+                row3.Add("ColumnA1", "DataA" + i);
+                tbl3.AddRow(row3);
             }
 
             var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);

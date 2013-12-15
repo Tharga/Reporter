@@ -5,19 +5,19 @@ namespace Tharga.Reporter.Engine.Entity
     public class DocumentDataTable
     {
         private readonly string _tableName;
-        private readonly List<KeyValuePair<string, string>> _data = new List<KeyValuePair<string, string>>();
+        private readonly List<Dictionary<string, string>> _data = new List<Dictionary<string, string>>();
 
         public string TableName { get { return _tableName; } }
-        public List<KeyValuePair<string, string>> Rows { get { return _data; } }
+        public List<Dictionary<string, string>> Rows { get { return _data; } }
 
         public DocumentDataTable(string tableName)
         {
             _tableName = tableName;
         }
 
-        public void AddRow(string key, string value)
+        public void AddRow(Dictionary<string, string> row)
         {
-            _data.Add(new KeyValuePair<string, string>(key, value));
+            _data.Add(row);
         }
     }
 }

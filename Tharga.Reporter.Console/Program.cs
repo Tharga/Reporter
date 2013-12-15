@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -30,9 +31,9 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_with_basic_table();
-            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //Different_text_on_different_pages();
-            RefWithOnePageTextBox();
+            //RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
         }
@@ -307,18 +308,18 @@ namespace Tharga.Reporter.Console
             content.Pane.ElementList.Add(new TextBox { Left = "10cm", Height="2cm", Value = "Vill du automatiskt få denna följesedel skickad via mejl varje gång du handlar hos Skalleberg. Skicka då ett meddelande till support@thargelion.se med ditt kundnummer så fixar vi det." });
 
             var documentData = new DocumentData();
-            var tableData = documentData.GetDataTable("MyTable");
+            var tableData = new DocumentDataTable("MyTable");
+            documentData.Add(tableData);
             for (var i = 0; i < 100; i++)
             {
-                tableData.AddRow("Col1", string.Format("some data for row {0}", i));
-                tableData.AddRow("Col2", "some oter data");
+                var row = new Dictionary<string, string>();
+                row.Add("Col1", string.Format("some data for row {0}", i));
+                row.Add("Col2", "some oter data");
+                tableData.AddRow(row);
             }
             var template = new Template(coverPage);
             template.SectionList.Add(content);
             template.SectionList.Add(index);
-
-            //var byteArray = Rendering.CreatePDFDocument(template, documentData: documentData, debug: false);
-            //ExecuteFile(byteArray);
 
             SampleOutput(template, documentData);
         }
@@ -334,11 +335,15 @@ namespace Tharga.Reporter.Console
 
             var documentData = new DocumentData();
             var tableData = documentData.GetDataTable("MyTable");
-            tableData.AddRow("Col1", "some data for row 1");
-            tableData.AddRow("Col2", "some oter data");
+            var row = new Dictionary<string, string>();
+            row.Add("Col1", "some data for row 1");
+            row.Add("Col2", "some oter data");
+            tableData.AddRow(row);
 
-            tableData.AddRow("Col1", "some data for row 2");
-            tableData.AddRow("Col2", "some oter data");
+            var row2 = new Dictionary<string, string>();
+            row2.Add("Col1", "some data for row 2");
+            row2.Add("Col2", "some oter data");
+            tableData.AddRow(row2);
 
             var template = new Template(section);
 
