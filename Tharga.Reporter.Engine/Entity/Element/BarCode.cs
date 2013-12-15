@@ -32,6 +32,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override void Render(IRenderData renderData)
         {
+            if (IsNotVisible(renderData)) return;
+
             var bounds = GetBounds(renderData.ParentBounds);
             var imageData = GetImage(renderData.DocumentData, bounds, renderData.PageNumberInfo, renderData.Section);
             renderData.ElementBounds = bounds;

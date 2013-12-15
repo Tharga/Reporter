@@ -81,6 +81,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rendering\When_pre_rendering_a_table.cs" />
     <Compile Include="Serializing\BarCode_Tests.cs" />
     <Compile Include="AaaTest.cs" />
     <Compile Include="Rendering\Rendering_Text.cs" />

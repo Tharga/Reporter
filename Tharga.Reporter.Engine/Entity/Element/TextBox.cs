@@ -107,6 +107,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override void Render(IRenderData renderData, int page)
         {
+            if (IsNotVisible(renderData))
+                return;
+
             if (_pageText== null) throw new InvalidOperationException("Pre-render has not been performed.");
 
             renderData.ElementBounds = GetBounds(renderData.ParentBounds);
