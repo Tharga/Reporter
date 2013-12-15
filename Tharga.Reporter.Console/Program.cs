@@ -31,9 +31,21 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
-            Different_text_on_different_pages();
+            //Different_text_on_different_pages();
+            RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
+        }
+
+        private static void RefWithOnePageTextBox()
+        {
+            var section = new Section();
+            var referencePoint = new ReferencePoint();
+            referencePoint.ElementList.Add(new TextBox {Value = "Some data!"});
+            section.Pane.ElementList.Add(referencePoint);
+            var template = new Template(section);
+
+            SampleOutput(template, null);
         }
 
         private static void Different_text_on_different_pages()

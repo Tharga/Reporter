@@ -2,51 +2,50 @@
 using NUnit.Framework;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Interface;
 
 namespace Tharga.Reporter.Tests.Rendering
 {
     [TestFixture]
-    class When_pre_rendering_a_table : AaaTest
+    public class When_pre_rendering_reference_point : AaaTest
     {
-        private Table _table;
+        private ReferencePoint _referencePoint;
         private Mock<IRenderData> _renderDataMock;
         private Mock<IGraphics> _graphicsMock;
         private DocumentData _documentData;
 
         protected override void Arrange()
         {
-            _table = new Table();
-            _table.AddColumn("A1", "A2");
-            _table.AddColumn("B1", "B2");
-
             _documentData = new DocumentData();
-            _documentData.Add("A1", "Data_A1");
-            _documentData.Add("A2", "Data_A2");
-            _documentData.Add("B1", "Data_B1");
-            _documentData.Add("B2", "Data_B2");
 
             _graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
-            _graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize());
-            _graphicsMock.Setup(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()));
+            _graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize { Height = 1000, Width = 1000 });
+
+            _renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
+            _referencePoint = new ReferencePoint();
+            _referencePoint.ElementList.Add(new TextBox {Value = "Some text!"});
 
             _renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
             _renderDataMock.Setup(x => x.ParentBounds).Returns(It.IsAny<XRect>());
-            _renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
-            _renderDataMock.Setup(x => x.ElementBounds).Returns(It.IsAny<XRect>());
-            _renderDataMock.Setup(x => x.Section).Returns(new Section());
             _renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
+            _renderDataMock.Setup(x => x.Section).Returns(new Section());
             _renderDataMock.Setup(x => x.DocumentData).Returns(_documentData);
+            _renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 2));
+            _renderDataMock.Setup(x => x.DebugData).Returns((IDebugData)null);
+            _renderDataMock.Setup(x => x.IncludeBackground).Returns(false);
+            _renderDataMock.Setup(x => x.ElementBounds).Returns(It.IsAny<XRect>());
+            _renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
         }
 
         protected override void Act()
         {
-            _table.PreRender(_renderDataMock.Object);
+            _referencePoint.PreRender(_renderDataMock.Object);
         }
 
         [Test]
-        public void Nothing_is_drawn()
+        public void Then_nothing_is_drawn()
         {
             _graphicsMock.Verify(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()), Times.Never);
             _graphicsMock.Verify(x => x.DrawEllipse(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);

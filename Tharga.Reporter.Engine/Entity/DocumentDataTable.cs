@@ -10,7 +10,7 @@ namespace Tharga.Reporter.Engine.Entity
         public string TableName { get { return _tableName; } }
         public List<KeyValuePair<string, string>> Rows { get { return _data; } }
 
-        internal DocumentDataTable(string tableName)
+        public DocumentDataTable(string tableName)
         {
             _tableName = tableName;
         }

@@ -40,7 +40,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
             _pageText = new List<string[]>();
@@ -118,10 +117,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 return;
 
             if (renderData.DebugData != null)
-            {
-                //var Pen = new XPen(XColor.FromArgb(Color.Blue), 0.1);
                 renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
-            }
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
             var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));

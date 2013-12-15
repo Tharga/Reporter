@@ -20,7 +20,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
         public StackMethod Stack { get { return _stack ?? _defaultStack; } set { _stack = value; } }
         public ElementList ElementList { get { return _elementList ?? (_elementList = new ElementList()); } set { _elementList = value; } } 
 
-        //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
             var bounds = GetBounds(renderData.ParentBounds);
@@ -28,7 +27,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
             var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground);
             var pageCount = PreRenderChildren(rd);
 
-            //TODO: Change the width and height to the actual area used
             renderData.ElementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
 
             return pageCount;
@@ -56,7 +54,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         private void RenderChildren(IRenderData renderData, int page)
         {
             var stackTop = new UnitValue();
-            foreach (var element in _elementList)
+            foreach (var element in ElementList)
             {
                 var resetLocation = false;
                 if (Stack == StackMethod.Vertical)
@@ -87,7 +85,7 @@ namespace Tharga.Reporter.Engine.Entity.Area
         private int PreRenderChildren(IRenderData renderData)
         {
             var maxPageCount = 1;
-            var elementsToRender = _elementList.Where(x => x is MultiPageAreaElement || x is MultiPageElement);
+            var elementsToRender = ElementList.Where(x => x is MultiPageAreaElement || x is MultiPageElement);
 
             var stackTop = new UnitValue();
             foreach (var element in elementsToRender)
