@@ -33,7 +33,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         private SkipLine _skipLine;
 
-        private int _rowPointer;
         private UnitValue? _rowPadding;
         private UnitValue? _columnPadding;
 
@@ -94,59 +93,53 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public UnitValue RowPadding { get { return _rowPadding ?? _defaultRowPadding; } set { _rowPadding = value; } }
         public UnitValue ColumnPadding { get { return _columnPadding ?? _defaultColumnPadding; } set { _columnPadding = value; } }
 
-        internal override void ClearRenderPointer()
-        {
-            _rowPointer = 0;
-        }
-
-        //TODO: Make sure there is no output here
         internal override int PreRender(IRenderData renderData)
         {
-            //TODO: Make sure the renderer is only ran once for every data-set.
-            //Make sure the renderer is re-run when data changes (but the template is the same)
-            //if (_pageRowSet != null) throw new InvalidOperationException("Prerender has already been performed!");
-            
-                _pageRowSet = new List<PageRowSet>();
+            _pageRowSet = new List<PageRowSet>();
 
-                renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
 
-                if (!renderData.IncludeBackground && IsBackground)
-                    return 0;
+            if (!renderData.IncludeBackground && IsBackground)
+                return 0;
 
-                var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-                var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
+            var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
+            var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
 
-                var headerSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-                var lineSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
+            var firstColumn = _columns.FirstOrDefault();
+            if (firstColumn.Value == null)
+                return 0;
 
-                if (renderData.DocumentData != null)
+            var headerSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, headerFont, XStringFormats.TopLeft);
+            var lineSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, lineFont, XStringFormats.TopLeft);
+
+            if (renderData.DocumentData != null)
+            {
+                var dataTable = renderData.DocumentData.GetDataTable(Name);
+
+                var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
+                var pageIndex = 1;
+                var firstLineOnPage = 0;
+                for (var i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    var dataTable = renderData.DocumentData.GetDataTable(Name);
+                    top += lineSize.Height;
+                    top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
 
-                    var top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-                    var pageIndex = 1;
-                    var firstLineOnPage = 0;
-                    for (var i = 0; i < dataTable.Rows.Count; i++)
+                    if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
+                        top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
+
+                    pageIndex++;
+
+                    if (top > renderData.ElementBounds.Height - lineSize.Height)
                     {
-                        top += lineSize.Height;
-                        top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-
-                        if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                            top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
-
-                        pageIndex++;
-
-                        if (top > renderData.ElementBounds.Height - lineSize.Height)
-                        {
-                            _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = i});
-                            firstLineOnPage = i + 1;
-                            top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-                        }
+                        _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = i});
+                        firstLineOnPage = i + 1;
+                        top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
                     }
-
-                    if (firstLineOnPage != dataTable.Rows.Count)
-                        _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
                 }
+
+                if (firstLineOnPage != dataTable.Rows.Count)
+                    _pageRowSet.Add(new PageRowSet {FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1});
+            }
             return _pageRowSet.Count;
         }
 
@@ -159,16 +152,16 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (!renderData.IncludeBackground && IsBackground)
                 return;
 
-            var debugPen = new XPen(XColor.FromArgb(Color.Yellow), 0.1);
-            var debugFont = new XFont("Verdana", 10);
-            var debugBrush = new XSolidBrush(Color.Orange);
             var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
             var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(renderData.Section)));
             var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
             var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(renderData.Section)));
 
-            var headerSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, headerFont, XStringFormats.TopLeft);
-            var lineSize = renderData.Graphics.MeasureString(_columns.First().Value.DisplayName, lineFont, XStringFormats.TopLeft);
+            var firstColumn = _columns.FirstOrDefault();
+            if (firstColumn.Value == null)
+                return;
+            var headerSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, headerFont, XStringFormats.TopLeft);
+            var lineSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, lineFont, XStringFormats.TopLeft);
 
             RenderBorder(renderData.ElementBounds, renderData.Graphics, headerSize);
 

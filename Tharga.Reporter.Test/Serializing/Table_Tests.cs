@@ -108,8 +108,29 @@ namespace Tharga.Reporter.Test
         }
 
         [Test]
-        [Ignore] //TODO: Fix
-        public void When_rendering_an_empty_table()
+        public void When_rendering_an_empty_document_with_debugging()
+        {
+            //Arrange
+            var sectionName = "ABC123";
+            var section = new Section { Name = sectionName };
+            var template = new Template(section);
+            var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
+            graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize());
+            graphicsMock.Setup(x => x.DrawString(sectionName, It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>()));
+            graphicsMock.Setup(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()));
+            var graphicsFactoryMock = new Mock<IGraphicsFactory>(MockBehavior.Strict);
+            graphicsFactoryMock.Setup(x => x.PrepareGraphics(It.IsAny<PdfPage>(), It.IsAny<DocumentRenderer>(), It.IsAny<int>())).Returns(graphicsMock.Object);
+            var renderer = new Renderer(graphicsFactoryMock.Object, template, null, true, null, true);
+
+            //Act
+            var data = renderer.GetPdfBinary();
+
+            //Assert
+            Assert.Greater(data.Length, 0);
+        }
+
+        [Test]
+        public void When_rendering_a_document_with_an_empty_table()
         {
             //Arrange
             var table = new Table();

@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugData.cs" />
     <Compile Include="Entity\Area\ElementList.cs" />
     <Compile Include="Entity\Element\Base\PageVisibility.cs" />
     <Compile Include="Entity\Util\PageNumberInfo.cs" />
@@ -101,7 +102,7 @@
     <Compile Include="Entity\Font.cs" />
     <Compile Include="Entity\SectionList.cs" />
     <Compile Include="Entity\Util\SkipLine.cs" />
-    <Compile Include="Extensions\ExteptionExtension.cs" />
+    <Compile Include="Extensions\ExceptionExtension.cs" />
     <Compile Include="MyGraphics.cs" />
     <Compile Include="MyGraphicsFactory.cs" />
     <Compile Include="Renderer.cs" />

@@ -24,7 +24,6 @@ namespace Tharga.Reporter.Engine
         private readonly DocumentData _documentData;
         private readonly bool _includeBackgroundObjects;
         private readonly DocumentProperties _documentProperties;
-        //private readonly bool _debug;
         private readonly IDebugData _debugData;
         
         private int _printPageCount;
@@ -219,16 +218,11 @@ namespace Tharga.Reporter.Engine
 
         private void DoRenderStuff(IGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
         {
-            //var debugPen = new XPen(XColor.FromArgb(System.Drawing.Color.Gray), 0.5);
-            //var debugFont = new XFont("Verdana", 10);
-            //var debugBrush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Gray));
-
             var postRendering = new List<Action>();
 
             var pageNumberInfo = new PageNumberInfo(page + 1, totalPages);
 
             var section = GetSection(preRender, page);
-            section.Pane.ClearRenderPointers();
 
             var sectionBounds = new XRect(section.Margin.GetLeft(size.Width), section.Margin.GetTop(size.Height), section.Margin.GetWidht(size.Width), section.Margin.GetHeight(size.Height));
 
@@ -345,19 +339,5 @@ namespace Tharga.Reporter.Engine
 
             return doc;
         }
-    }
-
-    internal class DebugData : IDebugData
-    {
-        public DebugData()
-        {
-            Pen = new XPen(XColor.FromArgb(System.Drawing.Color.Blue), 0.1);
-            Brush = new XSolidBrush(XColor.FromArgb(System.Drawing.Color.Blue));
-            Font = new XFont("Verdana", 10);
-        }
-
-        public XPen Pen { get; private set; }
-        public XBrush Brush { get; private set; }
-        public XFont Font { get; private set; }
     }
 }

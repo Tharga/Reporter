@@ -18,12 +18,6 @@ namespace Tharga.Reporter.Engine.Entity.Area
 
         }
 
-        internal void ClearRenderPointers()
-        {
-            foreach (var element in _elementList.Where(x => x is MultiPageAreaElement))
-                ((MultiPageAreaElement)element).ClearRenderPointer();
-        }
-
         internal void Render(IRenderData renderData, int page)
         {
             foreach (var element in _elementList)

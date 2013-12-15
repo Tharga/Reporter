@@ -2,7 +2,7 @@
 
 namespace Tharga.Reporter.Engine
 {
-    internal static class ExteptionExtension
+    internal static class ExceptionExtension
     {
         public static Exception AddData(this Exception exp, object key, object value)
         {

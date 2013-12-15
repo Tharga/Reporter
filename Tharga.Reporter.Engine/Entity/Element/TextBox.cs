@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
-using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Interface;
 
@@ -18,8 +16,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private string _fontClass;
         private string _value;
         private string _hideValue;
-        private string[] _words;
-        private int _wordPointer;
         private List<string[]> _pageText;
 
         public string Value { get { return _value ?? string.Empty; } set { _value = value; } }
@@ -42,12 +38,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
                 _fontClass = value;
             }
-        }
-
-        internal override void ClearRenderPointer()
-        {
-            _words = null;
-            _wordPointer = 0;
         }
 
         //TODO: Make sure there is no output here
