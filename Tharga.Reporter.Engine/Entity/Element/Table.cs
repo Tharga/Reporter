@@ -99,7 +99,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             renderData.ElementBounds = GetBounds(renderData.ParentBounds);
 
-            if (!renderData.IncludeBackground && IsBackground)
+            if (IsBackground && !renderData.IncludeBackground)
                 return 0;
 
             var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
