@@ -75,7 +75,7 @@ namespace Tharga.Reporter.Engine
                 pos = parsedValue.IndexOf("{", startIndex, StringComparison.Ordinal);
             }
 
-            return parsedValue;
+            return parsedValue.TrimEnd(' ');
         }
 
         public static string ParseValue(this string value, DocumentData documentData, PageNumberInfo pageNumberInfo, bool returnErrorMessage = true)
@@ -106,7 +106,7 @@ namespace Tharga.Reporter.Engine
                 pos = parsedValue.IndexOf("{", startIndex, StringComparison.Ordinal);
             }
 
-            return parsedValue;
+            return parsedValue.TrimEnd(' ');
         }
     }
 }

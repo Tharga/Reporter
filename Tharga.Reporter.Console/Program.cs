@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Text;
+using System.Xml;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -31,11 +32,25 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
             //Create_PDF_document_with_basic_table();
-            Create_PDF_document_with_template_that_spans_over_multiple_pages();
+            //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //Different_text_on_different_pages();
             //RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
+            RenderFromFIle();
+        }
+
+        private static void RenderFromFIle()
+        {
+            var templateData = new XmlDocument();
+            templateData.Load(@"C:\Users\Daniel\Documents\template.xml");
+            var template = Template.Load(templateData);
+
+            var data = new XmlDocument();
+            data.Load(@"C:\Users\Daniel\Documents\data.xml");
+            var documentData = DocumentData.Load(data);
+
+            SampleOutput(template, documentData, debug: false);
         }
 
         private static void RefWithOnePageTextBox()
@@ -165,12 +180,12 @@ namespace Tharga.Reporter.Console
             SampleOutput(template, documentData);
         }
 
-        private static void SampleOutput(Template template, DocumentData documentData, bool useBackground = true)
+        private static void SampleOutput(Template template, DocumentData documentData, bool useBackground = true, bool debug = true)
         {
             try
             {
                 //Prep
-                var renderer = new Renderer(template, documentData, useBackground, null, true);
+                var renderer = new Renderer(template, documentData, useBackground, null, debug);
                 var stopWatch = new Stopwatch();
 
                 //New way
