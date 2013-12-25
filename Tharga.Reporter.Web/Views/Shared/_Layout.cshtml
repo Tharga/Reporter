@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="shortcut icon" href="favicon.ico" />
+</head>
+
+<body>
+	<div class="hheader">
+		<div class="header">
+  		  	<a href="/"><div class="logo"></div></a>
+            <div class="globalnav">
+            	@*<ul>
+                	<li><a href="#">Lorem</a></li>
+                    <li><a href="#">Ipsum</a></li>
+                    <li><a href="#">Dolor</a></li>
+                    <li><a href="#">Sit amet</a></li>
+                    <li><a href="#">Consectetur</a></li>
+                </ul>*@
+            </div>
+	    </div>
+    </div>
+    <div class="hcontent">
+    	<div class="contenttheme">
+        	<div class="hheaderbar">
+            	<div class="headerbar"><h1>Tharga Reporter</h1><div class="headerbar-logo"></div></div>
+            </div>
+			<div class="content">
+			    <div class="col1">
+                    @RenderBody()
+			        @*<asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>*@
+			    </div>
+                <div class="col2">
+					@*<h2>Curabitur eget</h2>
+                    <p>Nunc lobortis magna quis nunc vehicula placerat. Fusce in justo ac metus ultricies sodales in sed nisl. Donec ac massa eget mauris ullamcorper accumsan. Maecenas venenatis pulvinar neque, id suscipit nisl luctus nec. Maecenas tortor nunc, porta id egestas ac, pharetra sed justo.</p>*@
+                </div>
+		  </div>
+        </div>
+    </div>
+    <div class="hfooter">
+    	<div class="footer">
+@*        	<div class="col1">
+            	<h2>Sodales sit amet</h2>
+                <p>Praesent nisl elit, aliquet vel facilisis in, convallis lobortis velit. Nulla lobortis varius lacus vitae imperdiet. Mauris pharetra est nibh, quis volutpat lorem. Curabitur sit amet felis risus. Etiam euismod lectus a purus dignissim ac pharetra lacus semper. Nunc lobortis magna quis nunc vehicula placerat.</p>
+            </div>
+            <div class="col2">
+            	<h2>Sociis natoque</h2>
+                <p>Duis magna quam, auctor ac tincidunt tincidunt, dapibus ac nunc. Etiam aliquet blandit turpis. Morbi quis lacus elit, sit amet mollis nisi. Sed commodo fringilla quam, nec fermentum tortor luctus vel. Sed tempus, lacus vitae tempor tristique, mauris dui viverra tortor, vitae luctus erat velit non magna.</p>
+            </div>
+            <div class="col3">
+            	<h2>Nunc metus</h2>
+                <p>Nunc lobortis magna</p>
+				<p>Quis nunc vehicula</p>
+				<p>SE-111 22 Placerat</p>
+				<p>+46 8 555 55 55</p>
+				<p><a href="mailto:nustrus@loremipsum.com">nustrus@loremipsum.com</a></p>
+                <span class="disclaimer">Copyright Thargelion, Developed by <a href="http://www.rancio.com/">Rancio</a></span>
+            </div>*@
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -5,8 +5,8 @@
     <version>$version$</version>
     <title>Tharga Reporter</title>
     <authors>Thargelion AB</authors>
-    <description>Tharga Reporter creates pdf reports.</description>
-    <projectUrl>http://www.thargelion.se</projectUrl>
+    <description>Create and manage XML templates for print and PDF output.</description>
+    <projectUrl>http://reporter.thargelion.se</projectUrl>
     <iconUrl>http://support.thargelion.se/Images/ThargelionIcon.png</iconUrl>
     <language>en-US</language>
     <tags></tags>

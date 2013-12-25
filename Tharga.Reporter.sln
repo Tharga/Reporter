@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3D410D
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tharga.Reporter.Web", "Tharga.Reporter.Web\Tharga.Reporter.Web.csproj", "{4EB96274-B270-4F34-BA73-B8257879CCBE}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Tharga.Reporter.vsmdi
@@ -64,6 +66,16 @@ Global
 		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|Mixed Platforms.Build.0 = Release|x86
 		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|x86.ActiveCfg = Release|x86
 		{211A0915-64AF-4482-B669-DDE864AFE9E3}.Release|x86.Build.0 = Release|x86
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4EB96274-B270-4F34-BA73-B8257879CCBE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
