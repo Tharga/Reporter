@@ -28,9 +28,6 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.Name, otherLine.Name);            
             Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.Font.FontName, text.Font.FontName);
-            Assert.AreEqual(text.Font.Size, text.Font.Size);
-            Assert.AreEqual(text.Font.Color.ToArgb(), text.Font.Color.ToArgb());
             Assert.AreEqual(text.Code, text.Code);
             Assert.AreEqual(text.ToString(), otherLine.ToString());
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
@@ -49,12 +46,6 @@ namespace Tharga.Reporter.Test
                     IsBackground = true,
                     Name = "MyBarCode",         
                     Code = "123",
-                    Font = new Font
-                        {
-                            Color = Color.MediumPurple,
-                            FontName = "Times",
-                            Size = 9
-                        }
                 };
             var xme = text.ToXme();
 
@@ -71,9 +62,6 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(text.Name, otherLine.Name);
             Assert.AreEqual(text.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(text.Name, otherLine.Name);
-            Assert.AreEqual(text.Font.FontName, text.Font.FontName);
-            Assert.AreEqual(text.Font.Size, text.Font.Size);
-            Assert.AreEqual(text.Font.Color.ToArgb(), text.Font.Color.ToArgb());
             Assert.AreEqual(text.Code, text.Code);
             Assert.AreEqual(text.ToString(), otherLine.ToString());
             Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
