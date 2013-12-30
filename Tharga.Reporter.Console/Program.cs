@@ -22,7 +22,7 @@ namespace Tharga.Reporter.Console
             //Blank_default_PDF_document();
             //TextButNoData();
             //BackgroundObjectsOrNot();
-            //SinglePageAreaElement_Sample();
+            SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
             //Multiple_sections();
@@ -37,10 +37,10 @@ namespace Tharga.Reporter.Console
             //RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
-            RenderFromFIle();
+            //RenderFromFile();
         }
 
-        private static void RenderFromFIle()
+        private static void RenderFromFile()
         {
             var templateData = new XmlDocument();
             templateData.Load(@"C:\Users\Daniel\Documents\template.xml");
@@ -167,7 +167,7 @@ namespace Tharga.Reporter.Console
             section.Footer.ElementList.Add(new Image { Source = "http://skalleberg.se/wp-content/uploads/2013/10/bildspel-1-840x270.png", Left = "50%" });
 
             section.Pane.ElementList.Add(new Rectangle {BorderColor = Color.Green, Width = "50%", Height = "50%", Left = "25%", Top = "25%"});
-            section.Pane.ElementList.Add(new BarCode { Code = "ABC123" });
+            section.Pane.ElementList.Add(new BarCode {Code = "ABC123", Width = "8cm", Height = "2cm"});
 
 
             section.Footer.ElementList.Add(new Text {Value = "Data: {SomeData}"});

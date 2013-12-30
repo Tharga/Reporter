@@ -139,7 +139,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        private string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
+        private string GetValue(IDocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             if (!string.IsNullOrEmpty(HideValue))
             {

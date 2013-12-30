@@ -40,6 +40,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aspose.BarCode">
+      <HintPath>..\packages\Aspose.BarCode.5.9.0.0\lib\net45\Aspose.BarCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Aspose.BarCodeRecognition">
+      <HintPath>..\packages\Aspose.BarCode.5.9.0.0\lib\net45\Aspose.BarCodeRecognition.dll</HintPath>
+    </Reference>
     <Reference Include="MigraDoc.DocumentObjectModel">
       <HintPath>..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
     </Reference>
@@ -72,13 +78,14 @@
   <ItemGroup>
     <Compile Include="DebugData.cs" />
     <Compile Include="Entity\Area\ElementList.cs" />
+    <Compile Include="Entity\Element\BarCode.cs" />
     <Compile Include="Entity\Element\Base\PageVisibility.cs" />
+    <Compile Include="Interface\IDocumentData.cs" />
     <Compile Include="Entity\Util\PageNumberInfo.cs" />
     <Compile Include="Entity\ReferencePoint.cs" />
     <Compile Include="Entity\DocumentData.cs" />
     <Compile Include="Entity\DocumentDataTable.cs" />
     <Compile Include="Entity\DocumentProperties.cs" />
-    <Compile Include="Entity\Element\BarCode.cs" />
     <Compile Include="Entity\Element\Base\Element.cs" />
     <Compile Include="Entity\Element\Base\MultiPageElement.cs" />
     <Compile Include="Entity\Element\Extensions\ElementExtensions.cs" />
@@ -86,6 +93,7 @@
     <Compile Include="Entity\Element\Image.cs" />
     <Compile Include="Entity\Util\PageRowSet.cs" />
     <Compile Include="Extensions\PdfSharpExtensions.cs" />
+    <Compile Include="Interface\IDebugData.cs" />
     <Compile Include="Interface\IGraphics.cs" />
     <Compile Include="Interface\IGraphicsFactory.cs" />
     <Compile Include="Interface\IRenderData.cs" />
@@ -119,9 +127,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FREE3OF9.TTF">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
     <None Include="Tharga.Reporter.Engine.nuspec">
       <SubType>Designer</SubType>

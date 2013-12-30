@@ -78,7 +78,7 @@ namespace Tharga.Reporter.Engine
             return parsedValue.TrimEnd(' ');
         }
 
-        public static string ParseValue(this string value, DocumentData documentData, PageNumberInfo pageNumberInfo, bool returnErrorMessage = true)
+        public static string ParseValue(this string value, IDocumentData documentData, PageNumberInfo pageNumberInfo, bool returnErrorMessage = true)
         {
             if (string.IsNullOrEmpty(value))
                 return value;

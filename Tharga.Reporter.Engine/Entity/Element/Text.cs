@@ -11,7 +11,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         public string Value { get { return _value ?? string.Empty; } set { _value = value; } }
         public string HideValue { get { return _hideValue ?? string.Empty; } set { _hideValue = value; } }
         
-        protected override string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo)
+        protected override string GetValue(IDocumentData documentData, PageNumberInfo pageNumberInfo)
         {
             if (!string.IsNullOrEmpty(HideValue))
             {

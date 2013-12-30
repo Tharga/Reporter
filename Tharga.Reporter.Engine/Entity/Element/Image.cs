@@ -66,7 +66,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             return bytes;
         }
 
-        private System.Drawing.Image GetImage(DocumentData documentData, XRect bounds)
+        private System.Drawing.Image GetImage(IDocumentData documentData, XRect bounds)
         {
             var source = Source.ParseValue(documentData, null, false);
 
