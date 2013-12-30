@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace Tharga.Reporter.Engine.Entity
 {
-    public class DocumentData
+    public class DocumentData : IDocumentData
     {
         private readonly Dictionary<string, string> _data = new Dictionary<string, string>();
         private readonly List<DocumentDataTable> _dataTable = new List<DocumentDataTable>();
@@ -14,7 +14,7 @@ namespace Tharga.Reporter.Engine.Entity
             _data.Add(key, value);
         }
 
-        internal string Get(string key)
+        public string Get(string key)
         {
             return !_data.ContainsKey(key) ? null : _data[key];
         }

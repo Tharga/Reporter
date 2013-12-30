@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
@@ -80,7 +79,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             }
         }
 
-        protected abstract string GetValue(DocumentData documentData, PageNumberInfo pageNumberInfo);
+        protected abstract string GetValue(IDocumentData documentData, PageNumberInfo pageNumberInfo);
 
         protected override void AppendData(XmlElement xme)
         {

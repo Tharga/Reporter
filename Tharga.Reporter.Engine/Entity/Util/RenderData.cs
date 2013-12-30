@@ -7,13 +7,12 @@ namespace Tharga.Reporter.Engine.Entity.Util
     class RenderData : IRenderData
     {
         private readonly IGraphics _graphics;
-        private readonly DocumentData _documentData;
+        private readonly IDocumentData _documentData;
         private readonly bool _includeBackground;
         private readonly IDebugData _debugData;
 
-        public RenderData(IGraphics graphics, XRect parentBounds, Section section, DocumentData documentData, PageNumberInfo pageNumberInfo, IDebugData debugData, bool includeBackground)
+        public RenderData(IGraphics graphics, XRect parentBounds, Section section, IDocumentData documentData, PageNumberInfo pageNumberInfo, IDebugData debugData, bool includeBackground)
         {
-            //_gfx = gfx;
             ParentBounds = parentBounds;
             Section = section;
             _graphics = graphics;
@@ -28,7 +27,7 @@ namespace Tharga.Reporter.Engine.Entity.Util
         public bool IncludeBackground { get { return _includeBackground; } }
         public IGraphics Graphics { get { return _graphics; } }
         public Section Section { get; private set; }
-        public DocumentData DocumentData { get { return _documentData; } }
+        public IDocumentData DocumentData { get { return _documentData; } }
         public PageNumberInfo PageNumberInfo { get; private set; }
         public IDebugData DebugData { get { return _debugData; } }
     }

@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System.IO;
-using System.Text;
 using System.Xml;
+using Aspose.BarCode;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Interface;
@@ -32,108 +31,109 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
         internal override void Render(IRenderData renderData)
         {
+            if ( string.IsNullOrEmpty(Code))
+                throw new InvalidOperationException("Code has not been set.");
+
             if (IsNotVisible(renderData)) return;
 
             var bounds = GetBounds(renderData.ParentBounds);
-            var imageData = GetImage(renderData.DocumentData, bounds, renderData.PageNumberInfo, renderData.Section);
+
             renderData.ElementBounds = bounds;
 
-            if (renderData.IncludeBackground || !IsBackground)
+            if (!IsBackground || renderData.IncludeBackground)
             {
-                var legendFont = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-                var legendBrush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
-                var legendFontSize = renderData.Graphics.MeasureString(Code, legendFont);
+                var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
+                var memStream = new MemoryStream();
+                b.BarCodeImage.Save(memStream, ImageFormat.Png);
+                var imageData = System.Drawing.Image.FromStream(memStream);
+
+                //Paint over the license info
+                using (var g = Graphics.FromImage(imageData))
+                {
+                    g.FillRectangle(new SolidBrush(b.BackColor), 0, 0, imageData.Width, 14);
+                }
 
                 using (var image = XImage.FromGdiPlusImage(imageData))
                 {
-                    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height - legendFontSize.Height));
+                    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
                 }
 
-                //TODO: Possible to hide the text (Just show the barcode)
-                var code = GetCode(renderData.DocumentData, renderData.PageNumberInfo);
-                renderData.Graphics.DrawString(code, legendFont, legendBrush, new XPoint(renderData.ElementBounds.Left, renderData.ElementBounds.Bottom - legendFontSize.Height), XStringFormats.TopLeft);
+                imageData.Dispose();
             }
-            imageData.Dispose();
         }
 
-        private string GetCode(DocumentData documentData, PageNumberInfo pageNumberInfo)
+        private string GetCode(IDocumentData documentData, PageNumberInfo pageNumberInfo)
         {
-            //if (!string.IsNullOrEmpty(HideValue))
-            //{
-            //    var result = documentData.Get(HideValue);
-            //    if (string.IsNullOrEmpty(result))
-            //        return string.Empty;
-            //}
-
             return Code.ParseValue(documentData, pageNumberInfo);
         }
 
-        private System.Drawing.Image GetImage(DocumentData documentData, XRect bounds, PageNumberInfo pageNumberInfo, Section section)
-        {
-            var code = GetCode(documentData, pageNumberInfo);
+        //private System.Drawing.Image GetImage(DocumentData documentData, XRect bounds, PageNumberInfo pageNumberInfo, Section section)
+        //{
+        //    //var code = GetCode(documentData, pageNumberInfo);
 
-            const string filename = "FREE3OF9.TTF";
+        //    //const string filename = "FREE3OF9.TTF";
 
-            if (!File.Exists(filename))
-                throw new InvalidOperationException(string.Format("The file {0} cannot be found.", filename));
+        //    //if (!File.Exists(filename))
+        //    //    throw new InvalidOperationException(string.Format("The file {0} cannot be found.", filename));
 
-            var pfc = new PrivateFontCollection();
-            pfc.AddFontFile(filename);
-            var family = new FontFamily("Free 3 of 9", pfc);
+        //    //var pfc = new PrivateFontCollection();
+        //    //pfc.AddFontFile(filename);
+        //    //var family = new FontFamily("Free 3 of 9", pfc);
 
-            const float fontSize = 100;
-            var c39Font = new System.Drawing.Font(family, fontSize);
+        //    //const float fontSize = 100;
+        //    //var c39Font = new System.Drawing.Font(family, fontSize);
 
-            var matches = System.Text.RegularExpressions.Regex.Matches(code, @"[^A-Z0-9* \-$%./+]");
-            if (matches.Count > 0)
-            {
-                var sb = new StringBuilder();
-                sb.Append("Invalid characters '");
-                foreach (System.Text.RegularExpressions.Group match in matches)
-                    sb.AppendFormat(match.Value);
-                sb.Append("' in code string.");
-                throw new ArgumentException(sb.ToString());
-            }
+        //    //var matches = System.Text.RegularExpressions.Regex.Matches(code, @"[^A-Z0-9* \-$%./+]");
+        //    //if (matches.Count > 0)
+        //    //{
+        //    //    var sb = new StringBuilder();
+        //    //    sb.Append("Invalid characters '");
+        //    //    foreach (System.Text.RegularExpressions.Group match in matches)
+        //    //        sb.AppendFormat(match.Value);
+        //    //    sb.Append("' in code string.");
+        //    //    throw new ArgumentException(sb.ToString());
+        //    //}
 
-            SizeF barCodeSize;
-            var tmp = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
-            using (var objGraphics = Graphics.FromImage(tmp))
-            {
-                barCodeSize = objGraphics.MeasureString(code, c39Font);
-            }
+        //    //SizeF barCodeSize;
+        //    //var tmp = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+        //    //using (var objGraphics = Graphics.FromImage(tmp))
+        //    //{
+        //    //    barCodeSize = objGraphics.MeasureString(code, c39Font);
+        //    //}
 
-            if (Math.Abs(barCodeSize.Height - 0) < 0.001)
-                return tmp;
+        //    //if (Math.Abs(barCodeSize.Height - 0) < 0.001)
+        //    //    return tmp;
 
-            //TODO: Possible to have specific color for the barcode
-            //var brush = new SolidBrush(Color.Black);
-            var brush = new SolidBrush(_font.GetColor(section));
+        //    ////TODO: Possible to have specific color for the barcode
+        //    ////var brush = new SolidBrush(Color.Black);
+        //    //var brush = new SolidBrush(_font.GetColor(section));
 
-            var bmp = new Bitmap((int)barCodeSize.Width, (int)barCodeSize.Height, PixelFormat.Format32bppArgb);
-            using (var objGraphics = Graphics.FromImage(bmp))
-            {
-                objGraphics.DrawString(code, c39Font, brush, 0, 0, StringFormat.GenericTypographic);
-            }
-            return bmp;
-        }
+        //    //var bmp = new Bitmap((int)barCodeSize.Width, (int)barCodeSize.Height, PixelFormat.Format32bppArgb);
+        //    //using (var objGraphics = Graphics.FromImage(bmp))
+        //    //{
+        //    //    objGraphics.DrawString(code, c39Font, brush, 0, 0, StringFormat.GenericTypographic);
+        //    //}
+        //    //return bmp;
+        //    throw new NotImplementedException();
+        //}
 
-        private static int XCentered(int localWidth, int globalWidth)
-        {
-            return ((globalWidth - localWidth) / 2);
-        }
+        //private static int XCentered(int localWidth, int globalWidth)
+        //{
+        //    return ((globalWidth - localWidth) / 2);
+        //}
 
-        private static XRect GetImageBounds(System.Drawing.Image imageData, XRect bounds)
-        {
-            var imageBounds = bounds;
-            if (Math.Abs(imageBounds.Width / imageBounds.Height - imageData.Width / (double)imageData.Height) > 0.01)
-            {
-                if ((imageBounds.Width / imageBounds.Height - imageData.Width / (double)imageData.Height) > 0)
-                    imageBounds.Width = (imageBounds.Height * imageData.Width) / imageData.Height;
-                else
-                    imageBounds.Height = (imageBounds.Width * imageData.Height) / imageData.Width;
-            }
-            return imageBounds;
-        }
+        //private static XRect GetImageBounds(System.Drawing.Image imageData, XRect bounds)
+        //{
+        //    var imageBounds = bounds;
+        //    if (Math.Abs(imageBounds.Width / imageBounds.Height - imageData.Width / (double)imageData.Height) > 0.01)
+        //    {
+        //        if ((imageBounds.Width / imageBounds.Height - imageData.Width / (double)imageData.Height) > 0)
+        //            imageBounds.Width = (imageBounds.Height * imageData.Width) / imageData.Height;
+        //        else
+        //            imageBounds.Height = (imageBounds.Width * imageData.Height) / imageData.Width;
+        //    }
+        //    return imageBounds;
+        //}
 
         internal override XmlElement ToXme()
         {
