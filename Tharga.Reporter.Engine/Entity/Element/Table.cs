@@ -187,6 +187,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     {
                         var stringSize = renderData.Graphics.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
 
+                        if (column.Value.Width == null)
+                            throw new NullReferenceException(string.Format("Column {0} does not have a width.", column.Value.DisplayName));
+
                         if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
                             column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
 

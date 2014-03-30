@@ -22,7 +22,7 @@ namespace Tharga.Reporter.Console
             //Blank_default_PDF_document();
             //TextButNoData();
             //BackgroundObjectsOrNot();
-            SinglePageAreaElement_Sample();
+            //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
             //Basic_PDF_document_with_some_text_on_it();
             //Multiple_sections();
@@ -31,13 +31,19 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-            //Create_PDF_document_with_basic_table();
+            Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //Different_text_on_different_pages();
             //RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
             //RenderFromFile();
+        }
+
+        private static void Test()
+        {
+            
+
         }
 
         private static void RenderFromFile()
@@ -343,13 +349,14 @@ namespace Tharga.Reporter.Console
         {
             var section = new Section();
 
-            var tableTemplate = new Table { Name = "MyTable", ContentBorderColor = System.Drawing.Color.Blue };
+            var tableTemplate = new Table { Name = "MyTable", ContentBorderColor = Color.Blue };
             section.Pane.ElementList.Add(tableTemplate);
             tableTemplate.AddColumn("{Col1}", "Column 1", UnitValue.Parse("5cm"));
             tableTemplate.AddColumn("{Col2}", "Column 2", UnitValue.Parse("5cm"));
 
             var documentData = new DocumentData();
-            var tableData = documentData.GetDataTable("MyTable");
+            var tableData = new DocumentDataTable("MyTable");
+            documentData.Add(tableData);
             var row = new Dictionary<string, string>();
             row.Add("Col1", "some data for row 1");
             row.Add("Col2", "some oter data");
