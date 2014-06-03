@@ -19,6 +19,7 @@ namespace Tharga.Reporter.Tests.Rendering
 
             var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
             graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize { Height = 1000, Width = 1000 });
+            graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize {Height = 1000, Width = 1000});
             graphicsMock.Setup(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XRect>(), It.IsAny<XStringFormat>()));
 
             var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);

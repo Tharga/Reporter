@@ -25,6 +25,5 @@ namespace Tharga.Reporter.Console
                 }
             }
         }
-
     }
 }

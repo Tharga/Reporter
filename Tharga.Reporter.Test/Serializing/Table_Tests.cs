@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Printing;
 using MigraDoc.Rendering;
 using Moq;
 using NUnit.Framework;
@@ -12,8 +11,8 @@ using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Interface;
 using Font = Tharga.Reporter.Engine.Entity.Font;
 
-namespace Tharga.Reporter.Test
-{
+namespace Tharga.Reporter.Tests.Serializing
+{    
     [TestFixture]
     public class Table_Tests
     {
@@ -58,21 +57,30 @@ namespace Tharga.Reporter.Test
             //Arrange
             var table = new Table
                 {
-                    ContentBackgroundColor = Color.Navy,
-                    ContentBorderColor = Color.Olive,
-                    HeaderBackgroundColor = Color.MediumTurquoise,
-                    HeaderBorderColor = Color.MediumVioletRed,
                     Bottom = UnitValue.Parse("10px"),
-                    HeaderFontClass = "A",
                     Height = UnitValue.Parse("20px"),
                     IsBackground = true,
                     Left = UnitValue.Parse("10cm"),
                     Right = UnitValue.Parse("20cm"),
                     Name = "Bob",
-                    ContentFont = new Font {FontName = "Times", Size = 7},
-                    SkipLine = new SkipLine {Interval = 5, Height = "8mm"},
+
+                    ContentBackgroundColor = Color.Navy,
+                    ContentBorderColor = Color.Olive,
+                    ContentFont = new Font { FontName = "Times", Size = 7 },
+
+                    HeaderBackgroundColor = Color.MediumTurquoise,
+                    HeaderBorderColor = Color.MediumVioletRed,
+                    HeaderFontClass = "A",
+                    //HeaderFont = new Font { Bold = true, Color = Color.Orange, FontName = "Times", Size = 22, },
+                    
+                    GroupBackgroundColor = Color.Plum,
+                    GroupBorderColor = Color.Red,
+                    GroupSpacing = "5mm",
+                    GroupFont = new Font {Bold = true, Color = Color.Red, FontName = "Times", Size = 12,},
+
+                    SkipLine = new SkipLine { Interval = 5, Height = "8mm" },
                     ColumnPadding = UnitValue.Parse("7mm"),
-                    RowPadding = UnitValue.Parse("6mm"),
+                    RowPadding = UnitValue.Parse("6mm"),                    
                 };
             table.AddColumn("A0", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
             table.AddColumn("A1", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
@@ -91,14 +99,23 @@ namespace Tharga.Reporter.Test
             Assert.AreEqual(table.Height, otherLine.Height);
             Assert.AreEqual(table.IsBackground, otherLine.IsBackground);
             Assert.AreEqual(table.Name, otherLine.Name);
+
             Assert.AreEqual(table.ContentBackgroundColor.Value.ToArgb(), otherLine.ContentBackgroundColor.Value.ToArgb());
             Assert.AreEqual(table.ContentBorderColor.Value.ToArgb(), otherLine.ContentBorderColor.Value.ToArgb());
+            Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
+            Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
+            
             Assert.AreEqual(table.HeaderBackgroundColor.Value.ToArgb(), otherLine.HeaderBackgroundColor.Value.ToArgb());
             Assert.AreEqual(table.HeaderBorderColor.Value.ToArgb(), otherLine.HeaderBorderColor.Value.ToArgb());
             Assert.AreEqual(table.HeaderFontClass, otherLine.HeaderFontClass);
             Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
-            Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
-            Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
+
+            Assert.AreEqual(table.GroupBackgroundColor.Value.ToArgb(), otherLine.GroupBackgroundColor.Value.ToArgb());
+            Assert.AreEqual(table.GroupBorderColor.Value.ToArgb(), otherLine.GroupBorderColor.Value.ToArgb());
+            Assert.AreEqual(table.GroupSpacing.Value, otherLine.GroupSpacing.Value);
+            Assert.AreEqual(table.GroupFont.FontName, otherLine.GroupFont.FontName);
+            Assert.AreEqual(table.GroupFont.Size, otherLine.GroupFont.Size);
+
             Assert.AreEqual(table.SkipLine.Interval, otherLine.SkipLine.Interval);
             Assert.AreEqual(table.SkipLine.Height, otherLine.SkipLine.Height);
             Assert.AreEqual(table.ColumnPadding, otherLine.ColumnPadding);
@@ -203,7 +220,8 @@ namespace Tharga.Reporter.Test
             var data2 = renderer2.GetPdfBinary();
             var data3 = renderer3.GetPdfBinary();
 
-            //Assert           
+            //Assert
+            //Assert.AreEqual(data1, data2);
         }
     }
 }

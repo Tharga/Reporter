@@ -31,6 +31,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
         private Color? _contentBorderColor;
         private Color? _contentBackgroundColor;
 
+        private Font _groupFont;
+        private Color? _groupBorderColor;
+        private Color? _groupBackgroundColor;
+        private UnitValue? _groupSpacing;
+
         private SkipLine _skipLine;
 
         private UnitValue? _rowPadding;
@@ -77,6 +82,18 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 _contentFont = value;
             }
         }
+        public UnitValue GroupSpacing { get { return _groupSpacing ?? new UnitValue(); } set { _groupSpacing = value; } }
+        public Font GroupFont
+        {
+            get
+            {
+                return _groupFont ?? _contentFont ?? _defaultContentFont;
+            }
+            set
+            {
+                _groupFont = value;
+            }
+        }
         internal string ContentFontClass  //TODO: Hidden because it is not yet fully implemented
         {
             get { return _contentFontClass ?? string.Empty; }
@@ -89,6 +106,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
         }
         public Color? ContentBorderColor { get { return _contentBorderColor; } set { _contentBorderColor = value; } }
         public Color? ContentBackgroundColor { get { return _contentBackgroundColor; } set { _contentBackgroundColor = value; } }
+        public Color? GroupBorderColor { get { return _groupBorderColor; } set { _groupBorderColor = value; } }
+        public Color? GroupBackgroundColor { get { return _groupBackgroundColor; } set { _groupBackgroundColor = value; } }
         public SkipLine SkipLine { get { return _skipLine; } set { _skipLine = value; } }
         public UnitValue RowPadding { get { return _rowPadding ?? _defaultRowPadding; } set { _rowPadding = value; } }
         public UnitValue ColumnPadding { get { return _columnPadding ?? _defaultColumnPadding; } set { _columnPadding = value; } }
@@ -104,13 +123,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
             var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
+            var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
 
             var firstColumn = _columns.FirstOrDefault();
             if (firstColumn.Value == null)
                 return 0;
 
             var headerSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, headerFont, XStringFormats.TopLeft);
-            var lineSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, lineFont, XStringFormats.TopLeft);
+            var stdLineSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, lineFont, XStringFormats.TopLeft);
 
             if (renderData.DocumentData != null)
             {
@@ -122,11 +142,21 @@ namespace Tharga.Reporter.Engine.Entity.Element
                     var firstLineOnPage = 0;
                     for (var i = 0; i < dataTable.Rows.Count; i++)
                     {
+                        var lineSize = stdLineSize;
+                        if (dataTable.Rows[i] is DocumentDataTableData)
+                        {
+                            if (_skipLine != null && pageIndex % SkipLine.Interval == 0)
+                                top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
+                        }
+                        else if (dataTable.Rows[i] is DocumentDataTableGroup)
+                        {
+                            top += GroupSpacing.GetXUnitValue(renderData.ElementBounds.Height);
+                            lineSize = renderData.Graphics.MeasureString("X", groupFont, XStringFormats.TopLeft);
+                            pageIndex = 0;
+                        }
+
                         top += lineSize.Height;
                         top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-
-                        if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                            top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
 
                         pageIndex++;
 
@@ -161,12 +191,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(renderData.Section)));
             var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
             var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(renderData.Section)));
+            var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
 
             var firstColumn = _columns.FirstOrDefault();
             if (firstColumn.Value == null)
                 return;
             var headerSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, headerFont, XStringFormats.TopLeft);
-            var lineSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, lineFont, XStringFormats.TopLeft);
+            var stdLineSize = renderData.Graphics.MeasureString(firstColumn.Value.DisplayName, lineFont, XStringFormats.TopLeft);
 
             RenderBorder(renderData.ElementBounds, renderData.Graphics, headerSize);
 
@@ -198,14 +229,19 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                         foreach (var row in dataTable.Rows)
                         {
-                            var cellData = GetValue(column.Key, row);
-                            stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                                column.Value.Width = UnitValue.Parse((stringSize.Width + (columnPadding*2)).ToString(CultureInfo.InvariantCulture) + "px");
+                            if (row is DocumentDataTableData)
+                            {
+                                var rowData = row as DocumentDataTableData;
 
-                            var parsedHideValue = GetValue(column.Value.HideValue, row);
-                            if (parsedHideValue != cellData)
-                                column.Value.Hide = false;
+                                var cellData = GetValue(column.Key, rowData.Columns);
+                                stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                                if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
+                                    column.Value.Width = UnitValue.Parse((stringSize.Width + (columnPadding*2)).ToString(CultureInfo.InvariantCulture) + "px");
+
+                                var parsedHideValue = GetValue(column.Value.HideValue, rowData.Columns);
+                                if (parsedHideValue != cellData)
+                                    column.Value.Hide = false;
+                            }
                         }
 
                         if (column.Value.Hide)
@@ -265,7 +301,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                     for (var i = pageRowSet.FromRow; i < pageRowSet.ToRow + 1; i++)
                     {
-                        Dictionary<string, string> row;
+                        DocumentDataTableLine row;
                         try
                         {
                             row = dataTable.Rows[i];
@@ -277,31 +313,65 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         }
 
                         left = 0;
-                        foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
+                        var lineSize = stdLineSize;
+                        if (row is DocumentDataTableData)
                         {
-                            var cellData = GetValue(column.Key, row);
+                            var rowData = row as DocumentDataTableData;
 
-                            var alignmentJusttification = 0D;
-                            if (column.Value.Align == Alignment.Right)
+                            foreach (var column in _columns.Where(x => !x.Value.Hide).ToList())
                             {
-                                var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                                alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                                var cellData = GetValue(column.Key, rowData.Columns);
+
+                                var alignmentJusttification = 0D;
+                                if (column.Value.Align == Alignment.Right)
+                                {
+                                    var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                                    alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                                }
+                                else
+                                    alignmentJusttification += columnPadding;
+
+                                var parsedHideValue = GetValue(column.Value.HideValue, rowData.Columns);
+                                if (parsedHideValue == cellData)
+                                    cellData = "";
+
+                                renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
+                                left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
                             }
-                            else
-                                alignmentJusttification += columnPadding;
 
-                            var parsedHideValue = GetValue(column.Value.HideValue, row);
-                            if (parsedHideValue == cellData)
-                                cellData = "";
-
-                            renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
-                            left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                            if (_skipLine != null && pageIndex % SkipLine.Interval == 0)
+                                top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
                         }
+                        else if (row is DocumentDataTableGroup)
+                        {
+                            var group = row as DocumentDataTableGroup;
+
+                            if (pageIndex != 1)
+                                top += GroupSpacing.GetXUnitValue(renderData.ElementBounds.Height);
+
+                            var groupData = group.Content;
+                            var stringSize = renderData.Graphics.MeasureString(groupData, groupFont, XStringFormats.TopLeft);
+                            lineSize = stringSize;
+                            var topLeft = new XPoint(renderData.ElementBounds.Left + left, renderData.ElementBounds.Top + top);
+
+                            if (GroupBackgroundColor != null)
+                            {
+                                var brush = new XSolidBrush(XColor.FromArgb(GroupBackgroundColor.Value));
+                                var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
+                                renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor ?? GroupBackgroundColor.Value), 0.1), brush, rect);
+                            }
+                            else if (GroupBorderColor != null)
+                            {
+                                var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
+                                renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor.Value), 0.1), rect);                                
+                            }
+
+                            renderData.Graphics.DrawString(groupData, groupFont, lineBrush, topLeft, XStringFormats.TopLeft);
+                            pageIndex = 0;
+                        }
+
                         top += lineSize.Height;
                         top += RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
-
-                        if (_skipLine != null && pageIndex%SkipLine.Interval == 0)
-                            top += SkipLine.Height.GetXUnitValue(renderData.ElementBounds.Height);
 
                         pageIndex++;
                     }
@@ -316,7 +386,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             if (ContentBorderColor != null || ContentBackgroundColor != null)
             {
-                var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value, 0.1); //TODO: Se the thickness of the boarder
+                var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value, 0.1); //TODO: Set the thickness of the boarder
 
                 if (ContentBackgroundColor != null)
                 {
@@ -364,6 +434,12 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (_contentBorderColor != null)
                 xme.SetAttribute("ContentBorderColor", string.Format("{0}{1}{2}", _contentBorderColor.Value.R.ToString("X2"), _contentBorderColor.Value.G.ToString("X2"), _contentBorderColor.Value.B.ToString("X2")));
 
+            if (_groupBackgroundColor != null)
+                xme.SetAttribute("GroupBackgroundColor", string.Format("{0}{1}{2}", _groupBackgroundColor.Value.R.ToString("X2"), _groupBackgroundColor.Value.G.ToString("X2"), _groupBackgroundColor.Value.B.ToString("X2")));
+
+            if (_groupBorderColor != null)
+                xme.SetAttribute("GroupBorderColor", string.Format("{0}{1}{2}", _groupBorderColor.Value.R.ToString("X2"), _groupBorderColor.Value.G.ToString("X2"), _groupBorderColor.Value.B.ToString("X2")));
+
             if (_headerBackgroundColor != null)
                 xme.SetAttribute("HeaderBackgroundColor", string.Format("{0}{1}{2}", _headerBackgroundColor.Value.R.ToString("X2"), _headerBackgroundColor.Value.G.ToString("X2"), _headerBackgroundColor.Value.B.ToString("X2")));
 
@@ -390,6 +466,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (_contentFontClass != null)
                 xme.SetAttribute("ContentFontClass", _contentFontClass);
 
+            if (_groupFont != null)
+            {
+                var fontXme = _groupFont.ToXme("GroupFont");
+                var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
+                xme.AppendChild(importedFont);
+            }
+
             if (_skipLine != null)
             {
                 var xmeSkipLine = _skipLine.ToXme();
@@ -402,6 +485,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (_columnPadding != null)
                 xme.SetAttribute("ColumnPadding", _columnPadding.Value.ToString());
+
+            if (_groupSpacing != null)
+                xme.SetAttribute("GroupSpacing", _groupSpacing.Value.ToString());
 
             var columns = xme.OwnerDocument.CreateElement("Columns");
             xme.AppendChild(columns);
@@ -432,6 +518,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (xmlBorderColor != null)
                 table.ContentBorderColor = xmlBorderColor.Value.ToColor();
 
+            var xmlGroupBackgroundColor = xme.Attributes["GroupBackgroundColor"];
+            if (xmlGroupBackgroundColor != null)
+                table.GroupBackgroundColor = xmlGroupBackgroundColor.Value.ToColor();
+
+            var xmlGroupBorderColor = xme.Attributes["GroupBorderColor"];
+            if (xmlGroupBorderColor != null)
+                table.GroupBorderColor = xmlGroupBorderColor.Value.ToColor();
+
             var xmlHeaderBackgroundColor = xme.Attributes["HeaderBackgroundColor"];
             if (xmlHeaderBackgroundColor != null)
                 table.HeaderBackgroundColor = xmlHeaderBackgroundColor.Value.ToColor();
@@ -456,6 +550,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
             if (xmlColumnPadding != null)
                 table.ColumnPadding = xmlColumnPadding.Value;
 
+            var xmlGroupSpacing = xme.Attributes["GroupSpacing"];
+            if (xmlGroupSpacing != null)
+                table.GroupSpacing = xmlGroupSpacing.Value;
+
             foreach (XmlElement child in xme)
             {
                 switch (child.Name)
@@ -465,6 +563,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         break;
                     case "ContentFont":
                         table.ContentFont = Font.Load(child);
+                        break;
+                    case "GroupFont":
+                        table.GroupFont = Font.Load(child);
                         break;
                     case "SkipLine":
                         table.SkipLine = SkipLine.Load(child);

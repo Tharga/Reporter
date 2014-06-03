@@ -6,7 +6,7 @@ namespace Tharga.Reporter.Engine.Entity
 {
     public class SkipLine
     {
-        private int _interval;
+        private int _interval = 3;
         private UnitValue? _height;
 
         public int Interval

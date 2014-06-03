@@ -31,13 +31,15 @@ namespace Tharga.Reporter.Console
             //Multipage_PDF_by_spanning_text_using_a_reference_point();
             //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
             //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-            Create_PDF_document_with_basic_table();
+            //Create_PDF_document_with_basic_table();
             //Create_PDF_document_with_template_that_spans_over_multiple_pages();
             //Different_text_on_different_pages();
             //RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
             //RenderFromFile();
+            //DataWithLinefeed();
+            Table_With_grouping();
         }
 
         private static void Test()
@@ -125,6 +127,27 @@ namespace Tharga.Reporter.Console
             SampleOutput(template, null,false);
         }
 
+        private static async void DataWithLinefeed()
+        {
+            var section = new Section();
+            section.Header.Height = "3cm";
+            var refPoint = new ReferencePoint {Stack = ReferencePoint.StackMethod.Vertical};
+            section.Pane.ElementList.Add(refPoint);
+            refPoint.ElementList.Add(new Text { Value = "Line1: {DataLine1}" });
+            refPoint.ElementList.Add(new Text { Value = "Line2:" + Environment.NewLine + "{DataLine2}" + Environment.NewLine, HideValue = "DataLine2" });
+            refPoint.ElementList.Add(new Text { Value = "Line3:" + Environment.NewLine + "{DataLine3}", HideValue = "DataLine3" });
+            refPoint.ElementList.Add(new Text { Value = "Line4: {DataLine4}" });
+
+            var template = new Template(section);
+
+            var data = new DocumentData();
+            data.Add("DataLine1", "ABC123");
+            data.Add("DataLine2", "x");
+            data.Add("DataLine3", "GHI" + Environment.NewLine + "789");
+            data.Add("DataLine4", "JKL012");
+            SampleOutput(template, data);
+        }
+
         private async static void TextButNoData()
         {
             var section = new Section();
@@ -206,7 +229,7 @@ namespace Tharga.Reporter.Console
                 {
                     PrinterName = "Microsoft XPS Document Writer",
                     PrintToFile = true,
-                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+                    PrintFileName = @"\\secc518\TEMPDABOH$\Desktop\b1.xps", //@"C:\Users\Daniel\Desktop\b1.xps",
                 };
                 stopWatch.Reset();
                 stopWatch.Start();
@@ -341,6 +364,71 @@ namespace Tharga.Reporter.Console
             var template = new Template(coverPage);
             template.SectionList.Add(content);
             template.SectionList.Add(index);
+
+            SampleOutput(template, documentData);
+        }
+
+        private async static void Table_With_grouping()
+        {
+            var section = new Section();
+
+            section.Margin = new UnitRectangle { Left = UnitValue.Parse("1cm"), Top = UnitValue.Parse("1cm"), Right = UnitValue.Parse("1cm"), Bottom = UnitValue.Parse("1cm") };
+            section.Header.Height = "3cm";
+            section.Footer.Height = "2cm";
+
+            var tableTemplate = new Table
+                {
+                    Name = "MyTable", 
+                    
+                    HeaderBackgroundColor = Color.LightGreen,
+                    HeaderBorderColor = Color.Green,
+                    HeaderFont = new Font { FontName = "Times", Size = 10, Color = Color.Green },                    
+
+                    ContentBorderColor = Color.Blue,
+                    ContentBackgroundColor = Color.SkyBlue,
+                    ContentFont = new Font { FontName = "Verdana", Size = 8, Color = Color.Blue },
+
+                    GroupBorderColor = Color.Red,
+                    GroupBackgroundColor = Color.Pink,
+                    GroupFont = new Font { FontName = "Times", Size = 12, Color = Color.Red },
+                    GroupSpacing = "5mm",
+
+                    SkipLine = new SkipLine{ Height = "2mm"},                    
+                };
+            section.Pane.ElementList.Add(tableTemplate);
+            tableTemplate.AddColumn("{Col1}", "Column 1", UnitValue.Parse("5cm"));
+            tableTemplate.AddColumn("{Col2}.", "Column 2", UnitValue.Parse("5cm"));
+
+            var documentData = new DocumentData();
+            var tableData = new DocumentDataTable("MyTable");
+            documentData.Add(tableData);
+
+            tableData.AddGroup("First group.");
+
+            var row = new Dictionary<string, string> {{"Col1", "some data for row 1"}, {"Col2", "some oter data"}};
+            tableData.AddRow(row);
+
+            var row2 = new Dictionary<string, string> {{"Col1", "some data for row 2"}, {"Col2", "some oter data"}};
+            tableData.AddRow(row2);
+
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 3" }, { "Col2", "some oter data" } });
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 4" }, { "Col2", "some oter data" } });
+
+            tableData.AddGroup("Second group that have a really long name that spans over several columns.");
+
+            var row3 = new Dictionary<string, string> { { "Col1", "some data for row 5" }, { "Col2", "some oter data" } };
+            tableData.AddRow(row3);
+
+            var row4 = new Dictionary<string, string> { { "Col1", "some data for row 6" }, { "Col2", "some oter data" } };
+            tableData.AddRow(row4);
+
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 7" }, { "Col2", "some oter data" } });
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 8" }, { "Col2", "some oter data" } });
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 9" }, { "Col2", "some oter data" } });
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 10" }, { "Col2", "some oter data" } });
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "some data for row 11" }, { "Col2", "some oter data" } });
+
+            var template = new Template(section);
 
             SampleOutput(template, documentData);
         }

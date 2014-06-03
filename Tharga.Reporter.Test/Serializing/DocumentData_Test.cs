@@ -68,10 +68,10 @@ namespace Tharga.Reporter.Tests.Serializing
             //Assert
             Assert.AreEqual(documentData.Get("A"), other.Get("A"));
             Assert.AreEqual(documentData.GetDataTable("TableA").Rows.Count, other.GetDataTable("TableA").Rows.Count);
-            Assert.AreEqual(documentData.GetDataTable("TableA").Rows[0].First().Key, other.GetDataTable("TableA").Rows[0].First().Key);
-            Assert.AreEqual(documentData.GetDataTable("TableA").Rows[0].First().Value, other.GetDataTable("TableA").Rows[0].First().Value);
-            Assert.AreEqual(documentData.GetDataTable("TableA").Rows[1].First().Key, other.GetDataTable("TableA").Rows[1].First().Key);
-            Assert.AreEqual(documentData.GetDataTable("TableA").Rows[1].First().Value, other.GetDataTable("TableA").Rows[1].First().Value);
+            Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[0]).Columns.First().Key, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[0]).Columns.First().Key);
+            Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[0]).Columns.First().Value, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[0]).Columns.First().Value);
+            Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[1]).Columns.First().Key, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[1]).Columns.First().Key);
+            Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[1]).Columns.First().Value, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[1]).Columns.First().Value);
             Assert.AreEqual(xml.OuterXml, other.ToXml().OuterXml);
         }
     }

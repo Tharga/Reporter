@@ -56,6 +56,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
             var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
+            if (text.EndsWith(Environment.NewLine))
+                textSize = renderData.Graphics.MeasureString(text + ".", font, XStringFormats.TopLeft);
 
             var offset = 0D;
             if (TextAlignment == Alignment.Right)
@@ -70,7 +72,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 if (renderData.PageNumberInfo.TotalPages == null)
                     throw new InvalidOperationException("The prerendering step did not set the number of total pages!");
 
-                renderData.Graphics.DrawString(text, font, brush, renderData.ElementBounds, XStringFormats.TopLeft);
+                var lines = text.Split(Environment.NewLine.ToCharArray());
+                double lineOffset = 0;
+                foreach (var line in lines)
+                {
+                    var elementBounds = new XRect(renderData.ElementBounds.X, renderData.ElementBounds.Y + lineOffset, renderData.ElementBounds.Width, renderData.ElementBounds.Height - lineOffset);
+                    renderData.Graphics.DrawString(line, font, brush, elementBounds, XStringFormats.TopLeft);
+                    lineOffset += renderData.Graphics.MeasureString(line, font).Height;
+                }
 
                 if (renderData.DebugData != null)
                 {

@@ -57,11 +57,15 @@ namespace Tharga.Reporter.Engine.Entity
                 {
                     var xmeRow = xmd.CreateElement("Row");
                     xmeTable.AppendChild(xmeRow);
-                    foreach (var col in row)
+                    if (row is DocumentDataTableData)
                     {
-                        var xmeCol = xmd.CreateElement(col.Key);
-                        xmeCol.InnerText = col.Value;
-                        xmeRow.AppendChild(xmeCol);
+                        var rowData = row as DocumentDataTableData;
+                        foreach (var col in rowData.Columns)
+                        {
+                            var xmeCol = xmd.CreateElement(col.Key);
+                            xmeCol.InnerText = col.Value;
+                            xmeRow.AppendChild(xmeCol);
+                        }
                     }
                 }
             }
@@ -88,7 +92,7 @@ namespace Tharga.Reporter.Engine.Entity
                 foreach (XmlElement row in table.ChildNodes)
                 {
                     var rw = new Dictionary<string, string>();
-                    t.Rows.Add(rw);
+                    t.Rows.Add(new DocumentDataTableData(rw));
                     foreach (XmlElement col in row)
                     {
                         rw.Add(col.Name,col.InnerText);
