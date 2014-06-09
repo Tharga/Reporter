@@ -55,10 +55,11 @@ namespace Tharga.Reporter.Engine.Entity
                 xmd.LastChild.AppendChild(xmeTable);
                 foreach (var row in table.Rows)
                 {
-                    var xmeRow = xmd.CreateElement("Row");
-                    xmeTable.AppendChild(xmeRow);
                     if (row is DocumentDataTableData)
                     {
+                        var xmeRow = xmd.CreateElement("Row");
+                        xmeTable.AppendChild(xmeRow);
+
                         var rowData = row as DocumentDataTableData;
                         foreach (var col in rowData.Columns)
                         {
@@ -67,6 +68,16 @@ namespace Tharga.Reporter.Engine.Entity
                             xmeRow.AppendChild(xmeCol);
                         }
                     }
+                    else if (row is DocumentDataTableGroup)
+                    {
+                        var xmeGroup = xmd.CreateElement("Group");
+                        xmeTable.AppendChild(xmeGroup);
+
+                        var rowData = row as DocumentDataTableGroup;
+                        xmeGroup.InnerText = rowData.Content;
+                    }
+                    else
+                        throw new ArgumentOutOfRangeException(string.Format("Unknown document data table type {0}.", row.GetType()));
                 }
             }
 
@@ -91,11 +102,21 @@ namespace Tharga.Reporter.Engine.Entity
                 documentData.Add(t);
                 foreach (XmlElement row in table.ChildNodes)
                 {
-                    var rw = new Dictionary<string, string>();
-                    t.Rows.Add(new DocumentDataTableData(rw));
-                    foreach (XmlElement col in row)
+                    switch (row.Name)
                     {
-                        rw.Add(col.Name,col.InnerText);
+                        case "Row":
+                            var rw = new Dictionary<string, string>();
+                            t.Rows.Add(new DocumentDataTableData(rw));
+                            foreach (XmlElement col in row)
+                            {
+                                rw.Add(col.Name, col.InnerText);
+                            }
+                            break;
+                        case "Group":
+                            t.Rows.Add(new DocumentDataTableGroup(row.InnerText));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(string.Format("Unknown row type {0}.", row.Name));
                     }
                 }
             }

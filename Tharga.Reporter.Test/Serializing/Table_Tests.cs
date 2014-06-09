@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using MigraDoc.Rendering;
 using Moq;
 using NUnit.Framework;
@@ -222,6 +223,33 @@ namespace Tharga.Reporter.Tests.Serializing
 
             //Assert
             //Assert.AreEqual(data1, data2);
+        }
+
+        [Test]
+        public void When_serializing_and_deserializing_data_with_group_lines()
+        {
+            //Arrange
+            var originalDocumentData = new DocumentData();
+            var tableData = new DocumentDataTable("A");
+            tableData.AddGroup("Group1");
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "Data1A" }, { "Col2", "Data2A" } });
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "Data1B" }, { "Col2", "Data2B" } });
+            tableData.AddGroup("Group2");
+            tableData.AddRow(new Dictionary<string, string> { { "Col1", "Data1C" }, { "Col2", "Data2C" } });
+            originalDocumentData.Add(tableData);
+            var xmlDocumentData = originalDocumentData.ToXml();
+
+            //Act
+            var loadedDocumentData = DocumentData.Load(xmlDocumentData);
+
+            //Assert
+            Assert.AreEqual(originalDocumentData.GetDataTable("A").Rows.Count, loadedDocumentData.GetDataTable("A").Rows.Count);
+            Assert.AreEqual(originalDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableData), loadedDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableData));
+            Assert.AreEqual(originalDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableGroup), loadedDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableGroup));
+            Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content, (loadedDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content);
+            Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.Last(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content, (loadedDocumentData.GetDataTable("A").Rows.Last(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content);
+            Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Key, (loadedDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Key);
+            Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Value, (loadedDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Value);
         }
     }
 }

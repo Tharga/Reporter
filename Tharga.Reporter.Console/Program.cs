@@ -37,9 +37,10 @@ namespace Tharga.Reporter.Console
             //RefWithOnePageTextBox();
             //SkallebergSample1();
             //SkallebergSample2();
-            //RenderFromFile();
+            //RenderFromFile(@"C:\Users\Daniel\Documents\template.xml", @"C:\Users\Daniel\Documents\data.xml");
+            RenderFromFile(@"C:\Users\Daniel\Desktop\InvoiceTemplate.txt", @"C:\Users\Daniel\Desktop\InvoiceData.txt");
             //DataWithLinefeed();
-            Table_With_grouping();
+            //Table_With_grouping();
         }
 
         private static void Test()
@@ -48,14 +49,14 @@ namespace Tharga.Reporter.Console
 
         }
 
-        private static void RenderFromFile()
+        private static void RenderFromFile(string templatePath, string dataPath)
         {
             var templateData = new XmlDocument();
-            templateData.Load(@"C:\Users\Daniel\Documents\template.xml");
+            templateData.Load(templatePath);
             var template = Template.Load(templateData);
 
             var data = new XmlDocument();
-            data.Load(@"C:\Users\Daniel\Documents\data.xml");
+            data.Load(dataPath);
             var documentData = DocumentData.Load(data);
 
             SampleOutput(template, documentData, debug: false);
