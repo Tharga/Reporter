@@ -20,7 +20,7 @@ namespace Tharga.Reporter.Console
         static void Main(string[] args)
         {
             //Blank_default_PDF_document();
-            //TextButNoData();
+            TextButNoData();
             //BackgroundObjectsOrNot();
             //SinglePageAreaElement_Sample();
             //MultiPageAreaElement_Sample();
@@ -38,7 +38,7 @@ namespace Tharga.Reporter.Console
             //SkallebergSample1();
             //SkallebergSample2();
             //RenderFromFile(@"C:\Users\Daniel\Documents\template.xml", @"C:\Users\Daniel\Documents\data.xml");
-            RenderFromFile(@"C:\Users\Daniel\Desktop\InvoiceTemplate.txt", @"C:\Users\Daniel\Desktop\InvoiceData.txt");
+            //RenderFromFile(@"C:\Users\Daniel\Desktop\InvoiceTemplate.txt", @"C:\Users\Daniel\Desktop\InvoiceData.txt");
             //DataWithLinefeed();
             //Table_With_grouping();
         }
@@ -230,7 +230,7 @@ namespace Tharga.Reporter.Console
                 {
                     PrinterName = "Microsoft XPS Document Writer",
                     PrintToFile = true,
-                    PrintFileName = @"\\secc518\TEMPDABOH$\Desktop\b1.xps", //@"C:\Users\Daniel\Desktop\b1.xps",
+                    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
                 };
                 stopWatch.Reset();
                 stopWatch.Start();

@@ -49,6 +49,7 @@ namespace Tharga.Reporter.Engine
 
         #region Public access methods
 
+
         public void CreatePdfFile(string fileName, PageSize pageSize = PageSize.A4)
         {
             if (System.IO.File.Exists(fileName))
@@ -85,6 +86,7 @@ namespace Tharga.Reporter.Engine
             docRenderer.PrepareDocument();
 
             var printDocument = new MigraDocPrintDocument();
+            printDocument.PrintController = new StandardPrintController();
 
             printDocument.PrintPage += printDocument_PrintPage;
 
