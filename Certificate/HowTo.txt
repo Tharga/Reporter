@@ -1,0 +1,6 @@
+thargelion.pfx is identical to florida.pfx. It is taken from there and renamed.
+
+Then a pubkicKey is retrieved like this.
+"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\sn.exe" -Tp ..\Tharga.Reporter.Engine\bin\Debug\Tharga.Reporter.Engine.dll
+
+The public key is placed in the AssemblyInfo.cs file

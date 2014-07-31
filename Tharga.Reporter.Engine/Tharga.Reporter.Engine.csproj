@@ -48,6 +48,12 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>thargelion.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Aspose.BarCode">
       <HintPath>..\packages\Aspose.BarCode.5.9.0.0\lib\net45\Aspose.BarCode.dll</HintPath>
@@ -143,6 +149,7 @@
     <None Include="Tharga.Reporter.Engine.nuspec">
       <SubType>Designer</SubType>
     </None>
+    <None Include="thargelion.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
