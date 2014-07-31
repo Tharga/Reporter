@@ -12,6 +12,7 @@ namespace Tharga.Reporter.Tests.Rendering
     class Rendering_Text
     {
         [Test]
+        [Ignore("Can't gain access to internal stuff.")]
         public void When_rendering_text()
         {
             //Arrange
