@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Element.Extensions;
 using Tharga.Reporter.Interface;
 
 namespace Tharga.Reporter.Entity.Element

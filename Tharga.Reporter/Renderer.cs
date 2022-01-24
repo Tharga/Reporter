@@ -7,6 +7,7 @@ using PdfSharp.Pdf;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Extensions;
 using Tharga.Reporter.Interface;
 //using MigraDoc.Rendering.Printing;
 using Section = Tharga.Reporter.Entity.Section;

@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Xml;
+using Tharga.Reporter.Entity.Element.Extensions;
 using Tharga.Reporter.Extensions;
 
 namespace Tharga.Reporter.Entity

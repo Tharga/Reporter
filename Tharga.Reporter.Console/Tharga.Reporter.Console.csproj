@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Tharga.Reporter.Engine\Tharga.Reporter.csproj" />
+	  <ProjectReference Include="..\Tharga.Reporter\Tharga.Reporter.csproj" />
 	</ItemGroup>
 
 </Project>

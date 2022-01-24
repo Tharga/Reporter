@@ -1,3 +1,5 @@
+using Tharga.Reporter.Extensions;
+
 namespace Tharga.Reporter.Entity
 {
     //TODO: Move stuff to extensions

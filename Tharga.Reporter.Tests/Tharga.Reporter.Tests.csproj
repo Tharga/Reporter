@@ -24,11 +24,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Tharga.Reporter.Engine\Tharga.Reporter.csproj" />
+	  <Folder Include="Properties\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Properties\" />
+	  <ProjectReference Include="..\Tharga.Reporter\Tharga.Reporter.csproj" />
 	</ItemGroup>
 
 </Project>
