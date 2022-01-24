@@ -9,7 +9,7 @@ pool:
 variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  BQC.ForceNewBaseline: false
+  # BQC.ForceNewBaseline: false
 
 steps:
 - task: UseDotNet@2
@@ -17,8 +17,6 @@ steps:
   inputs:
     version: 6.0.x
     includePreviewVersions: false
-
-- task: NuGetToolInstaller@1
 
 - task: DotNetCoreCLI@2
   displayName: 'Restore nuget packages'
@@ -35,42 +33,42 @@ steps:
     arguments: '-c Release /p:NoWarn=0618'
     versioningScheme: 'byBuildNumber'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Test'
-  inputs:
-    command: 'test'
-    projects: '**/Tharga.Reporter.Tests.csproj'
-    arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
+# - task: DotNetCoreCLI@2
+#   displayName: 'Test'
+#   inputs:
+#     command: 'test'
+#     projects: '**/Tharga.Reporter.Tests.csproj'
+#     arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
 
-- task: BuildQualityChecks@8
-  displayName: 'Build Quality Checks'
-  inputs:
-    checkWarnings: true
-    warningFailOption: 'build'
-    allowWarningVariance: true
-    warningVariance: '1'
-    checkCoverage: true
-    coverageFailOption: 'build'
-    coverageType: 'blocks'
-    allowCoverageVariance: true
-    coverageVariance: '1'
+# - task: BuildQualityChecks@8
+#   displayName: 'Build Quality Checks'
+#   inputs:
+#     checkWarnings: true
+#     warningFailOption: 'build'
+#     allowWarningVariance: true
+#     warningVariance: '1'
+#     checkCoverage: true
+#     coverageFailOption: 'build'
+#     coverageType: 'blocks'
+#     allowCoverageVariance: true
+#     coverageVariance: '1'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/Tharga.Reporter.csproj'
-    versioningScheme: 'byBuildNumber'
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'pack'
+#     packagesToPack: '**/Tharga.Reporter.csproj'
+#     versioningScheme: 'byBuildNumber'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'df4b267e-c55c-4a36-8fe3-8e98d5d8dbbb/5cea672d-cb79-44f6-beb8-2eaba59e670d'
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'push'
+#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+#     nuGetFeedType: 'internal'
+#     publishVstsFeed: 'df4b267e-c55c-4a36-8fe3-8e98d5d8dbbb/5cea672d-cb79-44f6-beb8-2eaba59e670d'
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'Nuget.org'
+# - task: NuGetCommand@2
+#   inputs:
+#     command: 'push'
+#     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+#     nuGetFeedType: 'external'
+#     publishFeedCredentials: 'Nuget.org'
