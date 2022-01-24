@@ -1,13 +1,11 @@
-﻿using System.Diagnostics;
-
-namespace Tharga.Reporter.Console;
+﻿namespace Tharga.Reporter.Console;
 
 public static class FileManager
 {
     public static void ExecuteFile(byte[] byteArray)
     {
-        var fileName = string.Format("{0}.pdf", System.IO.Path.GetTempFileName());
-        System.IO.File.WriteAllBytes(fileName, byteArray);
+        var fileName = $"{Path.GetTempFileName()}.pdf";
+        File.WriteAllBytes(fileName, byteArray);
         System.Console.WriteLine($"Created: {fileName}");
         //Process.Start(fileName);
 

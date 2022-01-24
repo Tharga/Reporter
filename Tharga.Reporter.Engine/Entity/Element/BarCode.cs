@@ -30,9 +30,9 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (!IsBackground || renderData.IncludeBackground)
             {
-                var generatorA = new BarcodeGenerator(EncodeTypes.Code128, "1234567");
-                generatorA.Parameters.Barcode.XDimension.Millimeters = 1f;
-                generatorA.Save("c:\\temp\\output.jpg", BarCodeImageFormat.Jpeg);
+                //var generatorA = new BarcodeGenerator(EncodeTypes.Code128, "1234567");
+                //generatorA.Parameters.Barcode.XDimension.Millimeters = 1f;
+                //generatorA.Save("c:\\temp\\output.jpg", BarCodeImageFormat.Jpeg);
 
                 //var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
                 var generator = new BarcodeGenerator(EncodeTypes.Code39Standard, GetCode(renderData.DocumentData, renderData.PageNumberInfo));
@@ -47,6 +47,14 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 //    g.FillRectangle(new SolidBrush(generator.Parameters.BackColor), 0, 0, imageData.Width, 14);
                 //}
 
+                //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, imageData.Width, imageData.Height);
+                //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, raw.Width / 2, raw.Height * 10);
+
+                //using (var image = XImage.FromGdiPlusImage(imageData))
+                //{
+                //    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
+                //}
+
                 //NOTE: Create a new image 1 pixel height, and paint an untouched part of the barcode on that.
                 var targetImageHeight = 1;
                 var raw = new Bitmap(imageData, new Size(imageData.Width, targetImageHeight));
@@ -56,13 +64,6 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         new[] { new PointF(0, 0), new PointF(imageData.Width, 0), new PointF(0, targetImageHeight) },
                         new RectangleF(0, 10, imageData.Width, 1), GraphicsUnit.Pixel);
                 }
-
-                renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, imageData.Width, imageData.Height);
-
-                //using (var image = XImage.FromGdiPlusImage(imageData))
-                //{
-                //    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
-                //}
 
                 {
                     using var strm = new MemoryStream();

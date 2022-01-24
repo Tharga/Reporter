@@ -21,7 +21,7 @@ namespace Tharga.Reporter.Engine
 {
     public class Renderer
     {
-        public enum PageSize { A4, Letter }
+        public enum PageSize { A4, Letter, PlasticCard }
 
         private readonly Template _template;
         private readonly DocumentData _documentData;
@@ -35,6 +35,8 @@ namespace Tharga.Reporter.Engine
 
         internal Renderer(IGraphicsFactory graphicsFactory, Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
         {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             _template = template;
             _documentData = documentData;
             _includeBackgroundObjects = includeBackgroundObjects;
@@ -116,7 +118,15 @@ namespace Tharga.Reporter.Engine
             {
                 var page = pdfDocument.AddPage();
 
-                page.Size = pageSize.ToPageSize();
+                if (pageSize == PageSize.PlasticCard)
+                {
+                    page.Width = new XUnit(85, XGraphicsUnit.Millimeter);
+                    page.Height = new XUnit(54, XGraphicsUnit.Millimeter);
+                }
+                else
+                {
+                    page.Size = pageSize.ToPageSize();
+                }
 
                 var gfx = _graphicsFactory.PrepareGraphics(page, docRenderer, ii);
 

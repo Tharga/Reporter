@@ -162,7 +162,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
         internal static Image Load(XmlElement xme)
         {
             var image = new Image();
-            
+
             image.AppendData(xme);
 
             var xmlSource = xme.Attributes["Source"];
