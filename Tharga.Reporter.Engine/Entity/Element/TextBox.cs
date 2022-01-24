@@ -50,7 +50,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 return 0;
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+            //TODO: var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+            var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
             var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
@@ -120,7 +121,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+            //TODO: var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+            var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
             var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);

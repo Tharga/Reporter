@@ -62,7 +62,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
             get { return _headerFontClass ?? string.Empty; }
             set
             {
-                if (_headerFont != null) 
+                if (_headerFont != null)
                     throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFont has already been set.");
                 _headerFontClass = value;
             }
@@ -188,9 +188,11 @@ namespace Tharga.Reporter.Engine.Entity.Element
                 return;
 
             var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-            var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(renderData.Section)));
+            //TODO: var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(renderData.Section)));
+            var headerBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
             var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
-            var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(renderData.Section)));
+            //TODO: var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(renderData.Section)));
+            var lineBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
             var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
 
             var firstColumn = _columns.FirstOrDefault();
@@ -356,14 +358,17 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
                             if (GroupBackgroundColor != null)
                             {
-                                var brush = new XSolidBrush(XColor.FromArgb(GroupBackgroundColor.Value));
+                                //var brush = new XSolidBrush(XColor.FromArgb(GroupBackgroundColor.Value));
+                                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                                 var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                                renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor ?? GroupBackgroundColor.Value), 0.1), brush, rect);
+                                //TODO: renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor ?? GroupBackgroundColor.Value), 0.1), brush, rect);
+                                renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), brush, rect);
                             }
                             else if (GroupBorderColor != null)
                             {
                                 var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                                renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor.Value), 0.1), rect);                                
+                                //TODO: renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor.Value), 0.1), rect);
+                                renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), rect);
                             }
 
                             renderData.Graphics.DrawString(groupData, groupFont, lineBrush, topLeft, XStringFormats.TopLeft);
@@ -386,11 +391,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
         {
             if (ContentBorderColor != null || ContentBackgroundColor != null)
             {
-                var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value, 0.1); //TODO: Set the thickness of the boarder
+                //TODO: var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value, 0.1); //TODO: Set the thickness of the boarder
+                var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
 
                 if (ContentBackgroundColor != null)
                 {
-                    var brush = new XSolidBrush(XColor.FromArgb(ContentBackgroundColor.Value));
+                    //TODO: var brush = new XSolidBrush(XColor.FromArgb(ContentBackgroundColor.Value));
+                    var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                     gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
                 }
                 else
@@ -399,11 +406,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (HeaderBorderColor != null || HeaderBackgroundColor != null)
             {
-                var borderPen = new XPen(HeaderBorderColor ?? HeaderBackgroundColor.Value, 0.1); //TODO: Se the thickness of the boarder
+                //TODO: var borderPen = new XPen(HeaderBorderColor ?? HeaderBackgroundColor.Value, 0.1); //TODO: Se the thickness of the boarder
+                var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
 
                 if (HeaderBackgroundColor != null)
                 {
-                    var brush = new XSolidBrush(XColor.FromArgb(HeaderBackgroundColor.Value));
+                    //TODO: var brush = new XSolidBrush(XColor.FromArgb(HeaderBackgroundColor.Value));
+                    var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                     gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
                 }
                 else
@@ -582,7 +591,7 @@ namespace Tharga.Reporter.Engine.Entity.Element
                         throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to text base.", child.Name));
                 }
             }
-            
+
             return table;
         }
     }

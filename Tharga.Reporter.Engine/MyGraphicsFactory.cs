@@ -11,7 +11,7 @@ namespace Tharga.Reporter.Engine
         {
             var gfx = XGraphics.FromPdfPage(page);
             gfx.MUH = PdfFontEncoding.Unicode;
-            gfx.MFEH = PdfFontEmbedding.Default;
+            //gfx.MFEH = PdfFontEmbedding.Default;
             docRenderer.RenderPage(gfx, ii + 1);
             return new MyGraphics(gfx);
         }

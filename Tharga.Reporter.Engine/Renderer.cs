@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
-using MigraDoc.Rendering.Printing;
+//using MigraDoc.Rendering.Printing;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Tharga.Reporter.Engine.Entity;
@@ -13,6 +14,8 @@ using Tharga.Reporter.Engine.Entity.Element;
 using Tharga.Reporter.Engine.Entity.Util;
 using Tharga.Reporter.Engine.Interface;
 using Section = Tharga.Reporter.Engine.Entity.Section;
+
+[assembly:InternalsVisibleTo("Tharga.Reporter.Engine.Tests")]
 
 namespace Tharga.Reporter.Engine
 {
@@ -25,7 +28,7 @@ namespace Tharga.Reporter.Engine
         private readonly bool _includeBackgroundObjects;
         private readonly DocumentProperties _documentProperties;
         private readonly IDebugData _debugData;
-        
+
         private int _printPageCount;
         private bool _preRendered;
         private readonly IGraphicsFactory _graphicsFactory;
@@ -85,14 +88,15 @@ namespace Tharga.Reporter.Engine
             var docRenderer = new DocumentRenderer(doc);
             docRenderer.PrepareDocument();
 
-            var printDocument = new MigraDocPrintDocument();
-            printDocument.PrintController = new StandardPrintController();
-
-            printDocument.PrintPage += printDocument_PrintPage;
-
-            printDocument.Renderer = docRenderer;
-            printDocument.PrinterSettings = printerSettings;
-            printDocument.Print();
+            //var printDocument = new MigraDocPrintDocument();
+            //printDocument.PrintController = new StandardPrintController();
+            //
+            //printDocument.PrintPage += printDocument_PrintPage;
+            //
+            //printDocument.Renderer = docRenderer;
+            //printDocument.PrinterSettings = printerSettings;
+            //printDocument.Print();
+            throw new NotImplementedException();
         }
 
 
@@ -137,17 +141,17 @@ namespace Tharga.Reporter.Engine
             }
 
             //TODO: Add other properties as well
-            //pdfDocument.Info.Keywords 
-            //pdfDocument.Info.Owner 
-            //pdfDocument.Info.Producer 
-            //pdfDocument.PageLayout = PdfSharp.Pdf.PdfPageLayout.OneColumn 
-            //pdfDocument.PageMode = PdfSharp.Pdf.PdfPageMode.FullScreen 
-            //pdfDocument.Language 
+            //pdfDocument.Info.Keywords
+            //pdfDocument.Info.Owner
+            //pdfDocument.Info.Producer
+            //pdfDocument.PageLayout = PdfSharp.Pdf.PdfPageLayout.OneColumn
+            //pdfDocument.PageMode = PdfSharp.Pdf.PdfPageMode.FullScreen
+            //pdfDocument.Language
             //pdfDocument.Outlines
-            //pdfDocument.SecurityHandler 
-            //pdfDocument.SecuritySettings 
-            //pdfDocument.Settings.PrivateFontCollection 
-            //pdfDocument.Version 
+            //pdfDocument.SecurityHandler
+            //pdfDocument.SecuritySettings
+            //pdfDocument.Settings.PrivateFontCollection
+            //pdfDocument.Version
             //pdfDocument.ViewerPreferences.
 
             //TODO: Provide security settings
@@ -186,10 +190,12 @@ namespace Tharga.Reporter.Engine
             var unitSize = GetSize(rawSize);
             var scale = GetScale(unitSize);
 
-            var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
-            gfx.ScaleTransform(scale);
+            //TODO: Not yet converted
+            //var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
+            //gfx.ScaleTransform(scale);
 
-            DoRenderStuff(new MyGraphics(gfx), new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
+            //DoRenderStuff(new MyGraphics(gfx), new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
+            throw new NotImplementedException();
         }
 
         private static XSize GetSize(XSize rawSize)

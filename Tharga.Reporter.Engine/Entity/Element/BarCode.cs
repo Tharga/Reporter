@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Xml;
 using Aspose.BarCode;
+using Aspose.BarCode.Generation;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Engine.Entity.Area;
 using Tharga.Reporter.Engine.Interface;
@@ -29,25 +30,50 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (!IsBackground || renderData.IncludeBackground)
             {
-                var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
+                var generatorA = new BarcodeGenerator(EncodeTypes.Code128, "1234567");
+                generatorA.Parameters.Barcode.XDimension.Millimeters = 1f;
+                generatorA.Save("c:\\temp\\output.jpg", BarCodeImageFormat.Jpeg);
+
+                //var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
+                var generator = new BarcodeGenerator(EncodeTypes.Code39Standard, GetCode(renderData.DocumentData, renderData.PageNumberInfo));
                 var memStream = new MemoryStream();
-                b.BarCodeImage.Save(memStream, ImageFormat.Png);
+                //b.BarCodeImage.Save(memStream, ImageFormat.Png);
+                generator.Save(memStream, BarCodeImageFormat.Png);
                 var imageData = System.Drawing.Image.FromStream(memStream);
 
-                //Paint over the license info
-                using (var g = Graphics.FromImage(imageData))
+                //NOTE: Paint over the license info
+                //using (var g = Graphics.FromImage(imageData))
+                //{
+                //    g.FillRectangle(new SolidBrush(generator.Parameters.BackColor), 0, 0, imageData.Width, 14);
+                //}
+
+                //NOTE: Create a new image 1 pixel height, and paint an untouched part of the barcode on that.
+                var targetImageHeight = 1;
+                var raw = new Bitmap(imageData, new Size(imageData.Width, targetImageHeight));
+                using (var g = Graphics.FromImage(raw))
                 {
-                    g.FillRectangle(new SolidBrush(b.BackColor), 0, 0, imageData.Width, 14);
+                    g.DrawImage(imageData,
+                        new[] { new PointF(0, 0), new PointF(imageData.Width, 0), new PointF(0, targetImageHeight) },
+                        new RectangleF(0, 10, imageData.Width, 1), GraphicsUnit.Pixel);
                 }
 
-                //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, imageData.Width, imageData.Height);
+                renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, imageData.Width, imageData.Height);
 
-                using (var image = XImage.FromGdiPlusImage(imageData))
+                //using (var image = XImage.FromGdiPlusImage(imageData))
+                //{
+                //    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
+                //}
+
                 {
-                    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
+                    using var strm = new MemoryStream();
+                    //imageData.Save(strm, ImageFormat.Png);
+                    raw.Save(strm, ImageFormat.Png);
+                    using var xfoto = XImage.FromStream(strm);
+                    renderData.Graphics.DrawImage(xfoto, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
                 }
 
                 imageData.Dispose();
+                raw.Dispose();
             }
         }
 

@@ -31,11 +31,13 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (!IsBackground || renderData.IncludeBackground)
             {
-                var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
+                //TODO: var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
+                var pen = new XPen(XColor.FromKnownColor(XKnownColor.Black), BorderWidth.GetXUnitValue(0));
 
                 if (BackgroundColor != null)
                 {
-                    var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                    //TODO: var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                    var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                     renderData.Graphics.DrawRectangle(pen, brush, renderData.ElementBounds);
                 }
                 else

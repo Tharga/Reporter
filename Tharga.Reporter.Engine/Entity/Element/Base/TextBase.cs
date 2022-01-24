@@ -52,7 +52,8 @@ namespace Tharga.Reporter.Engine.Entity.Element
             var bounds = GetBounds(renderData.ParentBounds);
 
             var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-            var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+            //TODO: var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+            var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
 
             var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
             var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);

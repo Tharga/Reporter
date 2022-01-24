@@ -26,10 +26,10 @@ namespace Tharga.Reporter.Engine.Entity.Element
 
             if (renderData.IncludeBackground || !IsBackground)
             {
-                using (var image = XImage.FromGdiPlusImage(imageData))
-                {
-                    renderData.Graphics.DrawImage(image, renderData.ElementBounds);
-                }
+                using var strm = new MemoryStream();
+                imageData.Save(strm, System.Drawing.Imaging.ImageFormat.Png);
+                using var xfoto = XImage.FromStream(strm);
+                renderData.Graphics.DrawImage(xfoto, renderData.ElementBounds);
             }
 
             imageData.Dispose();
