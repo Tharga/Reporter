@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<Version>2.0.0</Version>
+		<Authors>Daniel Bohlin</Authors>
+		<Company>Thargelion AB</Company>
+		<Product>Tharga.Reporter generates PDFand prints pdf-documents.  and send then m diretly to the printerfrom templates</Product>
+		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspose.BarCode" Version="21.12.0" />
+		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Entity\" />
+		<Folder Include="Properties\" />
+	</ItemGroup>
+
+</Project>

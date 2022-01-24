@@ -24,7 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Tharga.Reporter.Engine\Tharga.Reporter.Engine.csproj" />
+	  <ProjectReference Include="..\Tharga.Reporter.Engine\Tharga.Reporter.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
