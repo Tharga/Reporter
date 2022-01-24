@@ -33,12 +33,12 @@ steps:
     arguments: '-c Release /p:NoWarn=0618'
     versioningScheme: 'byBuildNumber'
 
-# - task: DotNetCoreCLI@2
-#   displayName: 'Test'
-#   inputs:
-#     command: 'test'
-#     projects: '**/Tharga.Reporter.Tests.csproj'
-#     arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
+- task: DotNetCoreCLI@2
+  displayName: 'Test'
+  inputs:
+    command: 'test'
+    projects: '**/Tharga.Reporter.Tests.csproj'
+    arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
 
 # - task: BuildQualityChecks@8
 #   displayName: 'Build Quality Checks'
@@ -53,18 +53,18 @@ steps:
 #     allowCoverageVariance: true
 #     coverageVariance: '1'
 
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: 'pack'
-#     packagesToPack: '**/Tharga.Reporter.csproj'
-#     versioningScheme: 'byBuildNumber'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/Tharga.Reporter.csproj'
+    versioningScheme: 'byBuildNumber'
 
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: 'push'
-#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-#     nuGetFeedType: 'internal'
-#     publishVstsFeed: 'df4b267e-c55c-4a36-8fe3-8e98d5d8dbbb/5cea672d-cb79-44f6-beb8-2eaba59e670d'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'df4b267e-c55c-4a36-8fe3-8e98d5d8dbbb/5cea672d-cb79-44f6-beb8-2eaba59e670d'
 
 # - task: NuGetCommand@2
 #   inputs:
