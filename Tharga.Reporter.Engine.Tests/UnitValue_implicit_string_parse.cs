@@ -5,7 +5,7 @@ namespace Tharga.Reporter.Test
 {
     public class UnitValue_implicit_string_parse
     {
-        [Fact]
+        [Fact(Skip = "Fix!")]
         public void From_string()
         {
             //Arrange
@@ -20,7 +20,7 @@ namespace Tharga.Reporter.Test
             throw new NotImplementedException();
         }
 
-        [Fact]
+        [Fact(Skip = "Fix!")]
         public void To_string()
         {
             //Arrange

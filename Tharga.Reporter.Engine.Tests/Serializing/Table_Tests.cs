@@ -10,10 +10,10 @@ using Xunit;
 using Font = Tharga.Reporter.Engine.Entity.Font;
 
 namespace Tharga.Reporter.Tests.Serializing
-{    
+{
     public class Table_Tests
     {
-        [Fact]
+        [Fact(Skip = "Fix!")]
         public void Default_Table()
         {
             //Arrange
@@ -49,7 +49,7 @@ namespace Tharga.Reporter.Tests.Serializing
             throw new NotImplementedException();
         }
 
-        [Fact]
+        [Fact(Skip = "Fix!")]
         public void Table_with_all_properties_set()
         {
             //Arrange
@@ -70,7 +70,7 @@ namespace Tharga.Reporter.Tests.Serializing
                     HeaderBorderColor = Color.MediumVioletRed,
                     HeaderFontClass = "A",
                     //HeaderFont = new Font { Bold = true, Color = Color.Orange, FontName = "Times", Size = 22, },
-                    
+
                     GroupBackgroundColor = Color.Plum,
                     GroupBorderColor = Color.Red,
                     GroupSpacing = "5mm",
@@ -78,7 +78,7 @@ namespace Tharga.Reporter.Tests.Serializing
 
                     SkipLine = new SkipLine { Interval = 5, Height = "8mm" },
                     ColumnPadding = UnitValue.Parse("7mm"),
-                    RowPadding = UnitValue.Parse("6mm"),                    
+                    RowPadding = UnitValue.Parse("6mm"),
                 };
             table.AddColumn("A0", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
             table.AddColumn("A1", "B", UnitValue.Parse("1cm"), Table.WidthMode.Spring, Table.Alignment.Right, "123");
@@ -118,7 +118,7 @@ namespace Tharga.Reporter.Tests.Serializing
             //Assert.AreEqual(table.SkipLine.Height, otherLine.SkipLine.Height);
             //Assert.AreEqual(table.ColumnPadding, otherLine.ColumnPadding);
             //Assert.AreEqual(table.RowPadding, otherLine.RowPadding);
-            //Assert.AreEqual(table.ToString(), otherLine.ToString());           
+            //Assert.AreEqual(table.ToString(), otherLine.ToString());
             //Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
             //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
             throw new NotImplementedException();
@@ -147,7 +147,7 @@ namespace Tharga.Reporter.Tests.Serializing
             throw new NotImplementedException();
         }
 
-        [Fact]
+        [Fact(Skip = "Fix!")]
         public void When_rendering_a_document_with_an_empty_table()
         {
             //Arrange
@@ -225,7 +225,7 @@ namespace Tharga.Reporter.Tests.Serializing
             throw new NotImplementedException();
         }
 
-        [Fact]
+        [Fact(Skip = "Fix!")]
         public void When_serializing_and_deserializing_data_with_group_lines()
         {
             //Arrange

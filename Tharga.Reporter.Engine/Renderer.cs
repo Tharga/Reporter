@@ -15,7 +15,7 @@ using Tharga.Reporter.Engine.Entity.Util;
 using Tharga.Reporter.Engine.Interface;
 using Section = Tharga.Reporter.Engine.Entity.Section;
 
-[assembly:InternalsVisibleTo("Tharga.Reporter.Engine.Tests")]
+[assembly:InternalsVisibleTo("Tharga.Reporter.Tests")]
 
 namespace Tharga.Reporter.Engine
 {

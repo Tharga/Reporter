@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using FluentAssertions;
 using Tharga.Reporter.Engine;
 using Tharga.Reporter.Engine.Entity;
 using Xunit;
@@ -18,31 +19,30 @@ namespace Tharga.Reporter.Test
             var template = new Template(section);
 
             //Assert
-            throw new NotImplementedException();
-            //Assert.AreEqual(1, template.SectionList.Count);
+            template.SectionList.Count.Should().Be(1);
 
             //Assert.IsNotNull(template.SectionList.First().Header);
-            //Assert.AreEqual(0, template.SectionList.First().Header.ElementList.Count);
-            //Assert.AreEqual(0, template.SectionList.First().Header.Height.Value);
-            //Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Header.Height.Unit);
+            template.SectionList.First().Header.ElementList.Count.Should().Be(0);
+            //template.SectionList.First().Header.Height.Should().Be(0);
+            UnitValue.EUnit.Point.Should().Be(template.SectionList.First().Header.Height.Unit);
 
             //Assert.IsNotNull(template.SectionList.First().Footer);
-            //Assert.AreEqual(0, template.SectionList.First().Footer.ElementList.Count);
-            //Assert.AreEqual(0, template.SectionList.First().Footer.Height.Value);
-            //Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Footer.Height.Unit);
+            //0.Should().Be(template.SectionList.First().Footer.ElementList.Count);
+            //0.Should().Be(template.SectionList.First().Footer.Height.Value);
+            UnitValue.EUnit.Point.Should().Be(template.SectionList.First().Footer.Height.Unit);
 
             //Assert.IsNotNull(template.SectionList.First().Pane);
-            //Assert.AreEqual(0, template.SectionList.First().Pane.ElementList.Count);
+            //0.Should().Be(template.SectionList.First().Pane.ElementList.Count);
 
             //Assert.IsNotNull(template.SectionList.First().Margin);
-            //Assert.AreEqual(0, template.SectionList.First().Margin.Left.Value.Value);
-            //Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Left.Value.Unit);
-            //Assert.AreEqual(0, template.SectionList.First().Margin.Right.Value.Value);
-            //Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Right.Value.Unit);
-            //Assert.AreEqual(0, template.SectionList.First().Margin.Top.Value.Value);
-            //Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Top.Value.Unit);
-            //Assert.AreEqual(0, template.SectionList.First().Margin.Bottom.Value.Value);
-            //Assert.AreEqual(UnitValue.EUnit.Point, template.SectionList.First().Margin.Bottom.Value.Unit);
+            //0.Should().Be(template.SectionList.First().Margin.Left.Value.Value);
+            //UnitValue.EUnit.Point, template.SectionList.First().Margin.Left.Value.Unit);
+            //0.Should().Be(template.SectionList.First().Margin.Right.Value.Value);
+            //UnitValue.EUnit.Point, template.SectionList.First().Margin.Right.Value.Unit);
+            //0.Should().Be(template.SectionList.First().Margin.Top.Value.Value);
+            //UnitValue.EUnit.Point, template.SectionList.First().Margin.Top.Value.Unit);
+            //0.Should().Be(template.SectionList.First().Margin.Bottom.Value.Value);
+            //UnitValue.EUnit.Point, template.SectionList.First().Margin.Bottom.Value.Unit);
             //Assert.IsNull(template.SectionList.First().Margin.Height);
             //Assert.IsNull(template.SectionList.First().Margin.Width);
         }
@@ -77,7 +77,7 @@ namespace Tharga.Reporter.Test
         //    //var otherXml = otherTemplate.ToXml();
 
         //    ////Assert
-        //    //Assert.AreEqual(xml.InnerXml, otherXml.InnerXml);
+        //    xml.InnerXml, otherXml.InnerXml);
         //    ////TODO: Also assert that the properties of the objects are equal
         //}
     }
