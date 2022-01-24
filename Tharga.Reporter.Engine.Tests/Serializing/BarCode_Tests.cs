@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Entity.Element;
 using Xunit;
 
-namespace Tharga.Reporter.Test;
+namespace Tharga.Reporter.Tests.Serializing;
 
 public class BarCode_Tests
 {

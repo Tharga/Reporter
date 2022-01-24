@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine
+namespace Tharga.Reporter
 {
     [ExcludeFromCodeCoverage]
     internal class MyGraphics : IGraphics

@@ -1,15 +1,13 @@
 ﻿using System.Drawing;
-using System.Linq;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element;
 using Xunit;
-using Font = Tharga.Reporter.Engine.Entity.Font;
-using Image = Tharga.Reporter.Engine.Entity.Element.Image;
-using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
-using Text = Tharga.Reporter.Engine.Entity.Element.Text;
+using Font = Tharga.Reporter.Entity.Font;
+using Image = Tharga.Reporter.Entity.Element.Image;
+using Rectangle = Tharga.Reporter.Entity.Element.Rectangle;
+using Text = Tharga.Reporter.Entity.Element.Text;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Section_Test
     {

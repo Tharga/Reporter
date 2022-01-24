@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
+﻿using System.Drawing.Printing;
 using System.Runtime.CompilerServices;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
-//using MigraDoc.Rendering.Printing;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Entity.Util;
-using Tharga.Reporter.Engine.Interface;
-using Section = Tharga.Reporter.Engine.Entity.Section;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
+//using MigraDoc.Rendering.Printing;
+using Section = Tharga.Reporter.Entity.Section;
 
 [assembly:InternalsVisibleTo("Tharga.Reporter.Tests")]
 
-namespace Tharga.Reporter.Engine
+namespace Tharga.Reporter
 {
     public class Renderer
     {

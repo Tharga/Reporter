@@ -1,8 +1,8 @@
-﻿using Tharga.Reporter.Engine.Entity;
+﻿using Tharga.Reporter.Entity;
 using Xunit;
-using Image = Tharga.Reporter.Engine.Entity.Element.Image;
+using Image = Tharga.Reporter.Entity.Element.Image;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Image_Tests
     {

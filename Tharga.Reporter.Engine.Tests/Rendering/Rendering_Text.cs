@@ -1,9 +1,6 @@
 ﻿using Moq;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Interface;
 using Xunit;
-using Text = Tharga.Reporter.Engine.Entity.Element.Text;
+using Text = Tharga.Reporter.Entity.Element.Text;
 
 namespace Tharga.Reporter.Tests.Rendering
 {

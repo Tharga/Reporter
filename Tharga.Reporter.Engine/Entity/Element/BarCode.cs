@@ -1,15 +1,14 @@
-using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Xml;
-using Aspose.BarCode;
 using Aspose.BarCode.Generation;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Extensions;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element
 {
     public class BarCode : SinglePageAreaElement
     {

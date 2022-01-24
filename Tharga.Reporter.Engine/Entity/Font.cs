@@ -1,10 +1,8 @@
-using System;
 using System.Drawing;
 using System.Xml;
-using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Extensions;
 
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public class Font
     {

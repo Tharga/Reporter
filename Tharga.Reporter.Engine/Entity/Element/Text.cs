@@ -1,7 +1,10 @@
 using System.Xml;
-using Tharga.Reporter.Engine.Entity.Area;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Extensions;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element
 {
     public class Text : TextBase
     {

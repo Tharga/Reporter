@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element.Base;
 using Xunit;
-using Font = Tharga.Reporter.Engine.Entity.Font;
-using Text = Tharga.Reporter.Engine.Entity.Element.Text;
+using Font = Tharga.Reporter.Entity.Font;
+using Text = Tharga.Reporter.Entity.Element.Text;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Text_Tests
     {

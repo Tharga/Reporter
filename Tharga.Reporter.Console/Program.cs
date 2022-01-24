@@ -2,11 +2,11 @@
 using System.Drawing;
 using System.Drawing.Printing;
 using MigraDoc.DocumentObjectModel.Shapes.Charts;
-using Tharga.Reporter.Engine;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Element;
-using Image = Tharga.Reporter.Engine.Entity.Element.Image;
-using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Entity.Element.Base;
+using Image = Tharga.Reporter.Entity.Element.Image;
+using Rectangle = Tharga.Reporter.Entity.Element.Rectangle;
 
 namespace Tharga.Reporter.Console;
 

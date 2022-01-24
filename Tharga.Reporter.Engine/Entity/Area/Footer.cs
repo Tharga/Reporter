@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace Tharga.Reporter.Engine.Entity.Area
+namespace Tharga.Reporter.Entity.Area
 {
     public class Footer : Pane
     {

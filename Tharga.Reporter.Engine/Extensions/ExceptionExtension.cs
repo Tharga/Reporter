@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tharga.Reporter.Engine
+﻿namespace Tharga.Reporter.Extensions
 {
     internal static class ExceptionExtension
     {

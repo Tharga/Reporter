@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Extensions;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element.Base
 { 
     public abstract class Element
     {

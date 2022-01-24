@@ -1,9 +1,10 @@
 using System.Drawing;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element
 {
     public sealed class Line : SinglePageAreaElement
     {

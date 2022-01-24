@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
-using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Entity;
 using Xunit;
-using Rectangle = Tharga.Reporter.Engine.Entity.Element.Rectangle;
+using Rectangle = Tharga.Reporter.Entity.Element.Rectangle;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Rectangle_Tests
     {

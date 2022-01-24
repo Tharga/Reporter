@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Area;
+﻿using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine
+namespace Tharga.Reporter.Extensions
 {
     static class Converter
     {

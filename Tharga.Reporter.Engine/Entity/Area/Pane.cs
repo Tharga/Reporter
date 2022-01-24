@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
-using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Area
+namespace Tharga.Reporter.Entity.Area
 {
     public class Pane
     {
@@ -88,11 +86,11 @@ namespace Tharga.Reporter.Engine.Entity.Area
             return pane;
         }
 
-        internal static IEnumerable<Element.Element> GetElements(XmlElement xme)
+        internal static IEnumerable<Element.Base.Element> GetElements(XmlElement xme)
         {
             foreach (XmlElement xmlElement in xme.ChildNodes)
             {
-                Element.Element element;
+                Element.Base.Element element;
                 switch (xmlElement.Name)
                 {
                     case "Image":

@@ -1,4 +1,4 @@
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Util
 {
     class PageRowSet
     {

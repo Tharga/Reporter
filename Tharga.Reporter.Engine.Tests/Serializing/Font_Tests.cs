@@ -1,9 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Xunit;
-using Font = Tharga.Reporter.Engine.Entity.Font;
+using Font = Tharga.Reporter.Entity.Font;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Font_Tests
     {

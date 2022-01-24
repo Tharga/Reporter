@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Xml;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public class DocumentData : IDocumentData
     {

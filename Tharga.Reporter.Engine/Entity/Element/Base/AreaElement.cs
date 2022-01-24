@@ -1,8 +1,7 @@
-using System;
 using System.Xml;
 using PdfSharp.Drawing;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element.Base
 {
     public abstract class AreaElement : Element
     {

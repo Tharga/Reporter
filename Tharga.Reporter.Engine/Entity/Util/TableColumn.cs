@@ -1,7 +1,8 @@
-using System;
 using System.Xml;
+using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Extensions;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Util
 {
     class TableColumn
     {

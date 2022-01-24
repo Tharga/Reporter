@@ -1,6 +1,4 @@
-using System;
-
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     //TODO: Move stuff to extensions
     public struct UnitValue : IEquatable<UnitValue>

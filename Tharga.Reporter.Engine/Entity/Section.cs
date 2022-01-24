@@ -1,8 +1,7 @@
-﻿using System;
-using System.Xml;
-using Tharga.Reporter.Engine.Entity.Area;
+﻿using System.Xml;
+using Tharga.Reporter.Entity.Area;
 
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public class Section
     {

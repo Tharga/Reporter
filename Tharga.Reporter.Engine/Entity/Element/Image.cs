@@ -1,14 +1,13 @@
-using System;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element
 {
     public class Image : SinglePageAreaElement
     {

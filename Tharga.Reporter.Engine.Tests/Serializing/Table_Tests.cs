@@ -2,12 +2,12 @@
 using System.Drawing;
 using System.Linq;
 using Moq;
-using Tharga.Reporter.Engine;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
 using Xunit;
-using Font = Tharga.Reporter.Engine.Entity.Font;
+using Font = Tharga.Reporter.Entity.Font;
 
 namespace Tharga.Reporter.Tests.Serializing
 {

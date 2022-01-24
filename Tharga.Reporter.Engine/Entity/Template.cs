@@ -1,7 +1,6 @@
-using System;
 using System.Xml;
 
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public class Template
     {

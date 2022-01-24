@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Tharga.Reporter.Engine.Entity;
+using Tharga.Reporter.Entity;
 using Xunit;
 
 namespace Tharga.Reporter.Tests.Serializing

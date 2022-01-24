@@ -1,8 +1,7 @@
-﻿using System.Drawing;
-using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Interface;
+﻿using PdfSharp.Drawing;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine
+namespace Tharga.Reporter
 {
     internal class DebugData : IDebugData
     {

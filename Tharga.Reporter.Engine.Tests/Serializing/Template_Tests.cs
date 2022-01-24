@@ -1,7 +1,7 @@
-﻿using Tharga.Reporter.Engine.Entity;
+﻿using Tharga.Reporter.Entity;
 using Xunit;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Template_Tests
     {

@@ -1,7 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public class SectionList : IEnumerable<Section>
     {

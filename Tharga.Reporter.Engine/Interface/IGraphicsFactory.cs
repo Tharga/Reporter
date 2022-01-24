@@ -1,7 +1,7 @@
 using MigraDoc.Rendering;
 using PdfSharp.Pdf;
 
-namespace Tharga.Reporter.Engine.Interface
+namespace Tharga.Reporter.Interface
 {
     internal interface IGraphicsFactory
     {

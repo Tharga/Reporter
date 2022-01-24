@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using FluentAssertions;
-using Tharga.Reporter.Engine;
-using Tharga.Reporter.Engine.Entity;
+﻿using FluentAssertions;
+using Tharga.Reporter.Entity;
 using Xunit;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests
 {
     public class Engine
     {

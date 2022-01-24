@@ -1,8 +1,7 @@
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Entity.Area;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Util
+namespace Tharga.Reporter.Entity.Util
 {
     class RenderData : IRenderData
     {

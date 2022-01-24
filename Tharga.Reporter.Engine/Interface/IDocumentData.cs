@@ -1,4 +1,6 @@
-namespace Tharga.Reporter.Engine.Entity
+using Tharga.Reporter.Entity;
+
+namespace Tharga.Reporter.Interface
 {
     public interface IDocumentData
     {

@@ -1,6 +1,6 @@
 using PdfSharp.Drawing;
 
-namespace Tharga.Reporter.Engine.Interface
+namespace Tharga.Reporter.Interface
 {
     internal interface IGraphics
     {

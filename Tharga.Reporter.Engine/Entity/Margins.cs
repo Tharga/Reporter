@@ -1,4 +1,4 @@
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public class Margins : UnitRectangle
     {

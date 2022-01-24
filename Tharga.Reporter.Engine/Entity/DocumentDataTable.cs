@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity
 {
     public abstract class DocumentDataTableLine
     {

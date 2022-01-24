@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Tharga.Reporter.Engine.Entity.Area
+namespace Tharga.Reporter.Entity.Util
 {
     public class PageNumberInfo
     {

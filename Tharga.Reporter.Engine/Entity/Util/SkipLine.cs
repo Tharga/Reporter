@@ -1,8 +1,8 @@
-using System;
 using System.Globalization;
 using System.Xml;
+using Tharga.Reporter.Extensions;
 
-namespace Tharga.Reporter.Engine.Entity
+namespace Tharga.Reporter.Entity.Util
 {
     public class SkipLine
     {

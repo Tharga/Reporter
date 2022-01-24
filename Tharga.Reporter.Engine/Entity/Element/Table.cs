@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Element.Extensions;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element
 {
     public class Table : MultiPageAreaElement
     {

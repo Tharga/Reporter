@@ -1,6 +1,6 @@
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element.Base
 {
     public abstract class MultiPageAreaElement : AreaElement
     {

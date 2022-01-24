@@ -1,7 +1,8 @@
-﻿using Tharga.Reporter.Engine.Entity.Element;
+﻿using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Entity.Util;
 using Xunit;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class TableColumn_Tests
     {

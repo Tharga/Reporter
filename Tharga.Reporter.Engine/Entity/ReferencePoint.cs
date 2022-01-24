@@ -1,12 +1,11 @@
-using System;
-using System.Linq;
 using System.Xml;
 using PdfSharp.Drawing;
-using Tharga.Reporter.Engine.Entity.Element;
-using Tharga.Reporter.Engine.Entity.Util;
-using Tharga.Reporter.Engine.Interface;
+using Tharga.Reporter.Entity.Area;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Engine.Entity.Area
+namespace Tharga.Reporter.Entity
 {
     public class ReferencePoint : MultiPageElement
     {

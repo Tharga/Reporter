@@ -1,7 +1,7 @@
 using System.Drawing;
 using PdfSharp.Drawing;
 
-namespace Tharga.Reporter.Engine.Entity.Element
+namespace Tharga.Reporter.Entity.Element.Extensions
 {
     internal static class FontExtensions
     {

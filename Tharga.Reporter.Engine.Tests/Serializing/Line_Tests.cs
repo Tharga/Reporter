@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
-using Tharga.Reporter.Engine.Entity;
-using Tharga.Reporter.Engine.Entity.Element;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element;
 using Xunit;
 
-namespace Tharga.Reporter.Test
+namespace Tharga.Reporter.Tests.Serializing
 {
     public class Line_Tests
     {
