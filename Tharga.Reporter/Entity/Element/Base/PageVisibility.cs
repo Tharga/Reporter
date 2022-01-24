@@ -1,13 +1,12 @@
-namespace Tharga.Reporter.Entity.Element.Base
+namespace Tharga.Reporter.Entity.Element.Base;
+
+public enum PageVisibility
 {
-    public enum PageVisibility
-    {
-        All,
-        FirstPage,
-        LastPage,
-        AllButFirst,
-        AllButLast,
-        WhenMultiplePages,
-        WhenSinglePage
-    };
+    All,
+    FirstPage,
+    LastPage,
+    AllButFirst,
+    AllButLast,
+    WhenMultiplePages,
+    WhenSinglePage
 }

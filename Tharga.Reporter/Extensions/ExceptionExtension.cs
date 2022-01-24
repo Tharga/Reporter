@@ -1,11 +1,10 @@
-﻿namespace Tharga.Reporter.Extensions
+﻿namespace Tharga.Reporter.Extensions;
+
+internal static class ExceptionExtension
 {
-    internal static class ExceptionExtension
+    public static Exception AddData(this Exception exp, object key, object value)
     {
-        public static Exception AddData(this Exception exp, object key, object value)
-        {
-            exp.Data.Add(key, value);
-            return exp;
-        }
+        exp.Data.Add(key, value);
+        return exp;
     }
 }

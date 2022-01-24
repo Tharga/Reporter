@@ -3,140 +3,173 @@ using System.Xml;
 using Tharga.Reporter.Entity.Element.Extensions;
 using Tharga.Reporter.Extensions;
 
-namespace Tharga.Reporter.Entity
+namespace Tharga.Reporter.Entity;
+
+public class Font
 {
-    public class Font
+    private readonly Color _defaultColor = Color.Black;
+    private bool? _bold;
+    private Color? _color;
+
+    private string _fontName;
+    private bool? _italic;
+    private int? _size;
+    private bool? _strikeout;
+    private bool? _underline;
+
+    public string FontName
     {
-        private readonly Color _defaultColor = Color.Black;
+        get => _fontName ?? string.Empty;
+        set => _fontName = value;
+    }
 
-        private string _fontName;
-        private int? _size;
-        private Color? _color;
-        private bool? _bold;
-        private bool? _italic;
-        private bool? _underline;
-        private bool? _strikeout;
+    public int Size
+    {
+        get => _size ?? 10;
+        set => _size = value;
+    }
 
-        public string FontName { get { return _fontName ?? string.Empty; } set { _fontName = value; } }
-        public int Size { get { return _size ?? 10; } set { _size = value; } }
-        public Color Color { get { return _color ?? _defaultColor; } set { _color = value; } }
-        public bool Bold
+    public Color Color
+    {
+        get => _color ?? _defaultColor;
+        set => _color = value;
+    }
+
+    public bool Bold
+    {
+        get => _bold ?? false;
+        set
         {
-            get
-            {
-                return _bold ?? false;
-            } 
-            set
-            {
-                if (Underline) throw new InvalidOperationException("Cannot use Bold, Underline is set to true.");
-                if (Strikeout) throw new InvalidOperationException("Cannot use Bold, Strikeout is set to true.");
-                _bold = value;
-            }
+            if (Underline) throw new InvalidOperationException("Cannot use Bold, Underline is set to true.");
+            if (Strikeout) throw new InvalidOperationException("Cannot use Bold, Strikeout is set to true.");
+            _bold = value;
         }
-        public bool Italic
+    }
+
+    public bool Italic
+    {
+        get => _italic ?? false;
+        set
         {
-            get
-            {
-                return _italic ?? false;
-            } 
-            set
-            {
-                if (Underline) throw new InvalidOperationException("Cannot use Italic, Underline is set to true.");
-                if (Strikeout) throw new InvalidOperationException("Cannot use Italic, Strikeout is set to true.");
-                _italic = value;
-            }
+            if (Underline) throw new InvalidOperationException("Cannot use Italic, Underline is set to true.");
+            if (Strikeout) throw new InvalidOperationException("Cannot use Italic, Strikeout is set to true.");
+            _italic = value;
         }
-        public bool Underline
+    }
+
+    public bool Underline
+    {
+        get => _underline ?? false;
+        set
         {
-            get
-            {
-                return _underline ?? false;
-            }
-            set
-            {
-                if (Bold) throw new InvalidOperationException("Cannot use Underline, Bold is set to true.");
-                if (Italic) throw new InvalidOperationException("Cannot use Underline, Italic is set to true.");
-                if (Strikeout) throw new InvalidOperationException("Cannot use Underline, Strikeout is set to true.");
-                _underline = value;
-            }
+            if (Bold) throw new InvalidOperationException("Cannot use Underline, Bold is set to true.");
+            if (Italic) throw new InvalidOperationException("Cannot use Underline, Italic is set to true.");
+            if (Strikeout) throw new InvalidOperationException("Cannot use Underline, Strikeout is set to true.");
+            _underline = value;
         }
-        public bool Strikeout
+    }
+
+    public bool Strikeout
+    {
+        get => _strikeout ?? false;
+        set
         {
-            get
-            {
-                return _strikeout ?? false;
-            } 
-            set
-            {
-                if (Bold) throw new InvalidOperationException("Cannot use Strikeout, Bold is set to true.");
-                if (Italic) throw new InvalidOperationException("Cannot use Strikeout, Italic is set to true.");
-                if (Underline) throw new InvalidOperationException("Cannot use Strikeout, Underline is set to true.");
-                _strikeout = value;
-            }
+            if (Bold) throw new InvalidOperationException("Cannot use Strikeout, Bold is set to true.");
+            if (Italic) throw new InvalidOperationException("Cannot use Strikeout, Italic is set to true.");
+            if (Underline) throw new InvalidOperationException("Cannot use Strikeout, Underline is set to true.");
+            _strikeout = value;
         }
+    }
 
-        internal XmlElement ToXme(string elementName = null)
+    internal XmlElement ToXme(string elementName = null)
+    {
+        var xmd = new XmlDocument();
+        var xme = xmd.CreateElement(elementName ?? GetType().ToShortTypeName());
+
+        if (_color != null)
         {
-            var xmd = new XmlDocument();
-            var xme = xmd.CreateElement(elementName ?? GetType().ToShortTypeName());
-
-            if (_color != null)
-                xme.SetAttribute("Color", string.Format("{0}{1}{2}", _color.Value.R.ToString("X2"), _color.Value.G.ToString("X2"), _color.Value.B.ToString("X2")));
-
-            if (_fontName != null)
-                xme.SetAttribute("FontName", _fontName);
-
-            if (_size != null)
-                xme.SetAttribute("Size", _size.ToString());
-
-            if (_bold != null)
-                xme.SetAttribute("Bold", _bold.ToString());
-
-            if (_italic != null)
-                xme.SetAttribute("Italic", _italic.ToString());
-
-            if (_strikeout != null)
-                xme.SetAttribute("Strikeout", _strikeout.ToString());
-
-            if (_underline != null)
-                xme.SetAttribute("Underline", _underline.ToString());
-
-            return xme;
+            xme.SetAttribute("Color", string.Format("{0}{1}{2}", _color.Value.R.ToString("X2"), _color.Value.G.ToString("X2"), _color.Value.B.ToString("X2")));
         }
 
-        internal static Font Load(XmlElement xme)
+        if (_fontName != null)
         {
-            var line = new Font();
+            xme.SetAttribute("FontName", _fontName);
+        }
 
-            var xmlBorderColor = xme.Attributes["Color"];
-            if (xmlBorderColor != null)
-                line.Color = xmlBorderColor.Value.ToColor();
+        if (_size != null)
+        {
+            xme.SetAttribute("Size", _size.ToString());
+        }
 
-            var xmlFontName = xme.Attributes["FontName"];
-            if (xmlFontName != null)
-                line.FontName = xmlFontName.Value;
+        if (_bold != null)
+        {
+            xme.SetAttribute("Bold", _bold.ToString());
+        }
 
-            var xmlSize = xme.Attributes["Size"];
-            if (xmlSize != null)
-                line.Size = int.Parse(xmlSize.Value);
+        if (_italic != null)
+        {
+            xme.SetAttribute("Italic", _italic.ToString());
+        }
 
-            var xmlBold = xme.Attributes["Bold"];
-            if (xmlBold != null)
-                line.Bold = bool.Parse(xmlBold.Value);
+        if (_strikeout != null)
+        {
+            xme.SetAttribute("Strikeout", _strikeout.ToString());
+        }
 
-            var xmlItalic = xme.Attributes["Italic"];
-            if (xmlItalic != null)
-                line.Italic = bool.Parse(xmlItalic.Value);
+        if (_underline != null)
+        {
+            xme.SetAttribute("Underline", _underline.ToString());
+        }
 
-            var xmlStrikeout = xme.Attributes["Strikeout"];
-            if (xmlStrikeout != null)
-                line.Strikeout = bool.Parse(xmlStrikeout.Value);
+        return xme;
+    }
 
-            var xmlUnderline = xme.Attributes["Underline"];
-            if (xmlUnderline != null)
-                line.Underline = bool.Parse(xmlUnderline.Value);
+    internal static Font Load(XmlElement xme)
+    {
+        var line = new Font();
 
-            return line;
-        }        
+        var xmlBorderColor = xme.Attributes["Color"];
+        if (xmlBorderColor != null)
+        {
+            line.Color = xmlBorderColor.Value.ToColor();
+        }
+
+        var xmlFontName = xme.Attributes["FontName"];
+        if (xmlFontName != null)
+        {
+            line.FontName = xmlFontName.Value;
+        }
+
+        var xmlSize = xme.Attributes["Size"];
+        if (xmlSize != null)
+        {
+            line.Size = int.Parse(xmlSize.Value);
+        }
+
+        var xmlBold = xme.Attributes["Bold"];
+        if (xmlBold != null)
+        {
+            line.Bold = bool.Parse(xmlBold.Value);
+        }
+
+        var xmlItalic = xme.Attributes["Italic"];
+        if (xmlItalic != null)
+        {
+            line.Italic = bool.Parse(xmlItalic.Value);
+        }
+
+        var xmlStrikeout = xme.Attributes["Strikeout"];
+        if (xmlStrikeout != null)
+        {
+            line.Strikeout = bool.Parse(xmlStrikeout.Value);
+        }
+
+        var xmlUnderline = xme.Attributes["Underline"];
+        if (xmlUnderline != null)
+        {
+            line.Underline = bool.Parse(xmlUnderline.Value);
+        }
+
+        return line;
     }
 }

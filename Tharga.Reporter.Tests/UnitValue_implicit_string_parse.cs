@@ -1,37 +1,36 @@
 ﻿using Tharga.Reporter.Entity;
 using Xunit;
 
-namespace Tharga.Reporter.Tests
+namespace Tharga.Reporter.Tests;
+
+public class UnitValue_implicit_string_parse
 {
-    public class UnitValue_implicit_string_parse
+    [Fact(Skip = "Fix!")]
+    public void From_string()
     {
-        [Fact(Skip = "Fix!")]
-        public void From_string()
-        {
-            //Arrange
-            var val1 = UnitValue.Parse("10cm");
-            UnitValue val2;
-            
-            //Act
-            val2 = "10cm";
+        //Arrange
+        var val1 = UnitValue.Parse("10cm");
+        UnitValue val2;
 
-            //Assert
-            //Assert.AreEqual(val1, val2);
-            throw new NotImplementedException();
-        }
+        //Act
+        val2 = "10cm";
 
-        [Fact(Skip = "Fix!")]
-        public void To_string()
-        {
-            //Arrange
-            var val1 = "10cm";
+        //Assert
+        //Assert.AreEqual(val1, val2);
+        throw new NotImplementedException();
+    }
 
-            //Act
-            var val2 = UnitValue.Parse( "10cm");
+    [Fact(Skip = "Fix!")]
+    public void To_string()
+    {
+        //Arrange
+        var val1 = "10cm";
 
-            //Assert
-            //Assert.AreEqual(val1, (string)val2);
-            throw new NotImplementedException();
-        }
+        //Act
+        var val2 = UnitValue.Parse("10cm");
+
+        //Assert
+        //Assert.AreEqual(val1, (string)val2);
+        throw new NotImplementedException();
     }
 }

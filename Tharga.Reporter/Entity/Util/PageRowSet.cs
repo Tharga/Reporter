@@ -1,8 +1,7 @@
-namespace Tharga.Reporter.Entity.Util
+namespace Tharga.Reporter.Entity.Util;
+
+internal class PageRowSet
 {
-    class PageRowSet
-    {
-        public int FromRow { get; set; }
-        public int ToRow { get; set; }
-    }
+    public int FromRow { get; set; }
+    public int ToRow { get; set; }
 }

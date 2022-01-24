@@ -1,83 +1,124 @@
+using System.Diagnostics;
 using System.Xml;
 using PdfSharp.Drawing;
 
-namespace Tharga.Reporter.Entity.Element.Base
+namespace Tharga.Reporter.Entity.Element.Base;
+
+public abstract class AreaElement : Element
 {
-    public abstract class AreaElement : Element
+    private readonly UnitRectangle _relativeAlignment;
+
+    protected AreaElement()
     {
-        private readonly UnitRectangle _relativeAlignment;
+        _relativeAlignment = new UnitRectangle();
+    }
 
-        protected AreaElement()
+    public override UnitValue? Top
+    {
+        get => _relativeAlignment.Top;
+        set => _relativeAlignment.Top = value;
+    }
+
+    public virtual UnitValue? Bottom
+    {
+        get => _relativeAlignment.Bottom;
+        set => _relativeAlignment.Bottom = value;
+    }
+
+    public virtual UnitValue? Height
+    {
+        get => _relativeAlignment.Height;
+        set => _relativeAlignment.Height = value;
+    }
+
+    public override UnitValue? Left
+    {
+        get => _relativeAlignment.Left;
+        set => _relativeAlignment.Left = value;
+    }
+
+    public virtual UnitValue? Right
+    {
+        get => _relativeAlignment.Right;
+        set => _relativeAlignment.Right = value;
+    }
+
+    public virtual UnitValue? Width
+    {
+        get => _relativeAlignment.Width;
+        set => _relativeAlignment.Width = value;
+    }
+
+    protected override XRect GetBounds(XRect parentBounds)
+    {
+        if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
+        var relativeAlignment = _relativeAlignment;
+
+        var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
+        //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
+        var width = _relativeAlignment.GetWidht(parentBounds.Width);
+
+        var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
+        //var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);
+        var height = relativeAlignment.GetHeight(parentBounds.Height);
+
+        if (height < 0)
         {
-            _relativeAlignment = new UnitRectangle();
+            Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
+            height = 0;
         }
 
-        protected override XRect GetBounds(XRect parentBounds)
+        return new XRect(left, top, width, height);
+    }
+
+    internal override XmlElement ToXme()
+    {
+        var xme = base.ToXme();
+
+        if (Left != null)
         {
-            if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
-            var relativeAlignment = _relativeAlignment;
-
-            var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
-            //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
-            var width = _relativeAlignment.GetWidht(parentBounds.Width);
-
-            var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
-            //var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);
-            var height = relativeAlignment.GetHeight(parentBounds.Height);
-
-            if (height < 0)
-            {
-                System.Diagnostics.Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
-                height = 0;
-            }
-
-            return new XRect(left, top, width, height);
+            xme.SetAttribute("Left", Left.Value.ToString());
         }
 
-        public override UnitValue? Top { get { return _relativeAlignment.Top; } set { _relativeAlignment.Top = value; } }
-        public virtual UnitValue? Bottom { get { return _relativeAlignment.Bottom; } set { _relativeAlignment.Bottom = value; } }
-        public virtual UnitValue? Height { get { return _relativeAlignment.Height; } set { _relativeAlignment.Height = value; } }
-        public override UnitValue? Left { get { return _relativeAlignment.Left; } set { _relativeAlignment.Left = value; } }
-        public virtual UnitValue? Right { get { return _relativeAlignment.Right; } set { _relativeAlignment.Right = value; } }
-        public virtual UnitValue? Width { get { return _relativeAlignment.Width; } set { _relativeAlignment.Width = value; } }
-
-        internal override XmlElement ToXme()
+        if (Top != null)
         {
-            var xme = base.ToXme();
-
-            if (Left != null)
-                xme.SetAttribute("Left", Left.Value.ToString());
-
-            if (Top != null)
-                xme.SetAttribute("Top", Top.Value.ToString());
-
-            if (Right != null)
-                xme.SetAttribute("Right", Right.Value.ToString());
-
-            if (Bottom != null)
-                xme.SetAttribute("Bottom", Bottom.Value.ToString());
-
-            if (Width != null)
-                xme.SetAttribute("Width", Width.Value.ToString());
-
-            if (Height != null)
-                xme.SetAttribute("Height", Height.Value.ToString());
-
-            //if (_isBackground != null)
-            //    xme.SetAttribute("IsBackground", _isBackground.Value.ToString());
-
-            return xme;
+            xme.SetAttribute("Top", Top.Value.ToString());
         }
 
-        protected override void AppendData(XmlElement xme)
+        if (Right != null)
         {
-            base.AppendData(xme);
-            Left = GetValue(xme, "Left");
-            Top = GetValue(xme, "Top");
-            Right = GetValue(xme, "Right");
-            Bottom = GetValue(xme, "Bottom");
-            Width = GetValue(xme, "Width");
-            Height = GetValue(xme, "Height");
+            xme.SetAttribute("Right", Right.Value.ToString());
         }
+
+        if (Bottom != null)
+        {
+            xme.SetAttribute("Bottom", Bottom.Value.ToString());
+        }
+
+        if (Width != null)
+        {
+            xme.SetAttribute("Width", Width.Value.ToString());
+        }
+
+        if (Height != null)
+        {
+            xme.SetAttribute("Height", Height.Value.ToString());
+        }
+
+        //if (_isBackground != null)
+        //    xme.SetAttribute("IsBackground", _isBackground.Value.ToString());
+
+        return xme;
+    }
+
+    protected override void AppendData(XmlElement xme)
+    {
+        base.AppendData(xme);
+        Left = GetValue(xme, "Left");
+        Top = GetValue(xme, "Top");
+        Right = GetValue(xme, "Right");
+        Bottom = GetValue(xme, "Bottom");
+        Width = GetValue(xme, "Width");
+        Height = GetValue(xme, "Height");
     }
 }

@@ -5,177 +5,174 @@ using Xunit;
 using Font = Tharga.Reporter.Entity.Font;
 using Image = Tharga.Reporter.Entity.Element.Image;
 using Rectangle = Tharga.Reporter.Entity.Element.Rectangle;
-using Text = Tharga.Reporter.Entity.Element.Text;
 
-namespace Tharga.Reporter.Tests.Serializing
+namespace Tharga.Reporter.Tests.Serializing;
+
+public class Section_Test
 {
-    public class Section_Test
+    [Fact(Skip = "Fix!")]
+    public void Section_with_a_name()
     {
-        [Fact(Skip = "Fix!")]
-        public void Section_with_a_name()
+        //Arrange
+        const string name = "ABC";
+        var section = new Section
         {
-            //Arrange
-            const string name = "ABC";
-            var section = new Section
+            Name = name
+        };
+        var template = new Template(section);
+        var xml = template.ToXml();
+
+        //Act
+        var otherTemplate = Template.Load(xml);
+
+        //Assert
+        //Assert.AreEqual(section.DefaultFont.FontName, otherTemplate.SectionList.First().DefaultFont.FontName);
+        //Assert.AreEqual(section.DefaultFont.Size, otherTemplate.SectionList.First().DefaultFont.Size);
+        //Assert.AreEqual(section.DefaultFont.Color, otherTemplate.SectionList.First().DefaultFont.Color);
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        //Assert.AreEqual(name, otherTemplate.SectionList.First().Name);
+        throw new NotImplementedException();
+    }
+
+    [Fact(Skip = "Fix!")]
+    public void Section_with_a_defaultFont()
+    {
+        //Arrange
+        var section = new Section
+        {
+            DefaultFont = new Font
             {
-                Name = name
-            };
-            var template = new Template(section);
-            var xml = template.ToXml();
+                FontName = "Times",
+                Size = 11,
+                Color = Color.MediumTurquoise
+            }
+        };
+        var xme = section.ToXme();
 
-            //Act
-            var otherTemplate = Template.Load(xml);
+        //Act
+        var other = Section.Load(xme);
 
-            //Assert
-            //Assert.AreEqual(section.DefaultFont.FontName, otherTemplate.SectionList.First().DefaultFont.FontName);
-            //Assert.AreEqual(section.DefaultFont.Size, otherTemplate.SectionList.First().DefaultFont.Size);
-            //Assert.AreEqual(section.DefaultFont.Color, otherTemplate.SectionList.First().DefaultFont.Color);
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            //Assert.AreEqual(name, otherTemplate.SectionList.First().Name);
-            throw new NotImplementedException();
-        }
+        //Assert
+        //Assert.AreEqual(section.Name, other.Name);
+        //Assert.AreEqual(section.DefaultFont.FontName, other.DefaultFont.FontName);
+        //Assert.AreEqual(section.DefaultFont.Size, other.DefaultFont.Size);
+        //Assert.AreEqual(section.DefaultFont.Color.ToArgb(), other.DefaultFont.Color.ToArgb());
+        //Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
+        throw new NotImplementedException();
+    }
 
-        [Fact(Skip = "Fix!")]
-        public void Section_with_a_defaultFont()
+    [Fact(Skip = "Fix!")]
+    public void Section_with_a_margin()
+    {
+        //Arrange
+        var margin = new UnitRectangle { Top = UnitValue.Parse("1cm"), Left = UnitValue.Parse("2px"), Bottom = UnitValue.Parse("30mm"), Right = UnitValue.Parse("4cm") };
+        var section = new Section
         {
-            //Arrange
-            var section = new Section
-            {
-                DefaultFont = new Font
-                    {
-                        FontName = "Times",
-                        Size = 11,
-                        Color = Color.MediumTurquoise
-                    }
-            };
-            var xme = section.ToXme();
+            Margin = margin
+        };
+        var template = new Template(section);
+        var xml = template.ToXml();
 
-            //Act
-            var other = Section.Load(xme);
+        //Act
+        var otherTemplate = Template.Load(xml);
 
-            //Assert
-            //Assert.AreEqual(section.Name, other.Name);
-            //Assert.AreEqual(section.DefaultFont.FontName, other.DefaultFont.FontName);
-            //Assert.AreEqual(section.DefaultFont.Size, other.DefaultFont.Size);
-            //Assert.AreEqual(section.DefaultFont.Color.ToArgb(), other.DefaultFont.Color.ToArgb());
-            //Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
-            throw new NotImplementedException();
-        }
+        //Assert
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        //Assert.AreEqual(margin.Left, otherTemplate.SectionList.First().Margin.Left);
+        //Assert.AreEqual(margin.Top, otherTemplate.SectionList.First().Margin.Top);
+        //Assert.AreEqual(margin.Right, otherTemplate.SectionList.First().Margin.Right);
+        //Assert.AreEqual(margin.Bottom, otherTemplate.SectionList.First().Margin.Bottom);
+        //Assert.AreEqual(margin.Width, otherTemplate.SectionList.First().Margin.Width);
+        //Assert.AreEqual(margin.Height, otherTemplate.SectionList.First().Margin.Height);
+        //Assert.AreEqual(margin, otherTemplate.SectionList.First().Margin);
+        throw new NotImplementedException();
+    }
 
-        [Fact(Skip = "Fix!")]
-        public void Section_with_a_margin()
-        {
-            //Arrange
-            var margin = new UnitRectangle {Top = UnitValue.Parse("1cm"), Left = UnitValue.Parse("2px"), Bottom = UnitValue.Parse("30mm"), Right = UnitValue.Parse("4cm")};
-            var section = new Section
-            {
-                Margin = margin
-            };
-            var template = new Template(section);
-            var xml = template.ToXml();
+    [Fact(Skip = "Fix!")]
+    public void Section_with_header_margin()
+    {
+        //Arrange
+        var section = new Section();
+        section.Footer.Height = UnitValue.Parse("4inch");
 
-            //Act
-            var otherTemplate = Template.Load(xml);
+        var template = new Template(section);
+        var xml = template.ToXml();
 
-            //Assert
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            //Assert.AreEqual(margin.Left, otherTemplate.SectionList.First().Margin.Left);
-            //Assert.AreEqual(margin.Top, otherTemplate.SectionList.First().Margin.Top);
-            //Assert.AreEqual(margin.Right, otherTemplate.SectionList.First().Margin.Right);
-            //Assert.AreEqual(margin.Bottom, otherTemplate.SectionList.First().Margin.Bottom);
-            //Assert.AreEqual(margin.Width, otherTemplate.SectionList.First().Margin.Width);
-            //Assert.AreEqual(margin.Height, otherTemplate.SectionList.First().Margin.Height);
-            //Assert.AreEqual(margin, otherTemplate.SectionList.First().Margin);
-            throw new NotImplementedException();
-        }
+        //Act
+        var otherTemplate = Template.Load(xml);
 
-        [Fact(Skip = "Fix!")]
-        public void Section_with_header_margin()
-        {
-            //Arrange
-            var section = new Section();
-            section.Footer.Height = UnitValue.Parse("4inch");
+        //Assert
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        //Assert.IsTrue(template.SectionList.First().Header.Height.Equals(otherTemplate.SectionList.First().Header.Height));
+        //Assert.IsTrue(template.SectionList.First().Header.Height == otherTemplate.SectionList.First().Header.Height);
+        //Assert.AreEqual(template.SectionList.First().Header.Height, otherTemplate.SectionList.First().Header.Height);
+        throw new NotImplementedException();
+    }
 
-            var template = new Template(section);
-            var xml = template.ToXml();
+    [Fact(Skip = "Fix!")]
+    public void Section_with_footer_margin()
+    {
+        //Arrange
+        var section = new Section();
+        section.Footer.Height = UnitValue.Parse("40");
 
-            //Act
-            var otherTemplate = Template.Load(xml);
+        var template = new Template(section);
+        var xml = template.ToXml();
 
-            //Assert
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            //Assert.IsTrue(template.SectionList.First().Header.Height.Equals(otherTemplate.SectionList.First().Header.Height));
-            //Assert.IsTrue(template.SectionList.First().Header.Height == otherTemplate.SectionList.First().Header.Height);
-            //Assert.AreEqual(template.SectionList.First().Header.Height, otherTemplate.SectionList.First().Header.Height);
-            throw new NotImplementedException();
-        }
+        //Act
+        var otherTemplate = Template.Load(xml);
 
-        [Fact(Skip = "Fix!")]
-        public void Section_with_footer_margin()
-        {
-            //Arrange
-            var section = new Section();
-            section.Footer.Height = UnitValue.Parse("40");
+        //Assert
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        //Assert.AreEqual(template.SectionList.First().Footer.Height, otherTemplate.SectionList.First().Footer.Height);
+        throw new NotImplementedException();
+    }
 
-            var template = new Template(section);
-            var xml = template.ToXml();
+    [Fact(Skip = "Fix!")]
+    public void Section_with_panes_with_element()
+    {
+        //Arrange
+        var section = new Section();
+        section.Header.ElementList.Add(new Line { Left = UnitValue.Parse("1cm") });
+        section.Pane.ElementList.Add(new Line { Left = UnitValue.Parse("2cm") });
+        section.Footer.ElementList.Add(new Line { Left = UnitValue.Parse("3cm") });
 
-            //Act
-            var otherTemplate = Template.Load(xml);
+        var template = new Template(section);
+        var xml = template.ToXml();
 
-            //Assert
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            //Assert.AreEqual(template.SectionList.First().Footer.Height, otherTemplate.SectionList.First().Footer.Height);
-            throw new NotImplementedException();
-        }
+        //Act
+        var otherTemplate = Template.Load(xml);
 
-        [Fact(Skip = "Fix!")]
-        public void Section_with_panes_with_element()
-        {
-            //Arrange
-            var section = new Section();
-            section.Header.ElementList.Add(new Line { Left = UnitValue.Parse("1cm") });
-            section.Pane.ElementList.Add(new Line { Left = UnitValue.Parse("2cm") });
-            section.Footer.ElementList.Add(new Line { Left = UnitValue.Parse("3cm") });
+        //Assert
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        //Assert.AreEqual(template.SectionList.First().Header.ElementList.First().Left, otherTemplate.SectionList.First().Header.ElementList.First().Left);
+        //Assert.AreEqual(template.SectionList.First().Pane.ElementList.First().Left, otherTemplate.SectionList.First().Pane.ElementList.First().Left);
+        //Assert.AreEqual(template.SectionList.First().Footer.ElementList.First().Left, otherTemplate.SectionList.First().Footer.ElementList.First().Left);
+        throw new NotImplementedException();
+    }
 
-            var template = new Template(section);
-            var xml = template.ToXml();
+    [Fact(Skip = "Fix!")]
+    public void Section_with_all_types_of_elements()
+    {
+        //Arrange
+        var section = new Section();
+        section.Pane.ElementList.Add(new Image());
+        section.Pane.ElementList.Add(new Line());
+        section.Pane.ElementList.Add(new Rectangle());
+        section.Pane.ElementList.Add(new Table());
+        section.Pane.ElementList.Add(new Text());
+        section.Pane.ElementList.Add(new TextBox());
+        section.Pane.ElementList.Add(new ReferencePoint());
+        section.Pane.ElementList.Add(new BarCode());
 
-            //Act
-            var otherTemplate = Template.Load(xml);
+        var template = new Template(section);
+        var xml = template.ToXml();
 
-            //Assert
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            //Assert.AreEqual(template.SectionList.First().Header.ElementList.First().Left, otherTemplate.SectionList.First().Header.ElementList.First().Left);
-            //Assert.AreEqual(template.SectionList.First().Pane.ElementList.First().Left, otherTemplate.SectionList.First().Pane.ElementList.First().Left);
-            //Assert.AreEqual(template.SectionList.First().Footer.ElementList.First().Left, otherTemplate.SectionList.First().Footer.ElementList.First().Left);
-            throw new NotImplementedException();
-        }
+        //Act
+        var otherTemplate = Template.Load(xml);
 
-        [Fact(Skip = "Fix!")]
-        public void Section_with_all_types_of_elements()
-        {
-            //Arrange
-            var section = new Section();
-            section.Pane.ElementList.Add(new Image());
-            section.Pane.ElementList.Add(new Line());
-            section.Pane.ElementList.Add(new Rectangle());
-            section.Pane.ElementList.Add(new Table());
-            section.Pane.ElementList.Add(new Text());
-            section.Pane.ElementList.Add(new TextBox());
-            section.Pane.ElementList.Add(new ReferencePoint());
-            section.Pane.ElementList.Add(new BarCode());
-
-            var template = new Template(section);
-            var xml = template.ToXml();
-
-            //Act
-            var otherTemplate = Template.Load(xml);
-
-            //Assert
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            throw new NotImplementedException();
-        }
+        //Assert
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        throw new NotImplementedException();
     }
 }
-

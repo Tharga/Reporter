@@ -5,83 +5,110 @@ using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Element.Extensions;
 using Tharga.Reporter.Interface;
 
-namespace Tharga.Reporter.Entity.Element
+namespace Tharga.Reporter.Entity.Element;
+
+public sealed class Rectangle : SinglePageAreaElement
 {
-    public sealed class Rectangle : SinglePageAreaElement
+    private readonly Color _defaultBorderColor = Color.Black;
+    private readonly UnitValue _defaultBorderWidth = "0.1px";
+    private Color? _backgroundColor;
+
+    private Color? _borderColor;
+    private UnitValue? _borderWidth;
+
+    public Rectangle()
     {
-        private readonly Color _defaultBorderColor = Color.Black;
-        private readonly UnitValue _defaultBorderWidth = "0.1px";
+        BorderWidth = UnitValue.Parse("1px");
+    }
 
-        private Color? _borderColor;
-        private UnitValue? _borderWidth;
-        private Color? _backgroundColor;
+    public Color BorderColor
+    {
+        get => _borderColor ?? _defaultBorderColor;
+        set => _borderColor = value;
+    }
 
-        public Color BorderColor { get { return _borderColor ?? _defaultBorderColor; } set { _borderColor = value; } }
-        public UnitValue BorderWidth { get { return _borderWidth ?? _defaultBorderWidth; } set { _borderWidth = value; } }
-        public Color? BackgroundColor { get { return _backgroundColor; } set { _backgroundColor = value; } }
+    public UnitValue BorderWidth
+    {
+        get => _borderWidth ?? _defaultBorderWidth;
+        set => _borderWidth = value;
+    }
 
-        public Rectangle()
+    public Color? BackgroundColor
+    {
+        get => _backgroundColor;
+        set => _backgroundColor = value;
+    }
+
+    internal override void Render(IRenderData renderData)
+    {
+        if (IsNotVisible(renderData)) return;
+
+        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+
+        if (!IsBackground || renderData.IncludeBackground)
         {
-            BorderWidth = UnitValue.Parse("1px");
-        }
+            //TODO: var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
+            var pen = new XPen(XColor.FromKnownColor(XKnownColor.Black), BorderWidth.GetXUnitValue(0));
 
-        internal override void Render(IRenderData renderData)
-        {
-            if (IsNotVisible(renderData)) return;
-
-            renderData.ElementBounds = GetBounds(renderData.ParentBounds);
-
-            if (!IsBackground || renderData.IncludeBackground)
+            if (BackgroundColor != null)
             {
-                //TODO: var pen = new XPen(XColor.FromArgb(BorderColor), BorderWidth.GetXUnitValue(0));
-                var pen = new XPen(XColor.FromKnownColor(XKnownColor.Black), BorderWidth.GetXUnitValue(0));
-
-                if (BackgroundColor != null)
-                {
-                    //TODO: var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
-                    var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                    renderData.Graphics.DrawRectangle(pen, brush, renderData.ElementBounds);
-                }
-                else
-                    renderData.Graphics.DrawRectangle(pen, renderData.ElementBounds);
+                //TODO: var brush = new XSolidBrush(XColor.FromArgb(BackgroundColor.Value));
+                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+                renderData.Graphics.DrawRectangle(pen, brush, renderData.ElementBounds);
+            }
+            else
+            {
+                renderData.Graphics.DrawRectangle(pen, renderData.ElementBounds);
             }
         }
+    }
 
-        internal override XmlElement ToXme()
+    internal override XmlElement ToXme()
+    {
+        var xme = base.ToXme();
+
+        if (_backgroundColor != null)
         {
-            var xme = base.ToXme();
-
-            if (_backgroundColor != null)
-                xme.SetAttribute("BackgroundColor", string.Format("{0}{1}{2}", _backgroundColor.Value.R.ToString("X2"), _backgroundColor.Value.G.ToString("X2"), _backgroundColor.Value.B.ToString("X2")));
-
-            if (_borderColor != null)
-                xme.SetAttribute("Color", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
-
-            if (_borderWidth != null)
-                xme.SetAttribute("Thickness", _borderWidth.Value.ToString());
-
-            return xme;
+            xme.SetAttribute("BackgroundColor", string.Format("{0}{1}{2}", _backgroundColor.Value.R.ToString("X2"), _backgroundColor.Value.G.ToString("X2"), _backgroundColor.Value.B.ToString("X2")));
         }
 
-        internal static Rectangle Load(XmlElement xme)
+        if (_borderColor != null)
         {
-            var rectangle = new Rectangle();
-
-            rectangle.AppendData(xme);
-
-            var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
-            if (xmlBackgroundColor != null)
-                rectangle.BackgroundColor = xmlBackgroundColor.Value.ToColor();
-
-            var xmlBorderColor = xme.Attributes["Color"];
-            if (xmlBorderColor != null)
-                rectangle.BorderColor = xmlBorderColor.Value.ToColor();
-
-            var xmlBorderWidth = xme.Attributes["Thickness"];
-            if (xmlBorderWidth != null)
-                rectangle.BorderWidth = UnitValue.Parse(xmlBorderWidth.Value);
-
-            return rectangle;
+            xme.SetAttribute("Color", string.Format("{0}{1}{2}", _borderColor.Value.R.ToString("X2"), _borderColor.Value.G.ToString("X2"), _borderColor.Value.B.ToString("X2")));
         }
+
+        if (_borderWidth != null)
+        {
+            xme.SetAttribute("Thickness", _borderWidth.Value.ToString());
+        }
+
+        return xme;
+    }
+
+    internal static Rectangle Load(XmlElement xme)
+    {
+        var rectangle = new Rectangle();
+
+        rectangle.AppendData(xme);
+
+        var xmlBackgroundColor = xme.Attributes["BackgroundColor"];
+        if (xmlBackgroundColor != null)
+        {
+            rectangle.BackgroundColor = xmlBackgroundColor.Value.ToColor();
+        }
+
+        var xmlBorderColor = xme.Attributes["Color"];
+        if (xmlBorderColor != null)
+        {
+            rectangle.BorderColor = xmlBorderColor.Value.ToColor();
+        }
+
+        var xmlBorderWidth = xme.Attributes["Thickness"];
+        if (xmlBorderWidth != null)
+        {
+            rectangle.BorderWidth = UnitValue.Parse(xmlBorderWidth.Value);
+        }
+
+        return rectangle;
     }
 }

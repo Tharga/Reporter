@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Printing;
-using MigraDoc.DocumentObjectModel.Shapes.Charts;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
 using Tharga.Reporter.Entity.Element.Base;
@@ -69,7 +67,7 @@ internal static class Program
         SampleCardOutput(template, null, false, false);
     }
 
-    private async static void TextButNoData()
+    private static async void TextButNoData()
     {
         var section = new Section();
         section.Pane.ElementList.Add(new Text { Value = "Data: {SomeData}" });
@@ -77,7 +75,7 @@ internal static class Program
         SampleOutput(template, null);
     }
 
-    private async static void Barcode_Sample()
+    private static async void Barcode_Sample()
     {
         var section = new Section();
 
@@ -105,7 +103,7 @@ internal static class Program
         SampleOutput(template, documentData);
     }
 
-    private async static void SinglePageAreaElement_Sample()
+    private static async void SinglePageAreaElement_Sample()
     {
         var section = new Section();
 

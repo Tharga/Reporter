@@ -1,33 +1,30 @@
 using System.Globalization;
 
-namespace Tharga.Reporter.Entity.Util
+namespace Tharga.Reporter.Entity.Util;
+
+public class PageNumberInfo
 {
-    public class PageNumberInfo
+    public PageNumberInfo(int pageNumber, int? totalPages)
     {
-        private readonly int _pageNumber;
-        private readonly int? _totalPages;
+        PageNumber = pageNumber;
+        TotalPages = totalPages;
+    }
 
-        public PageNumberInfo(int pageNumber, int? totalPages)
+    public int PageNumber { get; }
+
+    public int? TotalPages { get; }
+
+    //TODO: Write tests for this
+    public string GetPageNumberInfo(string dataName)
+    {
+        switch (dataName)
         {
-            _pageNumber = pageNumber;
-            _totalPages = totalPages;
-        }
-
-        public int PageNumber { get { return _pageNumber; } }
-        public int? TotalPages { get { return _totalPages; } }
-
-        //TODO: Write tests for this
-        public string GetPageNumberInfo(string dataName)
-        {
-            switch (dataName)
-            {
-                case "PageNumber":
-                    return PageNumber.ToString(CultureInfo.CurrentCulture);
-                case "TotalPages":
-                    return TotalPages == null ? "N/A" : TotalPages.Value.ToString(CultureInfo.CurrentCulture);
-                default:
-                    return null;
-            }
+            case "PageNumber":
+                return PageNumber.ToString(CultureInfo.CurrentCulture);
+            case "TotalPages":
+                return TotalPages == null ? "N/A" : TotalPages.Value.ToString(CultureInfo.CurrentCulture);
+            default:
+                return null;
         }
     }
 }

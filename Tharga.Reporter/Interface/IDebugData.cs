@@ -1,11 +1,10 @@
 using PdfSharp.Drawing;
 
-namespace Tharga.Reporter.Interface
+namespace Tharga.Reporter.Interface;
+
+internal interface IDebugData
 {
-    internal interface IDebugData
-    {
-        XPen Pen { get; }
-        XBrush Brush { get; }
-        XFont Font { get; }
-    }
+    XPen Pen { get; }
+    XBrush Brush { get; }
+    XFont Font { get; }
 }

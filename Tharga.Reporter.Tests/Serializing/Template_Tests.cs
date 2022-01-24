@@ -1,23 +1,22 @@
 ﻿using Tharga.Reporter.Entity;
 using Xunit;
 
-namespace Tharga.Reporter.Tests.Serializing
+namespace Tharga.Reporter.Tests.Serializing;
+
+public class Template_Tests
 {
-    public class Template_Tests
+    [Fact(Skip = "Fix!")]
+    public void Default_template()
     {
-        [Fact(Skip = "Fix!")]
-        public void Default_template()
-        {
-            //Arrange
-            var template = new Template(new Section());
-            var xml = template.ToXml();
+        //Arrange
+        var template = new Template(new Section());
+        var xml = template.ToXml();
 
-            //Act
-            var otherTemplate = Template.Load(xml);
+        //Act
+        var otherTemplate = Template.Load(xml);
 
-            //Assert
-            //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-            throw new NotImplementedException();
-        }   
+        //Assert
+        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
+        throw new NotImplementedException();
     }
 }

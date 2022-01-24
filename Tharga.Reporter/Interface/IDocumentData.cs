@@ -1,10 +1,9 @@
 using Tharga.Reporter.Entity;
 
-namespace Tharga.Reporter.Interface
+namespace Tharga.Reporter.Interface;
+
+public interface IDocumentData
 {
-    public interface IDocumentData
-    {
-        string Get(string dataName);
-        DocumentDataTable GetDataTable(string name);
-    }
+    string Get(string dataName);
+    DocumentDataTable GetDataTable(string name);
 }
