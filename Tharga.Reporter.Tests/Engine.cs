@@ -18,30 +18,30 @@ public class Engine
         //Assert
         template.SectionList.Count.Should().Be(1);
 
-        //Assert.IsNotNull(template.SectionList.First().Header);
+        template.SectionList.First().Header.Should().NotBeNull();
         template.SectionList.First().Header.ElementList.Count.Should().Be(0);
-        //template.SectionList.First().Header.Height.Should().Be(0);
-        UnitValue.EUnit.Point.Should().Be(template.SectionList.First().Header.Height.Unit);
+        template.SectionList.First().Header.Height.Should().NotBe(0);
+        template.SectionList.First().Header.Height.Unit.Should().Be(UnitValue.EUnit.Point);
 
-        //Assert.IsNotNull(template.SectionList.First().Footer);
-        //0.Should().Be(template.SectionList.First().Footer.ElementList.Count);
-        //0.Should().Be(template.SectionList.First().Footer.Height.Value);
-        UnitValue.EUnit.Point.Should().Be(template.SectionList.First().Footer.Height.Unit);
+        template.SectionList.First().Footer.Should().NotBeNull();
+        template.SectionList.First().Footer.ElementList.Count.Should().Be(0);
+        template.SectionList.First().Footer.Height.Value.Should().Be(0);
+        template.SectionList.First().Footer.Height.Unit.Should().Be(UnitValue.EUnit.Point);
 
-        //Assert.IsNotNull(template.SectionList.First().Pane);
-        //0.Should().Be(template.SectionList.First().Pane.ElementList.Count);
+        template.SectionList.First().Pane.Should().NotBeNull();
+        template.SectionList.First().Pane.ElementList.Count.Should().Be(0);
 
-        //Assert.IsNotNull(template.SectionList.First().Margin);
-        //0.Should().Be(template.SectionList.First().Margin.Left.Value.Value);
-        //UnitValue.EUnit.Point, template.SectionList.First().Margin.Left.Value.Unit);
-        //0.Should().Be(template.SectionList.First().Margin.Right.Value.Value);
-        //UnitValue.EUnit.Point, template.SectionList.First().Margin.Right.Value.Unit);
-        //0.Should().Be(template.SectionList.First().Margin.Top.Value.Value);
-        //UnitValue.EUnit.Point, template.SectionList.First().Margin.Top.Value.Unit);
-        //0.Should().Be(template.SectionList.First().Margin.Bottom.Value.Value);
-        //UnitValue.EUnit.Point, template.SectionList.First().Margin.Bottom.Value.Unit);
-        //Assert.IsNull(template.SectionList.First().Margin.Height);
-        //Assert.IsNull(template.SectionList.First().Margin.Width);
+        template.SectionList.First().Margin.Should().NotBeNull();
+        template.SectionList.First().Margin.Left.Value.Value.Should().Be(0);
+        template.SectionList.First().Margin.Left.Value.Unit.Should().Be(UnitValue.EUnit.Point);
+        template.SectionList.First().Margin.Right.Value.Value.Should().Be(0);
+        template.SectionList.First().Margin.Right.Value.Unit.Should().Be(UnitValue.EUnit.Point);
+        template.SectionList.First().Margin.Top.Value.Value.Should().Be(0);
+        template.SectionList.First().Margin.Top.Value.Unit.Should().Be(UnitValue.EUnit.Point);
+        template.SectionList.First().Margin.Bottom.Value.Value.Should().Be(0);
+        template.SectionList.First().Margin.Bottom.Value.Unit.Should().Be(0);
+        template.SectionList.First().Margin.Height.Should().BeNull();
+        template.SectionList.First().Margin.Width.Should().BeNull();
     }
 
     //[Test]

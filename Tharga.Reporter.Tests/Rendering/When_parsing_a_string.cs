@@ -1,36 +1,22 @@
-﻿//using System.Linq;
-//using NUnit.Framework;
-//using Tharga.Reporter.Engine;
+﻿using FluentAssertions;
+using Tharga.Reporter.Extensions;
+using Xunit;
 
-//namespace Tharga.Reporter.Tests.Rendering
-//{
-//    [TestFixture]
-//    class When_parsing_a_string : AaaTest
-//    {
-//        private string _result;
-//        private string _input;
+namespace Tharga.Reporter.Tests.Rendering;
 
-//        protected override void Arrange()
-//        {
-//            _input = "ABC";
-//        }
+public class When_parsing_a_string
+{
+    [Fact]
+    public void Basic()
+    {
+        //Arrange
+        var input = "ABC";
 
-//        protected override void Act()
-//        {
-//            _result = _input.ParseValue(null, null);
-//        }
+        //Act
+        var result = input.ParseValue(null, null);
 
-//        [Test]
-//        public void Then_the_is_the_same_as_the_input()
-//        {
-//            Assert.AreEqual(_input, _result);
-//        }
-
-//        [Test]
-//        public void Then_the_output_does_not_end_with_whitespace()
-//        {
-//            Assert.AreNotEqual(' ', _result.Last());
-//        }
-//    }
-//}
-
+        //Assert
+        result.Should().Be(input);
+        result.Last().Should().NotBe(' ');
+    }
+}

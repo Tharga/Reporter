@@ -17,18 +17,18 @@ public class BarCode_Tests
         var otherLine = BarCode.Load(xme);
 
         //Assert
-        text.Left.Should().Be(otherLine.Left);
-        text.Left.Should().Be(otherLine.Left);
-        text.Right.Should().Be(otherLine.Right);
-        text.Width.Should().Be(otherLine.Width);
-        text.Top.Should().Be(otherLine.Top);
-        text.Bottom.Should().Be(otherLine.Bottom);
-        text.Height.Should().Be(otherLine.Height);
-        text.Name.Should().Be(otherLine.Name);
-        text.IsBackground.Should().Be(otherLine.IsBackground);
-        text.Name.Should().Be(otherLine.Name);
-        text.Code.Should().Be(text.Code);
-        text.ToString().Should().Be(otherLine.ToString());
+        otherLine.Left.Should().Be(text.Left);
+        otherLine.Left.Should().Be(text.Left);
+        otherLine.Right.Should().Be(text.Right);
+        otherLine.Width.Should().Be(text.Width);
+        otherLine.Top.Should().Be(text.Top);
+        otherLine.Bottom.Should().Be(text.Bottom);
+        otherLine.Height.Should().Be(text.Height);
+        otherLine.Name.Should().Be(text.Name);
+        otherLine.IsBackground.Should().Be(text.IsBackground);
+        otherLine.Name.Should().Be(text.Name);
+        otherLine.Code.Should().Be(text.Code);
+        otherLine.ToString().Should().Be(text.ToString());
         xme.OuterXml.Should().Be(otherLine.ToXme().OuterXml);
     }
 
@@ -52,17 +52,17 @@ public class BarCode_Tests
         var otherLine = BarCode.Load(xme);
 
         //Assert
-        text.Left.Should().Be(otherLine.Left);
-        text.Right.Should().Be(otherLine.Right);
-        text.Width.Should().Be(otherLine.Width);
-        text.Top.Should().Be(otherLine.Top);
-        text.Bottom.Should().Be(otherLine.Bottom);
-        text.Height.Should().Be(otherLine.Height);
-        text.Name.Should().Be(otherLine.Name);
-        text.IsBackground.Should().Be(otherLine.IsBackground);
-        text.Name.Should().Be(otherLine.Name);
-        text.Code.Should().Be(text.Code);
-        text.ToString().Should().Be(otherLine.ToString());
+        otherLine.Left.Should().Be(text.Left);
+        otherLine.Right.Should().Be(text.Right);
+        otherLine.Width.Should().Be(text.Width);
+        otherLine.Top.Should().Be(text.Top);
+        otherLine.Bottom.Should().Be(text.Bottom);
+        otherLine.Height.Should().Be(text.Height);
+        otherLine.Name.Should().Be(text.Name);
+        otherLine.IsBackground.Should().Be(text.IsBackground);
+        otherLine.Name.Should().Be(text.Name);
+        otherLine.Code.Should().Be(text.Code);
+        otherLine.ToString().Should().Be(otherLine.ToString());
         xme.OuterXml.Should().Be(otherLine.ToXme().OuterXml);
     }
 }

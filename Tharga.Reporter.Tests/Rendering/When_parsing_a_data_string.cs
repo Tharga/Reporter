@@ -1,51 +1,29 @@
-﻿//using System.Linq;
-//using NUnit.Framework;
-//using Tharga.Reporter.Engine;
-//using Tharga.Reporter.Engine.Entity;
+﻿using FluentAssertions;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Extensions;
+using Xunit;
 
-//namespace Tharga.Reporter.Tests.Rendering
-//{
-//    [TestFixture]
-//    class When_parsing_a_data_string : AaaTest
-//    {
-//        private string _result;
-//        private string _input;
-//        private string _dataPart;
-//        private DocumentData _documentData;
-//        private string _dataValue;
+namespace Tharga.Reporter.Tests.Rendering;
 
-//        protected override void Arrange()
-//        {
-//            _dataPart = "DataX";
-//            _dataValue = "DataValue";
-//            _input = string.Format("ABC {{{0}}}", _dataPart);
+public class When_parsing_a_data_string
+{
+    [Fact]
+    public void Basic()
+    {
+        //Arrange
+        var dataPart = "DataX";
+        var dataValue = "DataValue";
+        var input = $"ABC {{{dataPart}}}";
 
-//            _documentData = new DocumentData();
-//            _documentData.Add(_dataPart,_dataValue);
-//        }
+        var documentData = new DocumentData();
+        documentData.Add(dataPart, dataValue);
 
-//        protected override void Act()
-//        {
-//            _result = _input.ParseValue(_documentData,null);
-//        }
+        //Act
+        var result = input.ParseValue(documentData, null);
 
-//        [Test]
-//        public void Then_the_output_differs()
-//        {
-//            Assert.AreNotEqual(_input, _result);
-//        }
-
-//        [Test]
-//        public void Then_the_output_does_not_end_with_whitespace()
-//        {
-//            Assert.AreNotEqual(' ', _result.Last());
-//        }
-
-//        [Test]
-//        public void Then_the_output_contains_the_data()
-//        {
-//            Assert.AreEqual(string.Format("ABC {0}", _dataValue), _result);
-//        }
-//    }
-//}
-
+        //Assert
+        result.Should().NotBe(input);
+        result.Last().Should().NotBe(' ');
+        result.Should().Be($"ABC {dataValue}");
+    }
+}
