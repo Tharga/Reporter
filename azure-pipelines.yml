@@ -54,6 +54,7 @@ steps:
 #     coverageVariance: '1'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Pack'
   inputs:
     command: 'pack'
     packagesToPack: '**/Tharga.Reporter.csproj'
