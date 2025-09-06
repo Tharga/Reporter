@@ -11,65 +11,102 @@ variables:
   buildConfiguration: 'Release'
   # BQC.ForceNewBaseline: false
 
-steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET 9'
-  inputs:
-    version: 9.0.x
-    includePreviewVersions: false
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Build
+    displayName: Build and Test
 
-- task: DotNetCoreCLI@2
-  displayName: 'Restore nuget packages'
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-    feedsToUse: 'select'
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET 9'
+      inputs:
+        version: 9.0.x
+        includePreviewVersions: false
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build'
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '-c Release /p:NoWarn=0618'
-    versioningScheme: 'byBuildNumber'
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore nuget packages'
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+        feedsToUse: 'select'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Test'
-  inputs:
-    command: 'test'
-    projects: '**/Tharga.Reporter.Tests.csproj'
-    arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '-c Release /p:NoWarn=0618'
+        versioningScheme: 'byBuildNumber'
 
-# - task: BuildQualityChecks@8
-#   displayName: 'Build Quality Checks'
-#   inputs:
-#     checkWarnings: true
-#     warningFailOption: 'build'
-#     allowWarningVariance: true
-#     warningVariance: '1'
-#     checkCoverage: true
-#     coverageFailOption: 'build'
-#     coverageType: 'blocks'
-#     allowCoverageVariance: true
-#     coverageVariance: '1'
+    - task: DotNetCoreCLI@2
+      displayName: 'Test'
+      inputs:
+        command: 'test'
+        projects: '**/Tharga.Reporter.Tests.csproj'
+        arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Pack'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/Tharga.Reporter.csproj'
-    versioningScheme: 'byBuildNumber'
+    # - task: BuildQualityChecks@8
+    #   displayName: 'Build Quality Checks'
+    #   inputs:
+    #     checkWarnings: true
+    #     warningFailOption: 'build'
+    #     allowWarningVariance: true
+    #     warningVariance: '1'
+    #     checkCoverage: true
+    #     coverageFailOption: 'build'
+    #     coverageType: 'blocks'
+    #     allowCoverageVariance: true
+    #     coverageVariance: '1'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Push'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack'
+      inputs:
+        command: 'pack'
+        packagesToPack: '**/Tharga.Reporter.csproj'
+        versioningScheme: 'byBuildNumber'
 
-- script: |
-     git tag $(Build.BuildNumber)
-     git push origin $(Build.BuildNumber)
-  workingDirectory: $(Build.SourcesDirectory)
-  displayName: Tag
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'Push'
+    #   inputs:
+    #     command: 'push'
+    #     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    #     nuGetFeedType: 'internal'
+    #     publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
+
+- stage: Release
+  displayName: Release
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+  jobs:
+  - job: Release
+    displayName: Release
+
+    steps:
+    - download: current
+      artifact: drop
+    - checkout: self
+      persistCredentials: true
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Push locally'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+        nuGetFeedType: 'internal'
+        publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
+
+    # - task: NuGetCommand@2
+    #   displayName: 'Push .nupkg to NuGet.org (with symbols)'
+    #   inputs:
+    #     command: 'push'
+    #     packagesToPush: '$(Pipeline.Workspace)/**/*.symbols.nupkg'
+    #     nuGetFeedType: 'external'
+    #     publishFeedCredentials: 'Nuget.org'
+
+    - script: |
+         git tag $(Build.BuildNumber)
+         git push origin $(Build.BuildNumber)
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: Tag
