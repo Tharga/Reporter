@@ -22,6 +22,7 @@
 	<ItemGroup>
 		<PackageReference Include="Aspose.BarCode" Version="25.8.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.8" />
 	</ItemGroup>
 
 	<ItemGroup>
