@@ -1,7 +1,7 @@
 trigger:
 - master
 
-name: 2.0.$(Rev:r)
+name: 2.1.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
@@ -13,9 +13,9 @@ variables:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET 6'
+  displayName: 'Use .NET 9'
   inputs:
-    version: 6.0.x
+    version: 9.0.x
     includePreviewVersions: false
 
 - task: DotNetCoreCLI@2
@@ -60,14 +60,6 @@ steps:
     packagesToPack: '**/Tharga.Reporter.csproj'
     versioningScheme: 'byBuildNumber'
 
-# - task: DotNetCoreCLI@2
-#   displayName: 'Push'
-#   inputs:
-#     command: 'push'
-#     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-#     nuGetFeedType: 'internal'
-#     publishVstsFeed: 'df4b267e-c55c-4a36-8fe3-8e98d5d8dbbb/5cea672d-cb79-44f6-beb8-2eaba59e670d'
-
 - task: DotNetCoreCLI@2
   displayName: 'Push'
   inputs:
@@ -76,9 +68,8 @@ steps:
     nuGetFeedType: 'internal'
     publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
 
-# - task: NuGetCommand@2
-#   inputs:
-#     command: 'push'
-#     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-#     nuGetFeedType: 'external'
-#     publishFeedCredentials: 'Nuget.org'
+- script: |
+     git tag $(Build.BuildNumber)
+     git push origin $(Build.BuildNumber)
+  workingDirectory: $(Build.SourcesDirectory)
+  displayName: Tag

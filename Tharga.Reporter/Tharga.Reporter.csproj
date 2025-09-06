@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -20,7 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspose.BarCode" Version="21.12.0" />
+		<PackageReference Include="Aspose.BarCode" Version="25.8.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
 	</ItemGroup>
 
