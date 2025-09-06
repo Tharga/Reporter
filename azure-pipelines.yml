@@ -75,6 +75,12 @@ stages:
     #     nuGetFeedType: 'internal'
     #     publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+
 - stage: Release
   displayName: Release
   dependsOn: Build
