@@ -1,7 +1,7 @@
 trigger:
 - master
 
-name: 2.1.$(Rev:r)
+name: 2.2.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
@@ -25,6 +25,8 @@ stages:
         version: 9.0.x
         includePreviewVersions: false
 
+    - task: NuGetToolInstaller@1
+
     - task: DotNetCoreCLI@2
       displayName: 'Restore nuget packages'
       inputs:
@@ -37,15 +39,22 @@ stages:
       inputs:
         command: 'build'
         projects: '**/*.csproj'
-        arguments: '-c Release /p:NoWarn=0618'
+        arguments: '-c Release'
         versioningScheme: 'byBuildNumber'
 
     - task: DotNetCoreCLI@2
       displayName: 'Test'
       inputs:
         command: 'test'
-        projects: '**/Tharga.Reporter.Tests.csproj'
-        arguments: '--collect "Code coverage" --configuration $(buildConfiguration) --no-build'
+        projects: '**/*Tests.csproj'
+        arguments: >-
+          -c $(buildConfiguration)
+          --no-build
+          --filter "(Category!=Integration)&(Category!=TimeCritical)"
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:SkipAutoProps=true
+          /p:ExcludeByAttribute="Obsolete"
 
     # - task: BuildQualityChecks@8
     #   displayName: 'Build Quality Checks'
@@ -61,19 +70,19 @@ stages:
     #     coverageVariance: '1'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Pack'
+      displayName: 'Pack Tharga.Reporter'
       inputs:
         command: 'pack'
         packagesToPack: '**/Tharga.Reporter.csproj'
         versioningScheme: 'byBuildNumber'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Push nuget packages locally'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-        nuGetFeedType: 'internal'
-        publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'Push nuget packages locally'
+    #   inputs:
+    #     command: 'push'
+    #     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    #     nuGetFeedType: 'internal'
+    #     publishVstsFeed: 'eda8985f-7491-4ceb-b57f-a6ce8a0c96d4'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish artifacts'
@@ -95,13 +104,13 @@ stages:
     - checkout: self
       persistCredentials: true
 
-    # - task: NuGetCommand@2
-    #   displayName: 'Push .nupkg to NuGet.org (with symbols)'
-    #   inputs:
-    #     command: 'push'
-    #     packagesToPush: '$(Pipeline.Workspace)/**/*.symbols.nupkg'
-    #     nuGetFeedType: 'external'
-    #     publishFeedCredentials: 'Nuget.org'
+    - task: NuGetCommand@2
+      displayName: 'Push .nupkg to NuGet.org (with symbols)'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Pipeline.Workspace)/**/*.symbols.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Nuget.org'
 
     - script: |
          git tag $(Build.BuildNumber)

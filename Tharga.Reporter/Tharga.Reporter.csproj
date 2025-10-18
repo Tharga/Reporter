@@ -2,31 +2,44 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>disable</Nullable>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<Version>2.0.0</Version>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
-		<Product>Tharga.Reporter generates PDFand prints pdf-documents.  and send then m diretly to the printerfrom templates</Product>
+		<Product>Tharga Reporter</Product>
+		<Description>Tharga Reporter generates PDF and prints pdf-documents and send then m diretly to the printer.</Description>
 		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
-		<LangVersion>latest</LangVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageProjectUrl>https://github.com/Tharga/Reporter</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<IncludeSymbols>true</IncludeSymbols>
+		<IncludeSource>true</IncludeSource>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<EnableSourceLink>false</EnableSourceLink>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<NoWarn>1701;1702;CS1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Properties\**" />
-	  <EmbeddedResource Remove="Properties\**" />
-	  <None Remove="Properties\**" />
+		<None Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspose.BarCode" Version="25.8.0" />
+		<PackageReference Include="Aspose.BarCode" Version="25.9.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
-		<PackageReference Include="System.Drawing.Common" Version="9.0.8" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Entity\" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.10" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 </Project>
