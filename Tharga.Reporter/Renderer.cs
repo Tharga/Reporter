@@ -1,32 +1,20 @@
-﻿using System.Drawing.Printing;
-using System.Runtime.CompilerServices;
-using System.Text;
-using MigraDoc.DocumentObjectModel;
+﻿using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.Security;
+using System.Text;
+using PdfSharp;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
-using Tharga.Reporter.Extensions;
 using Tharga.Reporter.Interface;
 using Section = Tharga.Reporter.Entity.Section;
-//using MigraDoc.Rendering.Printing;
-
-[assembly: InternalsVisibleTo("Tharga.Reporter.Tests")]
 
 namespace Tharga.Reporter;
 
 public class Renderer
 {
-    public enum PageSize
-    {
-        A4,
-        Letter,
-        PlasticCard
-    }
-
     private readonly IDebugData _debugData;
     private readonly DocumentData _documentData;
     private readonly DocumentProperties _documentProperties;
@@ -36,7 +24,10 @@ public class Renderer
     private readonly Template _template;
     private bool _preRendered;
 
-    private int _printPageCount;
+    public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
+        : this(new MyGraphicsFactory(), template, documentData, includeBackgroundObjects, documentProperties, debug)
+    {
+    }
 
     internal Renderer(IGraphicsFactory graphicsFactory, Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
     {
@@ -54,12 +45,7 @@ public class Renderer
         _graphicsFactory = graphicsFactory;
     }
 
-    public Renderer(Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
-        : this(new MyGraphicsFactory(), template, documentData, includeBackgroundObjects, documentProperties, debug)
-    {
-    }
-
-    private void RenderPdfDocument(PdfDocument pdfDocument, bool preRender, PageSize pageSize)
+    private void RenderPdfDocument(PdfDocument pdfDocument, bool preRender, PageFormat pageFormat)
     {
         if (_preRendered && preRender)
         {
@@ -75,14 +61,18 @@ public class Renderer
         {
             var page = pdfDocument.AddPage();
 
-            if (pageSize == PageSize.PlasticCard)
+            if (pageFormat.PageSize.HasValue)
             {
-                page.Width = new XUnit(85, XGraphicsUnit.Millimeter);
-                page.Height = new XUnit(54, XGraphicsUnit.Millimeter);
+                page.Size = pageFormat.PageSize.Value;
+            }
+            else if (pageFormat.CustomSize.HasValue)
+            {
+                page.Width = pageFormat.CustomSize.Value.Width;
+                page.Height = pageFormat.CustomSize.Value.Height;
             }
             else
             {
-                page.Size = pageSize.ToPageSize();
+                throw new InvalidOperationException($"The {nameof(pageFormat)} does not have {pageFormat.PageSize} or {pageFormat.CustomSize}.");
             }
 
             var gfx = _graphicsFactory.PrepareGraphics(page, docRenderer, ii);
@@ -136,60 +126,58 @@ public class Renderer
         return pdfDocument;
     }
 
-    private void PreRender(PageSize pageSize)
+    private void PreRender(PageFormat pageFormat)
     {
-        //TODO: If prerender with one format (pageSize) and printing with another.
-        //or, if template or document data changed between render and pre-render then things will be messed up.
         if (!_preRendered)
         {
             var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
             if (hasMultiPageElements)
             {
                 var pdfDocument = CreatePdfDocument();
-                RenderPdfDocument(pdfDocument, true, pageSize);
+                RenderPdfDocument(pdfDocument, true, pageFormat);
             }
         }
     }
 
-    private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
-    {
-        var rawSize = GetSize(e);
-        var unitSize = GetSize(rawSize);
-        var scale = GetScale(unitSize);
+    //private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
+    //{
+    //    var rawSize = GetSize(e);
+    //    var unitSize = GetSize(rawSize);
+    //    var scale = GetScale(unitSize);
 
-        //TODO: Not yet converted
-        //var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
-        //gfx.ScaleTransform(scale);
+    //    //TODO: Not yet converted
+    //    //var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
+    //    //gfx.ScaleTransform(scale);
 
-        //DoRenderStuff(new MyGraphics(gfx), new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
-        throw new NotImplementedException();
-    }
+    //    //DoRenderStuff(new MyGraphics(gfx), new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
+    //    throw new NotImplementedException();
+    //}
 
-    private static XSize GetSize(XSize rawSize)
-    {
-        var wm = PrinterUnitConvert.Convert(rawSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
-        var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
-        var hm = PrinterUnitConvert.Convert(rawSize.Height, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
-        var hx = new XUnit(hm, XGraphicsUnit.Millimeter);
-        var unitSize = new XSize(wx, hx);
-        return unitSize;
-    }
+    //private static XSize GetSize(XSize rawSize)
+    //{
+    //    var wm = PrinterUnitConvert.Convert(rawSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
+    //    var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
+    //    var hm = PrinterUnitConvert.Convert(rawSize.Height, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
+    //    var hx = new XUnit(hm, XGraphicsUnit.Millimeter);
+    //    var unitSize = new XSize(wx, hx);
+    //    return unitSize;
+    //}
 
-    private static double GetScale(XSize xSize)
-    {
-        var wm = PrinterUnitConvert.Convert(xSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
-        var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
-        var scale = xSize.Width / wx.Point;
-        return scale;
-    }
+    //private static double GetScale(XSize xSize)
+    //{
+    //    var wm = PrinterUnitConvert.Convert(xSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
+    //    var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
+    //    var scale = xSize.Width / wx.Point;
+    //    return scale;
+    //}
 
-    private static XSize GetSize(PrintPageEventArgs e)
-    {
-        var w = e.PageBounds.Width;
-        var h = e.PageBounds.Height;
-        var xSize = new XSize(w, h);
-        return xSize;
-    }
+    //private static XSize GetSize(PrintPageEventArgs e)
+    //{
+    //    var w = e.PageBounds.Width;
+    //    var h = e.PageBounds.Height;
+    //    var xSize = new XSize(w, h);
+    //    return xSize;
+    //}
 
     private void DoRenderStuff(IGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
     {
@@ -318,57 +306,55 @@ public class Renderer
         return doc;
     }
 
-    #region Public access methods
+    //public void CreatePdfFile(string fileName, PageSize pageSize = PageSize.A4)
+    //{
+    //    if (File.Exists(fileName))
+    //    {
+    //        throw new InvalidOperationException("The file already exists.").AddData("fileName", fileName);
+    //    }
 
-    public void CreatePdfFile(string fileName, PageSize pageSize = PageSize.A4)
+    //    File.WriteAllBytes(fileName, GetPdfBinary(pageSize));
+    //}
+
+    public byte[] GetPdfBinary(PageFormat pageFormat)
     {
-        if (File.Exists(fileName))
-        {
-            throw new InvalidOperationException("The file already exists.").AddData("fileName", fileName);
-        }
+        pageFormat ??= PageSize.A4;
 
-        File.WriteAllBytes(fileName, GetPdfBinary(pageSize));
-    }
-
-    public byte[] GetPdfBinary(PageSize pageSize = PageSize.A4)
-    {
-        PreRender(pageSize);
+        PreRender(pageFormat);
 
         var pdfDocument = CreatePdfDocument();
-        RenderPdfDocument(pdfDocument, false, pageSize);
+        RenderPdfDocument(pdfDocument, false, pageFormat);
 
         var memStream = new MemoryStream();
         pdfDocument.Save(memStream);
         return memStream.ToArray();
     }
 
-    public void Print(PrinterSettings printerSettings)
-    {
-        _printPageCount = 0;
+    //public void Print(PrinterSettings printerSettings)
+    //{
+    //    _printPageCount = 0;
 
-        PageSize pageSize;
-        if (!Enum.TryParse(printerSettings.DefaultPageSettings.PaperSize.Kind.ToString(), out pageSize))
-        {
-            throw new InvalidOperationException(string.Format("Unable to parse {0} from as printerSettings to a page size.", printerSettings.DefaultPageSettings.PaperSize.Kind));
-        }
+    //    PageSize pageSize;
+    //    if (!Enum.TryParse(printerSettings.DefaultPageSettings.PaperSize.Kind.ToString(), out pageSize))
+    //    {
+    //        throw new InvalidOperationException(string.Format("Unable to parse {0} from as printerSettings to a page size.", printerSettings.DefaultPageSettings.PaperSize.Kind));
+    //    }
 
-        PreRender(pageSize);
+    //    PreRender(pageSize);
 
-        var doc = GetDocument(false);
+    //    var doc = GetDocument(false);
 
-        var docRenderer = new DocumentRenderer(doc);
-        docRenderer.PrepareDocument();
+    //    var docRenderer = new DocumentRenderer(doc);
+    //    docRenderer.PrepareDocument();
 
-        //var printDocument = new MigraDocPrintDocument();
-        //printDocument.PrintController = new StandardPrintController();
-        //
-        //printDocument.PrintPage += printDocument_PrintPage;
-        //
-        //printDocument.Renderer = docRenderer;
-        //printDocument.PrinterSettings = printerSettings;
-        //printDocument.Print();
-        throw new NotImplementedException();
-    }
-
-    #endregion
+    //    //var printDocument = new MigraDocPrintDocument();
+    //    //printDocument.PrintController = new StandardPrintController();
+    //    //
+    //    //printDocument.PrintPage += printDocument_PrintPage;
+    //    //
+    //    //printDocument.Renderer = docRenderer;
+    //    //printDocument.PrinterSettings = printerSettings;
+    //    //printDocument.Print();
+    //    throw new NotImplementedException();
+    //}
 }

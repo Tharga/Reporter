@@ -33,6 +33,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="Tharga.Reporter.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Aspose.BarCode" Version="25.9.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
 		<PackageReference Include="System.Drawing.Common" Version="10.0.0" />
