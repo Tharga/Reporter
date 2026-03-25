@@ -148,18 +148,19 @@ public class Table_Tests
     [Fact(Skip = "Fix!")]
     public void When_rendering_a_document_with_an_empty_table()
     {
-        //Arrange
-        var table = new Table();
-        var section = new Section();
-        section.Pane.ElementList.Add(table);
-        var template = new Template(section);
-        var documentData = new DocumentData();
-        var renderer = new Renderer(template, documentData);
+        ////Arrange
+        //var table = new Table();
+        //var section = new Section();
+        //section.Pane.ElementList.Add(table);
+        //var template = new Template(section);
+        //var documentData = new DocumentData();
+        //var renderer = new Renderer(template, documentData);
 
-        //Act
-        var data = renderer.GetPdfBinary();
+        ////Act
+        //var data = renderer.GetPdfBinary();
 
-        //Assert
+        ////Assert
+        throw new NotImplementedException();
     }
 
     [Fact(Skip = "Can't gain access to internal stuff.")]
