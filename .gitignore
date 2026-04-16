@@ -6,3 +6,4 @@ obj
 *.DotSettings.user
 /_NCrunch*/*.cache
 /*.ncrunchsolution.user
+/.claude/settings.local.json

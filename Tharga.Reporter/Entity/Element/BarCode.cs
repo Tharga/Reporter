@@ -40,7 +40,8 @@ public class BarCode : SinglePageAreaElement
             //generatorA.Save("c:\\temp\\output.jpg", BarCodeImageFormat.Jpeg);
 
             //var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
-            var generator = new BarcodeGenerator(EncodeTypes.Code39, GetCode(renderData.DocumentData, renderData.PageNumberInfo));
+            var symbologyEncodeType = EncodeTypes.Code39; //TODO: Provide this as a property on the element.
+            var generator = new BarcodeGenerator(symbologyEncodeType, GetCode(renderData.DocumentData, renderData.PageNumberInfo));
             var memStream = new MemoryStream();
             //b.BarCodeImage.Save(memStream, ImageFormat.Png);
             generator.Save(memStream, BarCodeImageFormat.Png);

@@ -137,60 +137,62 @@ internal static class Program
 
     private static void SampleOutput(Template template, DocumentData documentData, bool useBackground = true, bool debug = true)
     {
-        try
-        {
-            //Prep
-            var renderer = new Renderer(template, documentData, useBackground, null, debug);
-            var stopWatch = new Stopwatch();
+        //try
+        //{
+        //    //Prep
+        //    var renderer = new Renderer(template, documentData, useBackground, null, debug);
+        //    var stopWatch = new Stopwatch();
 
-            //New way
-            stopWatch.Reset();
-            stopWatch.Start();
-            var bytes = renderer.GetPdfBinary();
-            System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-            FileManager.ExecuteFile(bytes);
+        //    //New way
+        //    stopWatch.Reset();
+        //    stopWatch.Start();
+        //    var bytes = renderer.GetPdfBinary();
+        //    System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+        //    FileManager.ExecuteFile(bytes);
 
-            //Directly to printer
-            //var printerSettings = new PrinterSettings
-            //{
-            //    PrinterName = "Microsoft XPS Document Writer",
-            //    PrintToFile = true,
-            //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-            //};
-            //stopWatch.Reset();
-            //stopWatch.Start();
-            //renderer.Print(printerSettings);
-            //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-        }
-        catch (Exception exception)
-        {
-            System.Console.WriteLine(exception.Message);
-        }
+        //    //Directly to printer
+        //    //var printerSettings = new PrinterSettings
+        //    //{
+        //    //    PrinterName = "Microsoft XPS Document Writer",
+        //    //    PrintToFile = true,
+        //    //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+        //    //};
+        //    //stopWatch.Reset();
+        //    //stopWatch.Start();
+        //    //renderer.Print(printerSettings);
+        //    //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+        //}
+        //catch (Exception exception)
+        //{
+        //    System.Console.WriteLine(exception.Message);
+        //}
+        throw new NotImplementedException();
     }
 
     private static void SampleCardOutput(Template template, DocumentData documentData, bool useBackground = true, bool debug = true)
     {
-        try
-        {
-            var renderer = new Renderer(template, documentData, useBackground, null, debug);
-            var bytes = renderer.GetPdfBinary(Renderer.PageSize.PlasticCard);
-            //FileManager.ExecuteFile(bytes);
+        //try
+        //{
+        //    var renderer = new Renderer(template, documentData, useBackground, null, debug);
+        //    var bytes = renderer.GetPdfBinary(Renderer.PageSize.PlasticCard);
+        //    //FileManager.ExecuteFile(bytes);
 
-            //Directly to printer
-            //var printerSettings = new PrinterSettings
-            //{
-            //    PrinterName = "Microsoft XPS Document Writer",
-            //    PrintToFile = true,
-            //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-            //};
-            //stopWatch.Reset();
-            //stopWatch.Start();
-            //renderer.Print(printerSettings);
-            //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-        }
-        catch (Exception exception)
-        {
-            System.Console.WriteLine(exception.Message);
-        }
+        //    //Directly to printer
+        //    //var printerSettings = new PrinterSettings
+        //    //{
+        //    //    PrinterName = "Microsoft XPS Document Writer",
+        //    //    PrintToFile = true,
+        //    //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
+        //    //};
+        //    //stopWatch.Reset();
+        //    //stopWatch.Start();
+        //    //renderer.Print(printerSettings);
+        //    //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
+        //}
+        //catch (Exception exception)
+        //{
+        //    System.Console.WriteLine(exception.Message);
+        //}
+        throw new NotImplementedException();
     }
 }
