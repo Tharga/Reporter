@@ -43,8 +43,8 @@ jobs:
         run: |
           WARNING_COUNT=$(grep -c " warning " build.log || true)
           echo "Build warnings: $WARNING_COUNT"
-          if [ "$WARNING_COUNT" -gt 200 ]; then
-            echo "::error::Build has $WARNING_COUNT warnings (threshold: 200)"
+          if [ "$WARNING_COUNT" -gt 100 ]; then
+            echo "::error::Build has $WARNING_COUNT warnings (threshold: 100)"
             exit 1
           fi
 
