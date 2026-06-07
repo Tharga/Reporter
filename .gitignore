@@ -7,3 +7,7 @@ obj
 /_NCrunch*/*.cache
 /*.ncrunchsolution.user
 /.claude/settings.local.json
+
+# DocFX generated output
+/docs/_site/
+/docs/api/
