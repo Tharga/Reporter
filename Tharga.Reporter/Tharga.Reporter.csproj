@@ -7,7 +7,7 @@
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Reporter</Product>
 		<Description>Tharga Reporter generates PDF and prints pdf-documents and send then m diretly to the printer.</Description>
-		<PackageIconUrl>http://thargelion.se/wp-content/uploads/2019/11/Thargelion-White-Icon-150.png</PackageIconUrl>
+		<PackageIconUrl>https://thargelion.net/assets/component-reporter.png</PackageIconUrl>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/Tharga/Reporter</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
