@@ -37,7 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspose.BarCode" Version="26.4.0" />
+		<PackageReference Include="Aspose.BarCode" Version="26.5.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
 		<PackageReference Include="System.Drawing.Common" Version="10.0.8" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
