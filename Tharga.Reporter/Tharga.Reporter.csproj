@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-		<Version>2.0.0</Version>
+		<TargetFrameworks>net10.0</TargetFrameworks>
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Reporter</Product>
@@ -22,7 +21,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<NoWarn>1701;1702;CS1591;CA1416</NoWarn>
+		<!--
+			NU5048: PackageIconUrl is deprecated in favour of an embedded PackageIcon.
+			Suppressed deliberately. Tharga packages reference their icon from
+			https://thargelion.net/assets/ so all package icons are maintained in one
+			place and can be updated without republishing a package.
+		-->
+		<NoWarn>1701;1702;CS1591;CA1416;NU5048</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -39,8 +44,8 @@
 	<ItemGroup>
 		<PackageReference Include="Aspose.BarCode" Version="26.5.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
-		<PackageReference Include="System.Drawing.Common" Version="10.0.8" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
+		<PackageReference Include="System.Drawing.Common" Version="10.0.10" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.301">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
