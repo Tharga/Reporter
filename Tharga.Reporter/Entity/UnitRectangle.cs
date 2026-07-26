@@ -240,6 +240,17 @@ public class UnitRectangle : IEquatable<UnitRectangle>
         return Equals((UnitRectangle)obj);
     }
 
+    /// <summary>
+    /// Returns a hash code built from the same values <see cref="Equals(UnitRectangle)"/> compares.
+    /// </summary>
+    public override int GetHashCode()
+    {
+        // The type defines ==/!= and overrides Equals but had no GetHashCode, so
+        // equal rectangles produced different hash codes (CS0659/CS0661) and the
+        // type misbehaved in any hash-based container.
+        return HashCode.Combine(Left, Top, Right, Bottom, Width, Height);
+    }
+
     internal XmlElement ToXme(string elementName = "Rect")
     {
         var xmd = new XmlDocument();

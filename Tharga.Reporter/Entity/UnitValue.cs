@@ -155,19 +155,13 @@ public struct UnitValue : IEquatable<UnitValue>
         return new UnitValue(a.GetXUnitValue(0) + b.GetXUnitValue(0), EUnit.Point);
     }
 
-    public static bool operator ==(UnitValue a, UnitValue b)
-    {
-        if ((object)a == (object)b) return true;
-        if ((object)a == null || (object)b == null) return false;
-        return a.Equals(b);
-    }
+    // UnitValue is a struct, so the reference and null checks these operators
+    // used to make were dead code: boxing a value type never yields null, and
+    // boxing both operands never yields the same reference. Both paths already
+    // fell through to Equals, so this is equivalent and avoids the boxing.
+    public static bool operator ==(UnitValue a, UnitValue b) => a.Equals(b);
 
-    public static bool operator !=(UnitValue a, UnitValue b)
-    {
-        if ((object)a == (object)b) return false;
-        if ((object)a == null || (object)b == null) return true;
-        return !a.Equals(b);
-    }
+    public static bool operator !=(UnitValue a, UnitValue b) => !a.Equals(b);
 
     #endregion
 
