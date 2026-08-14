@@ -46,10 +46,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspose.BarCode" Version="26.5.0" />
+		<PackageReference Include="Aspose.BarCode" Version="26.7.0" />
 		<PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.15" />
-		<PackageReference Include="System.Drawing.Common" Version="10.0.10" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.301">
+		<PackageReference Include="System.Drawing.Common" Version="10.0.11" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
