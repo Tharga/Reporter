@@ -8,7 +8,7 @@ For a typical .NET 8 / 9 / 10 application:
 dotnet add package Tharga.Reporter
 ```
 
-Tharga.Reporter targets `net10.0`. At runtime it uses `PDFsharp` and `Aspose.BarCode`, both of which are
+Tharga.Reporter targets `net10.0`. At runtime it uses `PDFsharp` and `ZXing.Net`, both of which are
 fully managed, so the same code renders on Windows, Linux and macOS. See [Fonts](fonts.md) if your
 templates name a specific font family.
 

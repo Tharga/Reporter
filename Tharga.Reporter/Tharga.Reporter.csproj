@@ -47,7 +47,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspose.BarCode" Version="26.8.0" />
+		<PackageReference Include="ZXing.Net" Version="0.16.11" />
 		<PackageReference Include="PDFsharp" Version="6.2.4" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400">
 			<PrivateAssets>all</PrivateAssets>

@@ -20,6 +20,11 @@ internal static class BarCodeSampleWriter
 
     internal static byte[] Rasterize(string code, int width, int height)
     {
+        return PngWriter.FromGreyscale(RasterizePixels(code, width, height));
+    }
+
+    internal static byte[,] RasterizePixels(string code, int width, int height)
+    {
         var bars = BarCode.GetBars(code, new XRect(0, 0, width, height));
 
         var pixels = new byte[height, width];
@@ -45,7 +50,7 @@ internal static class BarCodeSampleWriter
             }
         }
 
-        return PngWriter.FromGreyscale(pixels);
+        return pixels;
     }
 
     internal static string WritePng(string code)

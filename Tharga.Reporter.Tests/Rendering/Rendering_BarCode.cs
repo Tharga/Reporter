@@ -1,5 +1,5 @@
-using Aspose.BarCode.BarCodeRecognition;
 using FluentAssertions;
+using ZXing;
 using Moq;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity;
@@ -65,17 +65,59 @@ public class Rendering_BarCode
     public void Rendered_bars_decode_back_to_the_original_code(string code)
     {
         //Arrange
-        var png = BarCodeSampleWriter.Rasterize(code, BarCodeSampleWriter.ScannableWidth(code), 300);
-        using var stream = new MemoryStream(png);
-        using var bitmap = new Aspose.Drawing.Bitmap(stream);
+        var width = BarCodeSampleWriter.ScannableWidth(code);
+        var pixels = BarCodeSampleWriter.RasterizePixels(code, width, 300);
 
         //Act
-        using var reader = new BarCodeReader(bitmap, DecodeType.Code39);
-        var results = reader.ReadBarCodes();
+        var result = Decode(pixels, width, 300);
 
         //Assert
-        results.Should().ContainSingle();
-        results[0].CodeText.Should().Be(code);
+        result.Should().NotBeNull();
+        result.Text.Should().Be(code.ToUpperInvariant());
+    }
+
+    [Theory]
+    [InlineData("abc123", "ABC123")]
+    [InlineData("Member0042", "MEMBER0042")]
+    public void Lower_case_is_upper_cased_rather_than_dropped(string code, string expected)
+    {
+        //Arrange
+        var width = BarCodeSampleWriter.ScannableWidth(code);
+
+        //Act
+        var result = Decode(BarCodeSampleWriter.RasterizePixels(code, width, 300), width, 300);
+
+        //Assert
+        result.Text.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("abc*123")]
+    [InlineData("café")]
+    public void A_code_that_Code39_cannot_encode_is_rejected_rather_than_silently_altered(string code)
+    {
+        //Act
+        var act = () => BarCode.GetBars(code, new XRect(0, 0, 600, 100));
+
+        //Assert
+        act.Should().Throw<InvalidOperationException>().WithMessage("*cannot be encoded as Code 39*");
+    }
+
+    private static Result Decode(byte[,] pixels, int width, int height)
+    {
+        var raw = new byte[width * height];
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                raw[y * width + x] = pixels[y, x];
+            }
+        }
+
+        var source = new RGBLuminanceSource(raw, width, height, RGBLuminanceSource.BitmapFormat.Gray8);
+        var reader = new BarcodeReaderGeneric { Options = { PossibleFormats = [BarcodeFormat.CODE_39] } };
+
+        return reader.Decode(source);
     }
 
     [Fact]

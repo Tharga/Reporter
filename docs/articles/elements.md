@@ -63,7 +63,12 @@ section.Pane.ElementList.Add(new BarCode
 });
 ```
 
-The barcode fills the box you give it; size the box to the print area the scanner expects.
+The barcode fills the box you give it; size the box to the print area the scanner expects. A short code in a
+very wide box produces bars too wide to scan, so keep the box roughly proportional to the length of the code.
+
+Code 39 encodes digits, upper-case letters, space and `- . $ / + %`. Lower case is upper-cased, so `"abc123"`
+encodes as `ABC123`. Anything the symbology cannot represent raises an `InvalidOperationException` naming the
+offending character, rather than being silently dropped from the barcode.
 
 ## Line
 

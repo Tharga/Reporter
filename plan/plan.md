@@ -199,7 +199,44 @@ remedies — install the font, or register it with `ReporterFontResolver.Registe
 subset, and zero image XObjects — confirming the barcode is vector and nothing raster is
 involved.
 
+## Aspose.BarCode removed (2026-09-04)
+
+Replaced with **ZXing.Net 0.16.11** (Apache-2.0, no dependencies on net6.0+). Cheap to do once
+the drawing side was already vector: `Code39Writer.encode` returns the bar pattern directly, so
+the raster-and-threshold step was deleted rather than ported.
+
+**Cross-validation:** ZXing and Aspose produce identical bar counts — 40 for `ABC123`, 15 for
+`1`, 65 for `S1309799801` — two independent implementations agreeing on the encoding.
+
+**ZXing emits no quiet zone**, so 10 modules are added either side, per the Code 39 spec and
+ZXing's own default margin. The decode round-trip test is what guards this.
+
+### A silent data-corruption bug found on the way out
+
+Aspose **discarded** characters it could not encode instead of reporting them:
+
+| Input | Aspose barcode decoded as |
+|---|---|
+| `abc123` | `123` |
+| `a-b.c` | `-.` |
+
+A card carrying a lower-case code has been scanning as the wrong value, with no error anywhere.
+`BarCode.Normalize` now upper-cases (Code 39 is an upper-case symbology, so the characters are
+preserved rather than lost) and throws `InvalidOperationException` naming any character the
+symbology genuinely cannot represent. Covered by
+`Lower_case_is_upper_cased_rather_than_dropped` and
+`A_code_that_Code39_cannot_encode_is_rejected_rather_than_silently_altered`.
+
+**This changes output for anyone currently passing a lower-case code** — their barcode will now
+encode the letters instead of dropping them. It is a fix, but it belongs in the 3.0 release notes.
+
+**Final published dependencies:** `PDFsharp` 6.2.4 (MIT) and `ZXing.Net` 0.16.11 (Apache-2.0).
+No commercial component, no evaluation watermark, and no code cropping around one.
+
+**Tests: 69 total, 25 run, 44 skipped, 0 failed — identical on Windows and Linux.**
+
 ## Remaining before this can close
+
 
 - [ ] User confirms the rendered barcodes scan on a physical reader
 - [ ] Decide whether the hard-coded `"qwerty12"` owner password stays

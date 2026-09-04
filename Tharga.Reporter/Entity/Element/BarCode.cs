@@ -1,18 +1,17 @@
 using System.Xml;
-using Aspose.BarCode.Generation;
-using Aspose.Drawing;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
 using Tharga.Reporter.Extensions;
 using Tharga.Reporter.Interface;
+using ZXing.OneD;
 
 namespace Tharga.Reporter.Entity.Element;
 
 public class BarCode : SinglePageAreaElement
 {
-    private const int ScanLineOffset = 10;
-    private const int DarkThreshold = 128;
+    private const string Code39Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%";
+    private const int QuietZoneModules = 10;
 
     private string _code;
 
@@ -58,21 +57,31 @@ public class BarCode : SinglePageAreaElement
             .ToArray();
     }
 
+    /// <summary>
+    /// Code 39 encodes an uppercase alphabet only. Lower case is upper-cased rather than dropped, so a code
+    /// still encodes the characters it was given.
+    /// </summary>
+    internal static string Normalize(string code)
+    {
+        var normalized = (code ?? string.Empty).ToUpperInvariant();
+
+        var invalid = normalized.Where(x => !Code39Alphabet.Contains(x)).Distinct().ToArray();
+        if (invalid.Length != 0)
+        {
+            throw new InvalidOperationException($"The code '{code}' cannot be encoded as Code 39. Unsupported {(invalid.Length == 1 ? "character" : "characters")}: {string.Join(", ", invalid.Select(x => $"'{x}'"))}.");
+        }
+
+        return normalized;
+    }
+
     private static IReadOnlyList<bool> GetBarPattern(string code)
     {
-        var generator = new BarcodeGenerator(EncodeTypes.Code39, code);
+        var encoded = new Code39Writer().encode(Normalize(code));
 
-        using var stream = new MemoryStream();
-        generator.Save(stream, BarCodeImageFormat.Png);
-        stream.Position = 0;
+        var pattern = new bool[QuietZoneModules + encoded.Length + QuietZoneModules];
+        encoded.CopyTo(pattern, QuietZoneModules);
 
-        using var image = new Bitmap(stream);
-
-        var scanLine = Math.Min(ScanLineOffset, image.Height - 1);
-
-        return Enumerable.Range(0, image.Width)
-            .Select(x => IsDark(image.GetPixel(x, scanLine)))
-            .ToArray();
+        return pattern;
     }
 
     private static IEnumerable<(int Start, int Length)> GetRuns(IReadOnlyList<bool> pattern)
@@ -93,11 +102,6 @@ public class BarCode : SinglePageAreaElement
                 start = -1;
             }
         }
-    }
-
-    private static bool IsDark(Color color)
-    {
-        return (color.R + color.G + color.B) / 3 < DarkThreshold;
     }
 
     private string GetCode(IDocumentData documentData, PageNumberInfo pageNumberInfo)
