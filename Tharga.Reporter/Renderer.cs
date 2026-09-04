@@ -1,11 +1,10 @@
-﻿using MigraDoc.DocumentObjectModel;
-using MigraDoc.Rendering;
-using PdfSharp.Drawing;
+﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.Security;
 using System.Text;
 using PdfSharp;
 using Tharga.Reporter.Entity;
+using Tharga.Reporter.Fonts;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
 using Tharga.Reporter.Interface;
@@ -32,6 +31,7 @@ public class Renderer
     internal Renderer(IGraphicsFactory graphicsFactory, Template template, DocumentData documentData = null, bool includeBackgroundObjects = true, DocumentProperties documentProperties = null, bool debug = false)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        ReporterFontResolver.EnsureInstalled();
 
         _template = template;
         _documentData = documentData;
@@ -52,12 +52,9 @@ public class Renderer
             throw new InvalidOperationException("Prerender has already been performed.");
         }
 
-        var doc = GetDocument(preRender);
+        var pageCount = GetPageCount(preRender);
 
-        var docRenderer = new DocumentRenderer(doc);
-        docRenderer.PrepareDocument();
-
-        for (var ii = 0; ii < doc.Sections.Count; ii++)
+        for (var ii = 0; ii < pageCount; ii++)
         {
             var page = pdfDocument.AddPage();
 
@@ -67,17 +64,17 @@ public class Renderer
             }
             else if (pageFormat.CustomSize.HasValue)
             {
-                page.Width = pageFormat.CustomSize.Value.Width;
-                page.Height = pageFormat.CustomSize.Value.Height;
+                page.Width = XUnit.FromPoint(pageFormat.CustomSize.Value.Width);
+                page.Height = XUnit.FromPoint(pageFormat.CustomSize.Value.Height);
             }
             else
             {
                 throw new InvalidOperationException($"The {nameof(pageFormat)} does not have {pageFormat.PageSize} or {pageFormat.CustomSize}.");
             }
 
-            var gfx = _graphicsFactory.PrepareGraphics(page, docRenderer, ii);
+            var gfx = _graphicsFactory.PrepareGraphics(page);
 
-            DoRenderStuff(gfx, new XRect(0, 0, page.Width, page.Height), preRender, ii, _template.SectionList.Sum(x => x.GetRenderPageCount()));
+            DoRenderStuff(gfx, new XRect(0, 0, page.Width.Point, page.Height.Point), preRender, ii, _template.SectionList.Sum(x => x.GetRenderPageCount()));
         }
 
         if (preRender)
@@ -112,9 +109,8 @@ public class Renderer
         //pdfDocument.ViewerPreferences.
 
         //TODO: Provide security settings
-        pdfDocument.SecuritySettings.DocumentSecurityLevel = PdfDocumentSecurityLevel.Encrypted128Bit;
+        pdfDocument.SecurityHandler.SetEncryptionToV2With128Bits();
         pdfDocument.SecuritySettings.OwnerPassword = "qwerty12";
-        pdfDocument.SecuritySettings.PermitAccessibilityExtractContent = false;
         pdfDocument.SecuritySettings.PermitAnnotations = false;
         pdfDocument.SecuritySettings.PermitAssembleDocument = false;
         pdfDocument.SecuritySettings.PermitExtractContent = true; //Is this copy-paste block?
@@ -284,26 +280,11 @@ public class Renderer
         return section;
     }
 
-    private Document GetDocument(bool preRender)
+    private int GetPageCount(bool preRender)
     {
-        var doc = new Document();
-
-        foreach (var section in _template.SectionList)
-        {
-            if (preRender)
-            {
-                doc.AddSection();
-            }
-            else
-            {
-                for (var i = 0; i < section.GetRenderPageCount(); i++)
-                {
-                    doc.AddSection();
-                }
-            }
-        }
-
-        return doc;
+        return preRender
+            ? _template.SectionList.Count
+            : _template.SectionList.Sum(x => x.GetRenderPageCount());
     }
 
     //public void CreatePdfFile(string fileName, PageSize pageSize = PageSize.A4)

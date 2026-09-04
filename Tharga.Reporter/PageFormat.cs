@@ -32,7 +32,7 @@ public record PageFormat
         var width = new XUnit(customWidth, XGraphicsUnit.Millimeter);
         var height = new XUnit(customHeight, XGraphicsUnit.Millimeter);
 
-        _size = new XSize(width, height);
+        _size = new XSize(width.Point, height.Point);
     }
 
     public PageSize? PageSize => _pageFormat;
@@ -44,5 +44,5 @@ public record PageFormat
     /// <summary>
     /// Standard size for plastic cards.
     /// </summary>
-    public static PageFormat PlasticCard => new(new XSize(new XUnit(85, XGraphicsUnit.Millimeter), new XUnit(54, XGraphicsUnit.Millimeter)));
+    public static PageFormat PlasticCard => new(new XSize(new XUnit(85, XGraphicsUnit.Millimeter).Point, new XUnit(54, XGraphicsUnit.Millimeter).Point));
 }
