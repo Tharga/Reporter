@@ -1,7 +1,6 @@
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Xml;
 using Aspose.BarCode.Generation;
+using Aspose.Drawing;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
@@ -12,6 +11,9 @@ namespace Tharga.Reporter.Entity.Element;
 
 public class BarCode : SinglePageAreaElement
 {
+    private const int ScanLineOffset = 10;
+    private const int DarkThreshold = 128;
+
     private string _code;
 
     public string Code
@@ -35,53 +37,67 @@ public class BarCode : SinglePageAreaElement
 
         if (!IsBackground || renderData.IncludeBackground)
         {
-            //var generatorA = new BarcodeGenerator(EncodeTypes.Code128, "1234567");
-            //generatorA.Parameters.Barcode.XDimension.Millimeters = 1f;
-            //generatorA.Save("c:\\temp\\output.jpg", BarCodeImageFormat.Jpeg);
+            var code = GetCode(renderData.DocumentData, renderData.PageNumberInfo);
 
-            //var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
-            var symbologyEncodeType = EncodeTypes.Code39; //TODO: Provide this as a property on the element.
-            var generator = new BarcodeGenerator(symbologyEncodeType, GetCode(renderData.DocumentData, renderData.PageNumberInfo));
-            var memStream = new MemoryStream();
-            //b.BarCodeImage.Save(memStream, ImageFormat.Png);
-            generator.Save(memStream, BarCodeImageFormat.Png);
-            var imageData = System.Drawing.Image.FromStream(memStream);
-
-            //NOTE: Paint over the license info
-            //using (var g = Graphics.FromImage(imageData))
-            //{
-            //    g.FillRectangle(new SolidBrush(generator.Parameters.BackColor), 0, 0, imageData.Width, 14);
-            //}
-
-            //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, imageData.Width, imageData.Height);
-            //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, raw.Width / 2, raw.Height * 10);
-
-            //using (var image = XImage.FromGdiPlusImage(imageData))
-            //{
-            //    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
-            //}
-
-            //NOTE: Create a new image 1 pixel height, and paint an untouched part of the barcode on that.
-            var targetImageHeight = 1;
-            var raw = new Bitmap(imageData, new Size(imageData.Width, targetImageHeight));
-            using (var g = Graphics.FromImage(raw))
+            foreach (var bar in GetBars(code, bounds))
             {
-                g.DrawImage(imageData,
-                    new[] { new PointF(0, 0), new PointF(imageData.Width, 0), new PointF(0, targetImageHeight) },
-                    new RectangleF(0, 10, imageData.Width, 1), GraphicsUnit.Pixel);
+                renderData.Graphics.DrawRectangle(XBrushes.Black, bar);
             }
-
-            {
-                using var strm = new MemoryStream();
-                //imageData.Save(strm, ImageFormat.Png);
-                raw.Save(strm, ImageFormat.Png);
-                using var xfoto = XImage.FromStream(strm);
-                renderData.Graphics.DrawImage(xfoto, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
-            }
-
-            imageData.Dispose();
-            raw.Dispose();
         }
+    }
+
+    internal static IReadOnlyList<XRect> GetBars(string code, XRect bounds)
+    {
+        var pattern = GetBarPattern(code);
+        if (pattern.Count == 0) return [];
+
+        var scale = bounds.Width / pattern.Count;
+
+        return GetRuns(pattern)
+            .Select(x => new XRect(bounds.Left + x.Start * scale, bounds.Top, x.Length * scale, bounds.Height))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<bool> GetBarPattern(string code)
+    {
+        var generator = new BarcodeGenerator(EncodeTypes.Code39, code);
+
+        using var stream = new MemoryStream();
+        generator.Save(stream, BarCodeImageFormat.Png);
+        stream.Position = 0;
+
+        using var image = new Bitmap(stream);
+
+        var scanLine = Math.Min(ScanLineOffset, image.Height - 1);
+
+        return Enumerable.Range(0, image.Width)
+            .Select(x => IsDark(image.GetPixel(x, scanLine)))
+            .ToArray();
+    }
+
+    private static IEnumerable<(int Start, int Length)> GetRuns(IReadOnlyList<bool> pattern)
+    {
+        var start = -1;
+
+        for (var i = 0; i <= pattern.Count; i++)
+        {
+            var isBar = i < pattern.Count && pattern[i];
+
+            if (isBar && start < 0)
+            {
+                start = i;
+            }
+            else if (!isBar && start >= 0)
+            {
+                yield return (start, i - start);
+                start = -1;
+            }
+        }
+    }
+
+    private static bool IsDark(Color color)
+    {
+        return (color.R + color.G + color.B) / 3 < DarkThreshold;
     }
 
     private string GetCode(IDocumentData documentData, PageNumberInfo pageNumberInfo)

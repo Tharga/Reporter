@@ -12,6 +12,7 @@ internal interface IGraphics
     void DrawLine(XPen pen, double x1, double y1, double x2, double y2);
     void DrawRectangle(XPen pen, XRect rect);
     void DrawRectangle(XPen pen, XBrush brush, XRect rect);
+    void DrawRectangle(XBrush brush, XRect rect);
     void DrawEllipse(XPen pen, double x, double y, int width, int height);
     void DrawImage(XImage image, XRect rect);
 }

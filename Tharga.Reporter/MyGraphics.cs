@@ -54,6 +54,11 @@ internal class MyGraphics : IGraphics
         _gfx.DrawRectangle(pen, brush, rect);
     }
 
+    public void DrawRectangle(XBrush brush, XRect rect)
+    {
+        _gfx.DrawRectangle(brush, rect);
+    }
+
     public void DrawEllipse(XPen pen, double x, double y, int width, int height)
     {
         _gfx.DrawEllipse(pen, x, y, width, height);
