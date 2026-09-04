@@ -7,6 +7,7 @@
 		<Product>Tharga Reporter</Product>
 		<Description>Tharga Reporter generates PDF and prints pdf-documents and send then m diretly to the printer.</Description>
 		<PackageIconUrl>https://thargelion.net/assets/component-reporter.png</PackageIconUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/Tharga/Reporter</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
