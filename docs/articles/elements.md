@@ -45,11 +45,12 @@ section.Header.ElementList.Add(new Image
 });
 ```
 
-`Source` accepts an HTTP URL, a local file path, or anything `System.Drawing.Image.FromStream`/`FromFile` understands.
+`Source` accepts an HTTP URL, a local file path, or a byte array serialised with `Image.BytesToLongString`. PNG and JPEG are decoded by PDFsharp itself, so images work on every platform.
 
 ## BarCode
 
-A Code 39 barcode rendered via Aspose.BarCode.
+A Code 39 barcode. The bars are drawn as vector rectangles rather than an embedded raster image, so the
+barcode stays sharp at any print size and renders identically on every platform.
 
 ```csharp
 section.Pane.ElementList.Add(new BarCode
