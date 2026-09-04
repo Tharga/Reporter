@@ -119,8 +119,54 @@ This is a clean natural experiment: the failure proves GDI+ is genuinely absent 
 host, and the barcode test passing in the same process proves the new path genuinely avoids
 it. The barcode half of issue #17 is fixed and demonstrated on Linux.
 
+## PDFsharp 6 evaluation (2026-09-04) — validated by spike, not assumed
+
+`PDFsharp` **6.2.4** is MIT, declares no `System.Drawing.Common`, and states cross-platform
+support. A spike exercising the full surface this project uses was built on Windows and the
+same assembly run under WSL Ubuntu:
+
+| Capability | Linux result |
+|---|---|
+| Font resolve + `MeasureString` + `DrawString` | works — `23.0 x 13.3`, identical to Windows |
+| `DrawLine`, `DrawRectangle`, `XPen`, `XSolidBrush`, `XColor.FromKnownColor` | works |
+| `XImage.FromFile` + `DrawImage` | works — `800x300` embedded |
+| `XUnit.FromMillimeter`, `PageSize`, `XStringFormats` | works |
+| 128-bit encryption + `OwnerPassword` | works — 13403-byte PDF written |
+
+**API deltas found — only two:**
+
+1. `XFontStyle` is renamed **`XFontStyleEx`**.
+2. `SecuritySettings.DocumentSecurityLevel = PdfDocumentSecurityLevel.Encrypted128Bit`
+   becomes `SecurityHandler.SetEncryptionToV2With128Bits()`.
+
+Everything else compiled unchanged: `XRect`, `XSize`, `XColor`, `XKnownColor`, `XPen`,
+`XBrush`, `XSolidBrush`, `XBrushes`, `XPoint`, `XUnit`, `XGraphicsUnit`, `XStringFormat(s)`,
+`XGraphics.FromPdfPage`, `PdfDocument`, `PdfPage`, `PageSize`.
+
+**A font resolver is mandatory.** PDFsharp 6's Core build makes `PlatformFontResolver` throw
+by design, so `GlobalFontSettings.FontResolver` must be set. The spike used
+`PdfSharp.Snippets.Font.FailsafeFontResolver`, which works but *substitutes* unknown families
+(Arial becomes SegoeWP) — acceptable for a spike, wrong for a card printer where the output is
+scanned and printed. A library-owned resolver with an embedded font is the right answer, and
+it is what makes the package work on Linux with no host configuration.
+
+**MigraDoc can be dropped.** `GetDocument` builds an empty `Document` whose only role is to
+count pages and satisfy `DocumentRenderer.RenderPage`; all drawing goes through `XGraphics` in
+`DoRenderStuff`. Removing it deletes a whole dependency rather than migrating it.
+
+**This is a breaking change for consumers.** PdfSharp types are in the public API —
+`PageFormat(PageSize)` and its implicit operators, `RenderData.ParentBounds`/`ElementBounds`,
+and `DebugData.Pen`/`Brush`/`Font`. Moving to a different PdfSharp assembly changes those type
+identities, so this warrants a major version bump rather than a patch.
+
+## Also found, not in scope
+
+`Renderer.cs:115` encrypts every generated PDF at 128-bit with the owner password hard-coded
+as `"qwerty12"`, shipped in the published package. It protects nothing and is worth a separate
+decision.
+
 ## Last session
 
-Barcode rendering rewritten to draw PDF vector rectangles; verified on Linux. Text rendering
-found to be a second, independent GDI+ blocker — awaiting a decision on whether a font
-resolver belongs in this PR or its own.
+Barcode rendering fixed and demonstrated on Linux. PDFsharp 6.2.4 evaluated by spike and shown
+to render text, images and encryption on Linux with only two API deltas. Awaiting a go/no-go on
+the migration, which is a breaking change and a major version bump.
