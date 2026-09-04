@@ -6,15 +6,17 @@ _layout: landing
 
 A .NET library for **building and rendering PDF documents** from declarative templates. Define a `Template` of `Section`s with text, images, barcodes, lines, rectangles, and tables, feed it data, and render to a PDF byte array.
 
-Useful when you want to generate receipts, invoices, member cards, labels, reports, or any other structured PDF without hand-writing PdfSharp/MigraDoc code.
+Useful when you want to generate receipts, invoices, member cards, labels, reports, or any other structured PDF without hand-writing PDFsharp code.
 
 ## Package
 
 | Package | Target | What it does |
 |---|---|---|
-| [Tharga.Reporter](https://www.nuget.org/packages/Tharga.Reporter) | net8.0 / net9.0 / net10.0 | Template model (`Section`, `Pane`, `Header`, `Footer`), elements (`Text`, `TextBox`, `Image`, `BarCode`, `Line`, `Rectangle`, `Table`), and a `Renderer` that produces a PDF. |
+| [Tharga.Reporter](https://www.nuget.org/packages/Tharga.Reporter) | net10.0 | Template model (`Section`, `Pane`, `Header`, `Footer`), elements (`Text`, `TextBox`, `Image`, `BarCode`, `Line`, `Rectangle`, `Table`), and a `Renderer` that produces a PDF. |
 
-> Tharga.Reporter is Windows-only at runtime — it uses `System.Drawing.Common` and `Aspose.BarCode` under the hood.
+> Tharga.Reporter runs on Windows, Linux and macOS. Rendering goes through PDFsharp and needs no
+> platform graphics library, so it works on a Linux container with no fonts installed. See
+> [Fonts](articles/fonts.md) for how font resolution behaves across platforms.
 
 ## Quick start
 

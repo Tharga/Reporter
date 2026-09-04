@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -14,6 +12,9 @@ namespace Tharga.Reporter.Entity.Element;
 
 public class Image : SinglePageAreaElement
 {
+    private const string MissingImageFontName = "Verdana";
+    private const double MissingImageFontSize = 10;
+
     private string _source;
 
     public string Source
@@ -27,36 +28,53 @@ public class Image : SinglePageAreaElement
         if (IsNotVisible(renderData)) return;
 
         var bounds = GetBounds(renderData.ParentBounds);
-        var imageData = GetImage(renderData.DocumentData, bounds);
-        renderData.ElementBounds = GetImageBounds(imageData, bounds);
+        var source = Source.ParseValue(renderData.DocumentData, null, false);
 
-        if (renderData.IncludeBackground || !IsBackground)
+        using var imageData = GetImage(source);
+
+        renderData.ElementBounds = imageData == null ? bounds : GetImageBounds(imageData, bounds);
+
+        if (!renderData.IncludeBackground && IsBackground) return;
+
+        if (imageData == null)
         {
-            using var strm = new MemoryStream();
-            imageData.Save(strm, ImageFormat.Png);
-            using var xfoto = XImage.FromStream(strm);
-            renderData.Graphics.DrawImage(xfoto, renderData.ElementBounds);
+            RenderMissingImage(renderData, source);
+            return;
         }
 
-        imageData.Dispose();
+        renderData.Graphics.DrawImage(imageData, renderData.ElementBounds);
     }
 
-    private static XRect GetImageBounds(System.Drawing.Image imageData, XRect bounds)
+    private static XRect GetImageBounds(XImage imageData, XRect bounds)
     {
         var imageBounds = bounds;
-        if (Math.Abs(imageBounds.Width / imageBounds.Height - imageData.Width / (double)imageData.Height) > 0.01)
+        if (Math.Abs(imageBounds.Width / imageBounds.Height - imageData.PixelWidth / (double)imageData.PixelHeight) > 0.01)
         {
-            if (imageBounds.Width / imageBounds.Height - imageData.Width / (double)imageData.Height > 0)
+            if (imageBounds.Width / imageBounds.Height - imageData.PixelWidth / (double)imageData.PixelHeight > 0)
             {
-                imageBounds.Width = imageBounds.Height * imageData.Width / imageData.Height;
+                imageBounds.Width = imageBounds.Height * imageData.PixelWidth / imageData.PixelHeight;
             }
             else
             {
-                imageBounds.Height = imageBounds.Width * imageData.Height / imageData.Width;
+                imageBounds.Height = imageBounds.Width * imageData.PixelHeight / imageData.PixelWidth;
             }
         }
 
         return imageBounds;
+    }
+
+    private static void RenderMissingImage(IRenderData renderData, string source)
+    {
+        var bounds = renderData.ElementBounds;
+        var pen = new XPen(XColor.FromKnownColor(XKnownColor.Red));
+
+        renderData.Graphics.DrawLine(pen, bounds.Left, bounds.Top, bounds.Right, bounds.Bottom);
+        renderData.Graphics.DrawLine(pen, bounds.Right, bounds.Top, bounds.Left, bounds.Bottom);
+
+        var font = new XFont(MissingImageFontName, MissingImageFontSize);
+        var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.DarkRed));
+
+        renderData.Graphics.DrawString($"Image '{source}' is missing.", font, brush, bounds, XStringFormats.TopLeft);
     }
 
     public static string BytesToLongString(byte[] bytes)
@@ -83,69 +101,42 @@ public class Image : SinglePageAreaElement
         return bytes;
     }
 
-    private System.Drawing.Image GetImage(IDocumentData documentData, XRect bounds)
+    private static XImage GetImage(string source)
     {
-        var source = Source.ParseValue(documentData, null, false);
+        if (string.IsNullOrEmpty(source)) return null;
 
-        System.Drawing.Image imageData = null;
         if (File.Exists(source))
         {
-            imageData = System.Drawing.Image.FromFile(source);
-        }
-        else if (WebResourceExists(source, out imageData))
-        {
-            return imageData;
-        }
-        else if (!string.IsNullOrEmpty(source))
-        {
-            try
-            {
-                using (var stream = new MemoryStream(LongStringToBytes(source)))
-                {
-                    using (var image = System.Drawing.Image.FromStream(stream))
-                    {
-                        imageData = new Bitmap(image.Width, image.Height);
-                        using (var gfx = Graphics.FromImage(imageData))
-                        {
-                            gfx.DrawImage(image, 0, 0, image.Width, image.Height);
-                        }
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                Debug.WriteLine(exception.Message);
-            }
+            return XImage.FromFile(source);
         }
 
-        if (imageData == null)
+        if (WebResourceExists(source, out var cacheFileName))
         {
-            imageData = new Bitmap((int)bounds.Width, (int)bounds.Height);
-            using (var gfx = Graphics.FromImage(imageData))
-            {
-                var pen = new Pen(Color.Red);
-                gfx.DrawLine(pen, 0, 0, imageData.Width, imageData.Height);
-                gfx.DrawLine(pen, imageData.Width, 0, 0, imageData.Height);
-                var font = new System.Drawing.Font("Verdana", 10);
-                var brush = new SolidBrush(Color.DarkRed);
-                gfx.DrawString(string.Format("Image '{0}' is missing.", source), font, brush, 0, 0);
-            }
+            return XImage.FromFile(cacheFileName);
         }
 
-        return imageData;
+        try
+        {
+            return XImage.FromStream(new MemoryStream(LongStringToBytes(source)));
+        }
+        catch (Exception exception)
+        {
+            Debug.WriteLine(exception.Message);
+            return null;
+        }
     }
 
-    private bool WebResourceExists(string imageUrl, out System.Drawing.Image imageData)
+    private static bool WebResourceExists(string imageUrl, out string cacheFileName)
     {
-        imageData = null;
+        cacheFileName = null;
 
-        if (string.IsNullOrEmpty(imageUrl))
+        if (string.IsNullOrEmpty(imageUrl) || !imageUrl.Contains("://"))
         {
             return false;
         }
 
         var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?", "_").Replace("=", "_").Replace("&", "_");
-        var cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
+        cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
 
         if (!File.Exists(cacheFileName))
         {
@@ -162,8 +153,6 @@ public class Image : SinglePageAreaElement
                 return false;
             }
         }
-
-        imageData = System.Drawing.Image.FromFile(cacheFileName);
 
         return true;
     }

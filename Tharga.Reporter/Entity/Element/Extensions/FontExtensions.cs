@@ -5,7 +5,7 @@ namespace Tharga.Reporter.Entity.Element.Extensions;
 
 internal static class FontExtensions
 {
-    internal static XFontStyle GetStyle(this Font font, Section section)
+    internal static XFontStyleEx GetStyle(this Font font, Section section)
     {
         var bold = false;
         var italic = false;
@@ -29,34 +29,34 @@ internal static class FontExtensions
             strikeout = section.DefaultFont.Strikeout;
         }
 
-        var style = XFontStyle.Regular;
+        var style = XFontStyleEx.Regular;
 
         if (bold && italic)
         {
-            return XFontStyle.BoldItalic;
+            return XFontStyleEx.BoldItalic;
         }
 
         if (bold)
         {
-            return XFontStyle.Bold;
+            return XFontStyleEx.Bold;
         }
 
         if (italic)
         {
-            return XFontStyle.Italic;
+            return XFontStyleEx.Italic;
         }
 
         if (underline)
         {
-            return XFontStyle.Underline;
+            return XFontStyleEx.Underline;
         }
 
         if (strikeout)
         {
-            return XFontStyle.Strikeout;
+            return XFontStyleEx.Strikeout;
         }
 
-        return XFontStyle.Regular;
+        return XFontStyleEx.Regular;
     }
 
     internal static string GetName(this Font font, Section section)

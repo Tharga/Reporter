@@ -45,11 +45,12 @@ section.Header.ElementList.Add(new Image
 });
 ```
 
-`Source` accepts an HTTP URL, a local file path, or anything `System.Drawing.Image.FromStream`/`FromFile` understands.
+`Source` accepts an HTTP URL, a local file path, or a byte array serialised with `Image.BytesToLongString`. PNG and JPEG are decoded by PDFsharp itself, so images work on every platform.
 
 ## BarCode
 
-A Code 39 barcode rendered via Aspose.BarCode.
+A Code 39 barcode. The bars are drawn as vector rectangles rather than an embedded raster image, so the
+barcode stays sharp at any print size and renders identically on every platform.
 
 ```csharp
 section.Pane.ElementList.Add(new BarCode
@@ -62,7 +63,12 @@ section.Pane.ElementList.Add(new BarCode
 });
 ```
 
-The barcode fills the box you give it; size the box to the print area the scanner expects.
+The barcode fills the box you give it; size the box to the print area the scanner expects. A short code in a
+very wide box produces bars too wide to scan, so keep the box roughly proportional to the length of the code.
+
+Code 39 encodes digits, upper-case letters, space and `- . $ / + %`. Lower case is upper-cased, so `"abc123"`
+encodes as `ABC123`. Anything the symbology cannot represent raises an `InvalidOperationException` naming the
+offending character, rather than being silently dropped from the barcode.
 
 ## Line
 

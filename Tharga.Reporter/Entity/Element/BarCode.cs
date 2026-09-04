@@ -1,17 +1,18 @@
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Xml;
-using Aspose.BarCode.Generation;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
 using Tharga.Reporter.Extensions;
 using Tharga.Reporter.Interface;
+using ZXing.OneD;
 
 namespace Tharga.Reporter.Entity.Element;
 
 public class BarCode : SinglePageAreaElement
 {
+    private const string Code39Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%";
+    private const int QuietZoneModules = 10;
+
     private string _code;
 
     public string Code
@@ -35,52 +36,71 @@ public class BarCode : SinglePageAreaElement
 
         if (!IsBackground || renderData.IncludeBackground)
         {
-            //var generatorA = new BarcodeGenerator(EncodeTypes.Code128, "1234567");
-            //generatorA.Parameters.Barcode.XDimension.Millimeters = 1f;
-            //generatorA.Save("c:\\temp\\output.jpg", BarCodeImageFormat.Jpeg);
+            var code = GetCode(renderData.DocumentData, renderData.PageNumberInfo);
 
-            //var b = new BarCodeBuilder { SymbologyType = Symbology.Code39Standard, CodeText = GetCode(renderData.DocumentData, renderData.PageNumberInfo) };
-            var symbologyEncodeType = EncodeTypes.Code39; //TODO: Provide this as a property on the element.
-            var generator = new BarcodeGenerator(symbologyEncodeType, GetCode(renderData.DocumentData, renderData.PageNumberInfo));
-            var memStream = new MemoryStream();
-            //b.BarCodeImage.Save(memStream, ImageFormat.Png);
-            generator.Save(memStream, BarCodeImageFormat.Png);
-            var imageData = System.Drawing.Image.FromStream(memStream);
-
-            //NOTE: Paint over the license info
-            //using (var g = Graphics.FromImage(imageData))
-            //{
-            //    g.FillRectangle(new SolidBrush(generator.Parameters.BackColor), 0, 0, imageData.Width, 14);
-            //}
-
-            //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, imageData.Width, imageData.Height);
-            //renderData.ElementBounds = new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, raw.Width / 2, raw.Height * 10);
-
-            //using (var image = XImage.FromGdiPlusImage(imageData))
-            //{
-            //    renderData.Graphics.DrawImage(image, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
-            //}
-
-            //NOTE: Create a new image 1 pixel height, and paint an untouched part of the barcode on that.
-            var targetImageHeight = 1;
-            var raw = new Bitmap(imageData, new Size(imageData.Width, targetImageHeight));
-            using (var g = Graphics.FromImage(raw))
+            foreach (var bar in GetBars(code, bounds))
             {
-                g.DrawImage(imageData,
-                    new[] { new PointF(0, 0), new PointF(imageData.Width, 0), new PointF(0, targetImageHeight) },
-                    new RectangleF(0, 10, imageData.Width, 1), GraphicsUnit.Pixel);
+                renderData.Graphics.DrawRectangle(XBrushes.Black, bar);
             }
+        }
+    }
 
+    internal static IReadOnlyList<XRect> GetBars(string code, XRect bounds)
+    {
+        var pattern = GetBarPattern(code);
+        if (pattern.Count == 0) return [];
+
+        var scale = bounds.Width / pattern.Count;
+
+        return GetRuns(pattern)
+            .Select(x => new XRect(bounds.Left + x.Start * scale, bounds.Top, x.Length * scale, bounds.Height))
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Code 39 encodes an uppercase alphabet only. Lower case is upper-cased rather than dropped, so a code
+    /// still encodes the characters it was given.
+    /// </summary>
+    internal static string Normalize(string code)
+    {
+        var normalized = (code ?? string.Empty).ToUpperInvariant();
+
+        var invalid = normalized.Where(x => !Code39Alphabet.Contains(x)).Distinct().ToArray();
+        if (invalid.Length != 0)
+        {
+            throw new InvalidOperationException($"The code '{code}' cannot be encoded as Code 39. Unsupported {(invalid.Length == 1 ? "character" : "characters")}: {string.Join(", ", invalid.Select(x => $"'{x}'"))}.");
+        }
+
+        return normalized;
+    }
+
+    private static IReadOnlyList<bool> GetBarPattern(string code)
+    {
+        var encoded = new Code39Writer().encode(Normalize(code));
+
+        var pattern = new bool[QuietZoneModules + encoded.Length + QuietZoneModules];
+        encoded.CopyTo(pattern, QuietZoneModules);
+
+        return pattern;
+    }
+
+    private static IEnumerable<(int Start, int Length)> GetRuns(IReadOnlyList<bool> pattern)
+    {
+        var start = -1;
+
+        for (var i = 0; i <= pattern.Count; i++)
+        {
+            var isBar = i < pattern.Count && pattern[i];
+
+            if (isBar && start < 0)
             {
-                using var strm = new MemoryStream();
-                //imageData.Save(strm, ImageFormat.Png);
-                raw.Save(strm, ImageFormat.Png);
-                using var xfoto = XImage.FromStream(strm);
-                renderData.Graphics.DrawImage(xfoto, new XRect(renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Width, renderData.ElementBounds.Height)); // - legendFontSize.Height));
+                start = i;
             }
-
-            imageData.Dispose();
-            raw.Dispose();
+            else if (!isBar && start >= 0)
+            {
+                yield return (start, i - start);
+                start = -1;
+            }
         }
     }
 
