@@ -165,8 +165,49 @@ identities, so this warrants a major version bump rather than a patch.
 as `"qwerty12"`, shipped in the published package. It protects nothing and is worth a separate
 decision.
 
+## Migration completed (2026-09-04)
+
+| Step | Result |
+|---|---|
+| `PDFsharp` 6.2.4 replaces `PdfSharp.MigraDoc.Standard` + `System.Drawing.Common` | done |
+| MigraDoc removed entirely — `GetDocument` replaced by `GetPageCount` | done |
+| `XFontStyle` -> `XFontStyleEx`; security via `SetEncryptionToV2With128Bits()` | done |
+| Deprecated `XUnit` implicit conversions replaced with `.Point` / `XUnit.FromPoint` | done — warnings back to the 3-warning baseline |
+| `Image.cs` rebuilt on `XImage`; `System.Drawing` gone from the library | done |
+| `ReporterFontResolver` + `SystemFontIndex`, installed automatically by `Renderer` | done |
+| `MAJOR_MINOR` 2.4 -> 3.0 | done |
+| Docs: README, index, getting-started, elements, new `fonts.md`, toc | done |
+
+**Published dependency graph, read from the packed nuspec:** `Aspose.BarCode` 26.8.0 and
+`PDFsharp` 6.2.4 only. `System.Drawing.Common` and MigraDoc absent.
+
+**Tests: 65 total, 21 run, 44 skipped, 0 failed — identical on Windows and Linux.**
+
+**Font fidelity, measured on both platforms:**
+
+| Family | Windows | Linux (WSL Ubuntu) |
+|---|---|---|
+| Verdana | real system font, width 82.16 | fallback, width 71.70 |
+| Arial | real system font, width 73.37 | fallback, width 71.70 |
+| DejaVu Sans | fallback, width 71.70 | real system font, width 82.20 |
+
+Existing Windows output is therefore unchanged. On a host lacking the named family the text
+still renders but metrics differ, which is why `docs/articles/fonts.md` documents both
+remedies — install the font, or register it with `ReporterFontResolver.Register`.
+
+**A PDF generated on Linux** was inspected: `%PDF-1.7`, 3 pages, encrypted, one embedded font
+subset, and zero image XObjects — confirming the barcode is vector and nothing raster is
+involved.
+
+## Remaining before this can close
+
+- [ ] User confirms the rendered barcodes scan on a physical reader
+- [ ] Decide whether the hard-coded `"qwerty12"` owner password stays
+- [ ] Close records: `Requests.md`, backlog, comment and close issue #17
+- [ ] Archive `plan/feature.md`, `git rm -r plan`, final commit, push, PR
+
 ## Last session
 
-Barcode rendering fixed and demonstrated on Linux. PDFsharp 6.2.4 evaluated by spike and shown
-to render text, images and encryption on Linux with only two API deltas. Awaiting a go/no-go on
-the migration, which is a breaking change and a major version bump.
+PDFsharp 6 migration complete. The library no longer references any platform graphics library
+and the full suite passes identically on Windows and Linux. Awaiting the physical scan test
+and approval to push.
