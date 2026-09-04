@@ -79,16 +79,48 @@ So the issue splits in two, and only the first half is in reach of this branch.
 
 ## Notes
 
-- 2026-09-04 — Baseline recorded before any change: Release build succeeds with 3
-  pre-existing warnings; test assembly reports 50 total, 6 run, 44 skipped, 0 failed.
+- 2026-09-04 — Baseline before any change: Release build with 3 pre-existing warnings;
+  50 tests, 6 run, 44 skipped, 0 failed.
 - 2026-09-04 — Local SDK is 10.0.301, which `shared-instructions.md` records as reporting
-  "zero tests ran". Real counts come from running
-  `Tharga.Reporter.Tests/bin/Release/net10.0/Tharga.Reporter.Tests.exe` directly.
-- 2026-09-04 — Approach 1 (swap `System.Drawing` → `Aspose.Drawing`) abandoned before any
-  code was written, on the evidence above. Recorded so it is not proposed again.
+  "zero tests ran". Real counts come from running the built test assembly directly.
+- 2026-09-04 — Approach 1 (swap `System.Drawing` to `Aspose.Drawing`) abandoned before any
+  code was written: `XImage.FromStream` is itself GDI+, so it would have moved the crash
+  one frame deeper. Recorded so it is not proposed again.
+- 2026-09-04 — **`Moq` needed `InternalsVisibleTo("DynamicProxyGenAssembly2")`.** This is
+  the actual reason the four rendering tests carry `Skip = "Can't gain access to internal
+  stuff."` — `InternalsVisibleTo("Tharga.Reporter.Tests")` was already present, so the
+  recorded reason was only half the story. Adding the proxy-generator attribute unblocked
+  real rendering tests.
+- 2026-09-04 — **The Aspose evaluation watermark is a light-grey swirl drawn over the bars**,
+  plus a text legend below them. Thresholding at 128 removes it entirely: every bar row from
+  7 to 63 yields an identical 40-run pattern for `ABC123` (8 characters x 5 bars). Redrawing
+  from the run lengths therefore produces clean bars with no watermark.
+- 2026-09-04 — **A short code stretched across a wide element does not scan.** `"1"` rendered
+  at 1200x300 is rejected by the reader; at 600 or 300 wide it decodes. The element scales the
+  barcode to fill its bounds, which is pre-existing behaviour and unchanged here, but it means
+  bounds have to be roughly proportional to code length. Test canvases are sized per code.
+- 2026-09-04 — **`XFont` reaches GDI+ after all**, via `PlatformFontResolver.ResolveTypeface`,
+  not only through the `System.Drawing.FontFamily` constructor overloads as first read from
+  the decompiled source. Any template containing a `Text` element still dies on Linux.
+  `GlobalFontSettings.FontResolver` (public, `IFontResolver`) is the documented bypass.
+
+## Linux verification (2026-09-04)
+
+Docker Desktop was not running, so the suite was executed under WSL Ubuntu
+(`5.15.146.1-microsoft-standard-WSL2`, x86_64) against a user-local .NET 10.0.11 runtime
+installed to `~/.dotnet` (removable with `rm -rf ~/.dotnet`).
+
+| Result | Detail |
+|---|---|
+| 15 of 16 passed | Including `A_template_containing_a_barcode_renders_to_a_pdf` — a real PDF, produced on Linux |
+| 1 failed | `BarCode_Samples.Write_scannable_samples_for_manual_verification`, which adds a `Text` element: `XFont` -> `PlatformFontResolver` -> `GdiplusStartup` -> `DllNotFoundException` |
+
+This is a clean natural experiment: the failure proves GDI+ is genuinely absent from the
+host, and the barcode test passing in the same process proves the new path genuinely avoids
+it. The barcode half of issue #17 is fixed and demonstrated on Linux.
 
 ## Last session
 
-Investigated the fix, found that PdfSharp's own `XImage` is the deeper blocker, and
-abandoned the agreed approach before writing code. Revised approach proposed; awaiting a
-decision.
+Barcode rendering rewritten to draw PDF vector rectangles; verified on Linux. Text rendering
+found to be a second, independent GDI+ blocker — awaiting a decision on whether a font
+resolver belongs in this PR or its own.
