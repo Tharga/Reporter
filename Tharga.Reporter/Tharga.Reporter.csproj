@@ -49,7 +49,7 @@
 	<ItemGroup>
 		<PackageReference Include="ZXing.Net" Version="0.16.11" />
 		<PackageReference Include="PDFsharp" Version="6.2.4" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
