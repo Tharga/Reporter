@@ -338,7 +338,7 @@ public class Table : MultiPageAreaElement
                 }
 
                 var totalWidth = renderData.ElementBounds.Width;
-                var nonSpringWidth = Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.Value.GetXUnitValue(totalWidth));
+                var nonSpringWidth = Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetValueOrDefault().GetXUnitValue(totalWidth));
 
                 if (springCount > 0)
                 {

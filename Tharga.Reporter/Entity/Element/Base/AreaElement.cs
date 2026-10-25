@@ -64,7 +64,7 @@ public abstract class AreaElement : Element
 
         if (height < 0)
         {
-            Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
+            Debug.WriteLine($"Height is adjusted from {height} to 0.");
             height = 0;
         }
 

@@ -1,6 +1,5 @@
 ﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using PdfSharp.Pdf.Security;
 using System.Text;
 using PdfSharp;
 using Tharga.Reporter.Entity;

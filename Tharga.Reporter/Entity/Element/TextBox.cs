@@ -63,13 +63,10 @@ public class TextBox : MultiPageAreaElement
         }
 
         var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-        //TODO: var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
-        var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
 
         var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
         var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
 
-        var left = renderData.ElementBounds.Left;
         var top = renderData.ElementBounds.Top;
 
         if (textSize.Width > renderData.ElementBounds.Width)
@@ -147,9 +144,6 @@ public class TextBox : MultiPageAreaElement
         var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
         //TODO: var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
         var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-
-        var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
-        var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
 
         var left = renderData.ElementBounds.Left;
         var top = renderData.ElementBounds.Top;

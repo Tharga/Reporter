@@ -52,8 +52,8 @@ internal class TableColumn
 
     internal static TableColumn Load(XmlElement xme)
     {
-        var displayName = xme.Attributes["DisplayName"].Value;
-        var align = (Table.Alignment)Enum.Parse(typeof(Table.Alignment), xme.Attributes["Align"].Value);
+        var displayName = GetRequiredAttribute(xme, "DisplayName");
+        var align = (Table.Alignment)Enum.Parse(typeof(Table.Alignment), GetRequiredAttribute(xme, "Align"));
 
         string hideValue = null;
         if (xme.Attributes["HideValue"] != null)
@@ -67,9 +67,14 @@ internal class TableColumn
             width = UnitValue.Parse(xme.Attributes["Width"].Value);
         }
 
-        var widthMode = (Table.WidthMode)Enum.Parse(typeof(Table.WidthMode), xme.Attributes["WidthMode"].Value);
+        var widthMode = (Table.WidthMode)Enum.Parse(typeof(Table.WidthMode), GetRequiredAttribute(xme, "WidthMode"));
 
         var tableColumn = new TableColumn(displayName, width, widthMode, align, hideValue);
         return tableColumn;
+    }
+
+    private static string GetRequiredAttribute(XmlElement xme, string name)
+    {
+        return xme.Attributes[name]?.Value ?? throw new InvalidOperationException($"The {xme.Name} element has no {name} attribute.");
     }
 }
