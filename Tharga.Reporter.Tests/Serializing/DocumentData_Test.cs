@@ -1,11 +1,12 @@
-﻿using Tharga.Reporter.Entity;
+﻿using AwesomeAssertions;
+using Tharga.Reporter.Entity;
 using Xunit;
 
 namespace Tharga.Reporter.Tests.Serializing;
 
 public class DocumentData_Test
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Default_Document()
     {
         //Arrange
@@ -16,13 +17,12 @@ public class DocumentData_Test
         var other = DocumentData.Load(xml);
 
         //Assert
-        //Assert.AreEqual(documentData.Get("A"), other.Get("A"));
-        //Assert.AreEqual(documentData.GetDataTable("TableA"), other.GetDataTable("TableA"));
-        //Assert.AreEqual(xml.OuterXml, other.ToXml().OuterXml);
-        throw new NotImplementedException();
+        other.Get("A").Should().BeNull();
+        other.GetDataTable("TableA").Should().BeNull();
+        other.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Document_with_data()
     {
         //Arrange
@@ -34,44 +34,55 @@ public class DocumentData_Test
         var other = DocumentData.Load(xml);
 
         //Assert
-        //Assert.AreEqual(documentData.Get("A"), other.Get("A"));            
-        //Assert.AreEqual(documentData.GetDataTable("TableA"), other.GetDataTable("TableA"));
-        //Assert.AreEqual(xml.OuterXml, other.ToXml().OuterXml);
-        throw new NotImplementedException();
+        other.Get("A").Should().Be("DataA");
+        other.GetDataTable("TableA").Should().BeNull();
+        other.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Document_with_table()
     {
         //Arrange
         var documentData = new DocumentData();
-        var t = new DocumentDataTable("TableA");
-        var row = new Dictionary<string, string>();
-        row.Add("Row1A", "RowData1A");
-        row.Add("Row1B", "RowData1B");
-        row.Add("Row1C", "RowData1C");
-        t.AddRow(row);
-
-        var row2 = new Dictionary<string, string>();
-        row2.Add("Row2A", "RowData2A");
-        row2.Add("Row2B", "RowData2A");
-        row2.Add("Row2C", "RowData2A");
-        t.AddRow(row2);
-
-        documentData.Add(t);
+        var table = new DocumentDataTable("TableA");
+        table.AddRow(new Dictionary<string, string> { { "Row1A", "RowData1A" }, { "Row1B", "RowData1B" }, { "Row1C", "RowData1C" } });
+        table.AddRow(new Dictionary<string, string> { { "Row2A", "RowData2A" }, { "Row2B", "RowData2B" }, { "Row2C", "RowData2C" } });
+        documentData.Add(table);
         var xml = documentData.ToXml();
 
         //Act
         var other = DocumentData.Load(xml);
 
         //Assert
-        //Assert.AreEqual(documentData.Get("A"), other.Get("A"));
-        //Assert.AreEqual(documentData.GetDataTable("TableA").Rows.Count, other.GetDataTable("TableA").Rows.Count);
-        //Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[0]).Columns.First().Key, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[0]).Columns.First().Key);
-        //Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[0]).Columns.First().Value, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[0]).Columns.First().Value);
-        //Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[1]).Columns.First().Key, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[1]).Columns.First().Key);
-        //Assert.AreEqual(((DocumentDataTableData)documentData.GetDataTable("TableA").Rows[1]).Columns.First().Value, ((DocumentDataTableData)other.GetDataTable("TableA").Rows[1]).Columns.First().Value);
-        //Assert.AreEqual(xml.OuterXml, other.ToXml().OuterXml);
-        throw new NotImplementedException();
+        var rows = other.GetDataTable("TableA").Rows.Cast<DocumentDataTableData>().ToArray();
+        rows.Should().HaveCount(2);
+        rows[0].Columns.Should().Equal(new Dictionary<string, string> { { "Row1A", "RowData1A" }, { "Row1B", "RowData1B" }, { "Row1C", "RowData1C" } });
+        rows[1].Columns.Should().Equal(new Dictionary<string, string> { { "Row2A", "RowData2A" }, { "Row2B", "RowData2B" }, { "Row2C", "RowData2C" } });
+        other.ToXml().OuterXml.Should().Be(xml.OuterXml);
+    }
+
+    [Fact]
+    public void Document_with_group_lines()
+    {
+        //Arrange
+        var documentData = new DocumentData();
+        var table = new DocumentDataTable("A");
+        table.AddGroup("Group1");
+        table.AddRow(new Dictionary<string, string> { { "Col1", "Data1A" }, { "Col2", "Data2A" } });
+        table.AddRow(new Dictionary<string, string> { { "Col1", "Data1B" }, { "Col2", "Data2B" } });
+        table.AddGroup("Group2");
+        table.AddRow(new Dictionary<string, string> { { "Col1", "Data1C" }, { "Col2", "Data2C" } });
+        documentData.Add(table);
+        var xml = documentData.ToXml();
+
+        //Act
+        var other = DocumentData.Load(xml);
+
+        //Assert
+        var rows = other.GetDataTable("A").Rows;
+        rows.Select(x => x.GetType()).Should().Equal(typeof(DocumentDataTableGroup), typeof(DocumentDataTableData), typeof(DocumentDataTableData), typeof(DocumentDataTableGroup), typeof(DocumentDataTableData));
+        rows.OfType<DocumentDataTableGroup>().Select(x => x.Content).Should().Equal("Group1", "Group2");
+        ((DocumentDataTableData)rows[1]).Columns.Should().Equal(new Dictionary<string, string> { { "Col1", "Data1A" }, { "Col2", "Data2A" } });
+        other.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 }

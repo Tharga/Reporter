@@ -1,9 +1,15 @@
 ﻿using System.Drawing;
+using System.Text;
+using AwesomeAssertions;
 using Moq;
+using PdfSharp;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
 using Tharga.Reporter.Entity.Util;
 using Tharga.Reporter.Interface;
+using Tharga.Reporter.Tests.Rendering;
 using Xunit;
 using Font = Tharga.Reporter.Entity.Font;
 
@@ -11,7 +17,7 @@ namespace Tharga.Reporter.Tests.Serializing;
 
 public class Table_Tests
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Default_Table()
     {
         //Arrange
@@ -19,35 +25,33 @@ public class Table_Tests
         var xme = table.ToXme();
 
         //Act
-        var otherLine = Table.Load(xme);
+        var other = Table.Load(xme);
 
         //Assert
-        //Assert.AreEqual(table.Left, otherLine.Left);
-        //Assert.AreEqual(table.Right, otherLine.Right);
-        //Assert.AreEqual(table.Width, otherLine.Width);
-        //Assert.AreEqual(table.Top, otherLine.Top);
-        //Assert.AreEqual(table.Bottom, otherLine.Bottom);
-        //Assert.AreEqual(table.Height, otherLine.Height);
-        //Assert.AreEqual(table.IsBackground, otherLine.IsBackground);
-        //Assert.AreEqual(table.Name, otherLine.Name);
-        //Assert.AreEqual(table.ContentBackgroundColor, otherLine.ContentBackgroundColor);
-        //Assert.AreEqual(table.ContentBorderColor, otherLine.ContentBorderColor);
-        //Assert.AreEqual(table.HeaderBackgroundColor, otherLine.HeaderBackgroundColor);
-        //Assert.AreEqual(table.HeaderBorderColor, otherLine.HeaderBorderColor);
-        //Assert.AreEqual(table.HeaderFontClass, otherLine.HeaderFontClass);
-        //Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
-        //Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
-        //Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
-        //Assert.AreEqual(table.SkipLine, otherLine.SkipLine);
-        //Assert.AreEqual(table.ColumnPadding, otherLine.ColumnPadding);
-        //Assert.AreEqual(table.RowPadding, otherLine.RowPadding);
-        //Assert.AreEqual(table.ToString(), otherLine.ToString());
-        //Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Left.Should().Be(table.Left);
+        other.Right.Should().Be(table.Right);
+        other.Width.Should().Be(table.Width);
+        other.Top.Should().Be(table.Top);
+        other.Bottom.Should().Be(table.Bottom);
+        other.Height.Should().Be(table.Height);
+        other.IsBackground.Should().Be(table.IsBackground);
+        other.Name.Should().Be(table.Name);
+        other.ContentBackgroundColor.Should().Be(table.ContentBackgroundColor);
+        other.ContentBorderColor.Should().Be(table.ContentBorderColor);
+        other.HeaderBackgroundColor.Should().Be(table.HeaderBackgroundColor);
+        other.HeaderBorderColor.Should().Be(table.HeaderBorderColor);
+        other.HeaderFontClass.Should().Be(table.HeaderFontClass);
+        other.HeaderFont.Size.Should().Be(table.HeaderFont.Size);
+        other.ContentFontClass.Should().Be(table.ContentFontClass);
+        other.ContentFont.FontName.Should().Be(table.ContentFont.FontName);
+        other.SkipLine.Should().BeNull();
+        other.ColumnPadding.Should().Be(table.ColumnPadding);
+        other.RowPadding.Should().Be(table.RowPadding);
+        other.Columns.Should().BeEmpty();
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Table_with_all_properties_set()
     {
         //Arrange
@@ -67,7 +71,6 @@ public class Table_Tests
             HeaderBackgroundColor = Color.MediumTurquoise,
             HeaderBorderColor = Color.MediumVioletRed,
             HeaderFontClass = "A",
-            //HeaderFont = new Font { Bold = true, Color = Color.Orange, FontName = "Times", Size = 22, },
 
             GroupBackgroundColor = Color.Plum,
             GroupBorderColor = Color.Red,
@@ -84,171 +87,131 @@ public class Table_Tests
         var xme = table.ToXme();
 
         //Act
-        var otherLine = Table.Load(xme);
+        var other = Table.Load(xme);
 
         //Assert
-        //Assert.AreEqual(table.Left, otherLine.Left);
-        //Assert.AreEqual(table.Right, otherLine.Right);
-        //Assert.AreEqual(table.Width, otherLine.Width);
-        //Assert.AreEqual(table.Top, otherLine.Top);
-        //Assert.AreEqual(table.Bottom, otherLine.Bottom);
-        //Assert.AreEqual(table.Height, otherLine.Height);
-        //Assert.AreEqual(table.IsBackground, otherLine.IsBackground);
-        //Assert.AreEqual(table.Name, otherLine.Name);
+        other.Left.Should().Be(table.Left);
+        other.Right.Should().Be(table.Right);
+        other.Width.Should().Be(table.Width);
+        other.Top.Should().Be(table.Top);
+        other.Bottom.Should().Be(table.Bottom);
+        other.Height.Should().Be(table.Height);
+        other.IsBackground.Should().BeTrue();
+        other.Name.Should().Be("Bob");
 
-        //Assert.AreEqual(table.ContentBackgroundColor.Value.ToArgb(), otherLine.ContentBackgroundColor.Value.ToArgb());
-        //Assert.AreEqual(table.ContentBorderColor.Value.ToArgb(), otherLine.ContentBorderColor.Value.ToArgb());
-        //Assert.AreEqual(table.ContentFontClass, otherLine.ContentFontClass);
-        //Assert.AreEqual(table.ContentFont.FontName, otherLine.ContentFont.FontName);
+        ArgbOf(other.ContentBackgroundColor).Should().Be(Color.Navy.ToArgb());
+        ArgbOf(other.ContentBorderColor).Should().Be(Color.Olive.ToArgb());
+        other.ContentFontClass.Should().Be(table.ContentFontClass);
+        other.ContentFont.FontName.Should().Be("Times");
 
-        //Assert.AreEqual(table.HeaderBackgroundColor.Value.ToArgb(), otherLine.HeaderBackgroundColor.Value.ToArgb());
-        //Assert.AreEqual(table.HeaderBorderColor.Value.ToArgb(), otherLine.HeaderBorderColor.Value.ToArgb());
-        //Assert.AreEqual(table.HeaderFontClass, otherLine.HeaderFontClass);
-        //Assert.AreEqual(table.HeaderFont.Size, otherLine.HeaderFont.Size);
+        ArgbOf(other.HeaderBackgroundColor).Should().Be(Color.MediumTurquoise.ToArgb());
+        ArgbOf(other.HeaderBorderColor).Should().Be(Color.MediumVioletRed.ToArgb());
+        other.HeaderFontClass.Should().Be("A");
+        other.HeaderFont.Size.Should().Be(table.HeaderFont.Size);
 
-        //Assert.AreEqual(table.GroupBackgroundColor.Value.ToArgb(), otherLine.GroupBackgroundColor.Value.ToArgb());
-        //Assert.AreEqual(table.GroupBorderColor.Value.ToArgb(), otherLine.GroupBorderColor.Value.ToArgb());
-        //Assert.AreEqual(table.GroupSpacing.Value, otherLine.GroupSpacing.Value);
-        //Assert.AreEqual(table.GroupFont.FontName, otherLine.GroupFont.FontName);
-        //Assert.AreEqual(table.GroupFont.Size, otherLine.GroupFont.Size);
+        ArgbOf(other.GroupBackgroundColor).Should().Be(Color.Plum.ToArgb());
+        ArgbOf(other.GroupBorderColor).Should().Be(Color.Red.ToArgb());
+        other.GroupSpacing.Should().Be(UnitValue.Parse("5mm"));
+        other.GroupFont.FontName.Should().Be("Times");
+        other.GroupFont.Size.Should().Be(12);
 
-        //Assert.AreEqual(table.SkipLine.Interval, otherLine.SkipLine.Interval);
-        //Assert.AreEqual(table.SkipLine.Height, otherLine.SkipLine.Height);
-        //Assert.AreEqual(table.ColumnPadding, otherLine.ColumnPadding);
-        //Assert.AreEqual(table.RowPadding, otherLine.RowPadding);
-        //Assert.AreEqual(table.ToString(), otherLine.ToString());
-        //Assert.AreEqual(table.Columns.Count, otherLine.Columns.Count);
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.SkipLine.Interval.Should().Be(5);
+        other.SkipLine.Height.Should().Be(UnitValue.Parse("8mm"));
+        other.ColumnPadding.Should().Be(UnitValue.Parse("7mm"));
+        other.RowPadding.Should().Be(UnitValue.Parse("6mm"));
+        other.Columns.Keys.Should().Equal("A0", "A1", "A2");
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Can't gain access to internal stuff.")]
+    [Fact]
     public void When_rendering_an_empty_document_with_debugging()
     {
         //Arrange
-        var sectionName = "ABC123";
-        var section = new Section { Name = sectionName };
-        var template = new Template(section);
+        const string sectionName = "ABC123";
+        var template = new Template(new Section { Name = sectionName });
         var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
-        //graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize());
-        //graphicsMock.Setup(x => x.DrawString(sectionName, It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>()));
-        //graphicsMock.Setup(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()));
-        //var graphicsFactoryMock = new Mock<IGraphicsFactory>(MockBehavior.Strict);
-        //graphicsFactoryMock.Setup(x => x.PrepareGraphics(It.IsAny<PdfPage>(), It.IsAny<DocumentRenderer>(), It.IsAny<int>())).Returns(graphicsMock.Object);
-        //var renderer = new Renderer(graphicsFactoryMock.Object, template, null, true, null, true);
+        graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize(10, 10));
+        graphicsMock.Setup(x => x.DrawString(sectionName, It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>()));
+        graphicsMock.Setup(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()));
+        var graphicsFactoryMock = new Mock<IGraphicsFactory>(MockBehavior.Strict);
+        graphicsFactoryMock.Setup(x => x.PrepareGraphics(It.IsAny<PdfPage>())).Returns(graphicsMock.Object);
+        var renderer = new Renderer(graphicsFactoryMock.Object, template, null, true, null, true);
 
-        ////Act
-        //var data = renderer.GetPdfBinary();
+        //Act
+        var data = renderer.GetPdfBinary(PageSize.A4);
 
-        ////Assert
-        //Assert.Greater(data.Length, 0);
-        throw new NotImplementedException();
+        //Assert
+        IsPdf(data).Should().BeTrue();
+        graphicsMock.Verify(x => x.DrawString(sectionName, It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>()), Times.Once);
+        graphicsMock.Verify(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()), Times.Exactly(6));
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void When_rendering_a_document_with_an_empty_table()
     {
-        ////Arrange
-        //var table = new Table();
-        //var section = new Section();
-        //section.Pane.ElementList.Add(table);
-        //var template = new Template(section);
-        //var documentData = new DocumentData();
-        //var renderer = new Renderer(template, documentData);
+        //Arrange
+        var section = new Section();
+        section.Pane.ElementList.Add(new Table());
+        var renderer = new Renderer(new Template(section), new DocumentData());
 
-        ////Act
-        //var data = renderer.GetPdfBinary();
+        //Act
+        var data = renderer.GetPdfBinary(PageSize.A4);
 
-        ////Assert
-        throw new NotImplementedException();
+        //Assert
+        IsPdf(data).Should().BeTrue();
     }
 
-    [Fact(Skip = "Can't gain access to internal stuff.")]
+    [Fact]
     public void When_rendering_several_times_with_the_same_template()
     {
         //Arrange
-        var table1 = new Table { Name = "TableA", Top = "2cm", Height = "5cm" };
-        table1.Columns.Add("ColumnA1", new TableColumn("Column A", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
+        var table = new Table { Name = "TableA", Top = "2cm", Height = "5cm" };
+        table.Columns.Add("ColumnA1", new TableColumn("Column A", "2cm", Table.WidthMode.Auto, Table.Alignment.Left, string.Empty));
         var section = new Section();
-        section.Pane.ElementList.Add(table1);
+        section.Pane.ElementList.Add(table);
         var template = new Template(section);
-        var documentData1 = new DocumentData();
-        var tbl1 = new DocumentDataTable("TableA");
-        documentData1.Add(tbl1);
-        for (var i = 0; i < 30; i++)
-        {
-            var row1 = new Dictionary<string, string>();
-            row1.Add("ColumnA1", "DataA" + i);
-            tbl1.AddRow(row1);
-        }
-
-        var documentData2 = new DocumentData();
-        var tbl2 = new DocumentDataTable("TableA");
-        documentData2.Add(tbl2);
-        for (var i = 0; i < 10; i++)
-        {
-            var row2 = new Dictionary<string, string>();
-            row2.Add("ColumnA1", "DataA" + i);
-            tbl2.AddRow(row2);
-        }
-
-        var documentData3 = new DocumentData();
-        var tbl3 = new DocumentDataTable("TableA");
-        documentData3.Add(tbl3);
-        for (var i = 0; i < 20; i++)
-        {
-            var row3 = new Dictionary<string, string>();
-            row3.Add("ColumnA1", "DataA" + i);
-            tbl3.AddRow(row3);
-        }
-
-        var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
-        //graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize());
-        //graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize());
-        //graphicsMock.Setup(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>(), It.IsAny<XStringFormat>()));
-
-        //var graphicsFactoryMock = new Mock<IGraphicsFactory>(MockBehavior.Strict);
-        //graphicsFactoryMock.Setup(x => x.PrepareGraphics(It.IsAny<PdfPage>(), It.IsAny<DocumentRenderer>(), It.IsAny<int>())).Returns(graphicsMock.Object);
-
-        //var renderer1 = new Renderer(graphicsFactoryMock.Object, template, documentData1);
-        //var renderer2 = new Renderer(graphicsFactoryMock.Object, template, documentData2);
-        //var renderer3 = new Renderer(graphicsFactoryMock.Object, template, documentData3);
-
-        ////Act
-        //var data1 = renderer1.GetPdfBinary();
-        //var data2 = renderer2.GetPdfBinary();
-        //var data3 = renderer3.GetPdfBinary();
-
-        ////Assert
-        //Assert.AreEqual(data1, data2);
-        throw new NotImplementedException();
-    }
-
-    [Fact(Skip = "Fix!")]
-    public void When_serializing_and_deserializing_data_with_group_lines()
-    {
-        //Arrange
-        var originalDocumentData = new DocumentData();
-        var tableData = new DocumentDataTable("A");
-        tableData.AddGroup("Group1");
-        tableData.AddRow(new Dictionary<string, string> { { "Col1", "Data1A" }, { "Col2", "Data2A" } });
-        tableData.AddRow(new Dictionary<string, string> { { "Col1", "Data1B" }, { "Col2", "Data2B" } });
-        tableData.AddGroup("Group2");
-        tableData.AddRow(new Dictionary<string, string> { { "Col1", "Data1C" }, { "Col2", "Data2C" } });
-        originalDocumentData.Add(tableData);
-        var xmlDocumentData = originalDocumentData.ToXml();
 
         //Act
-        var loadedDocumentData = DocumentData.Load(xmlDocumentData);
+        var thirtyRows = Render(template, CreateData(30));
+        var tenRows = Render(template, CreateData(10));
+        var twentyRows = Render(template, CreateData(20));
+        var thirtyRowsAgain = Render(template, CreateData(30));
 
         //Assert
-        //Assert.AreEqual(originalDocumentData.GetDataTable("A").Rows.Count, loadedDocumentData.GetDataTable("A").Rows.Count);
-        //Assert.AreEqual(originalDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableData), loadedDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableData));
-        //Assert.AreEqual(originalDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableGroup), loadedDocumentData.GetDataTable("A").Rows.Count(x => x is DocumentDataTableGroup));
-        //Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content, (loadedDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content);
-        //Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.Last(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content, (loadedDocumentData.GetDataTable("A").Rows.Last(x => x is DocumentDataTableGroup) as DocumentDataTableGroup).Content);
-        //Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Key, (loadedDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Key);
-        //Assert.AreEqual((originalDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Value, (loadedDocumentData.GetDataTable("A").Rows.First(x => x is DocumentDataTableData) as DocumentDataTableData).Columns.First().Value);
-        throw new NotImplementedException();
+        tenRows.Should().BeLessThan(twentyRows);
+        twentyRows.Should().BeLessThan(thirtyRows);
+        thirtyRowsAgain.Should().Be(thirtyRows);
+    }
+
+    private static DocumentData CreateData(int rowCount)
+    {
+        var documentData = new DocumentData();
+        var table = new DocumentDataTable("TableA");
+        documentData.Add(table);
+        for (var i = 0; i < rowCount; i++)
+        {
+            table.AddRow(new Dictionary<string, string> { { "ColumnA1", $"DataA{i}" } });
+        }
+
+        return documentData;
+    }
+
+    private static int Render(Template template, DocumentData documentData)
+    {
+        var graphicsFactory = new PageCountingGraphicsFactory();
+        var data = new Renderer(graphicsFactory, template, documentData).GetPdfBinary(PageSize.A4);
+        IsPdf(data).Should().BeTrue();
+        return graphicsFactory.RenderedPageCount;
+    }
+
+    private static bool IsPdf(byte[] data)
+    {
+        return data.Length > 4 && Encoding.ASCII.GetString(data, 0, 4) == "%PDF";
+    }
+
+    private static int ArgbOf(Color? color)
+    {
+        color.Should().NotBeNull();
+        return color.GetValueOrDefault().ToArgb();
     }
 }

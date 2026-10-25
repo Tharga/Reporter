@@ -1,4 +1,6 @@
-﻿using Tharga.Reporter.Entity.Element;
+﻿using AwesomeAssertions;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Element;
 using Tharga.Reporter.Entity.Util;
 using Xunit;
 
@@ -6,25 +8,23 @@ namespace Tharga.Reporter.Tests.Serializing;
 
 public class TableColumn_Tests
 {
-    [Fact(Skip = "Fix!")]
-    public void Default_Table()
+    [Fact]
+    public void TableColumn_with_all_properties_set()
     {
         //Arrange
-        var table = new TableColumn("A", "2cm", Table.WidthMode.Specific, Table.Alignment.Left, "***");
-        var xme = table.ToXme();
+        var column = new TableColumn("A", "2cm", Table.WidthMode.Specific, Table.Alignment.Left, "***");
+        var xme = column.ToXme();
 
         //Act
-        var otherLine = TableColumn.Load(xme);
+        var other = TableColumn.Load(xme);
 
         //Assert
-        //Assert.AreEqual(table.Width, otherLine.Width);
-        //Assert.AreEqual(table.Align, otherLine.Align);
-        //Assert.AreEqual(table.DisplayName, otherLine.DisplayName);
-        //Assert.AreEqual(table.Hide, otherLine.Hide);
-        //Assert.AreEqual(table.HideValue, otherLine.HideValue);
-        //Assert.AreEqual(table.WidthMode, otherLine.WidthMode);
-        //Assert.AreEqual(table.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Width.Should().Be(UnitValue.Parse("2cm"));
+        other.Align.Should().Be(Table.Alignment.Left);
+        other.DisplayName.Should().Be("A");
+        other.Hide.Should().BeFalse();
+        other.HideValue.Should().Be("***");
+        other.WidthMode.Should().Be(Table.WidthMode.Specific);
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 }

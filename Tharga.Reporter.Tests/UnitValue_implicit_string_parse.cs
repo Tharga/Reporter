@@ -1,36 +1,31 @@
-﻿using Tharga.Reporter.Entity;
+﻿using AwesomeAssertions;
+using Tharga.Reporter.Entity;
 using Xunit;
 
 namespace Tharga.Reporter.Tests;
 
 public class UnitValue_implicit_string_parse
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void From_string()
     {
-        //Arrange
-        var val1 = UnitValue.Parse("10cm");
-        UnitValue val2;
-
         //Act
-        val2 = "10cm";
+        UnitValue value = "10cm";
 
         //Assert
-        //Assert.AreEqual(val1, val2);
-        throw new NotImplementedException();
+        value.Should().Be(UnitValue.Parse("10cm"));
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void To_string()
     {
         //Arrange
-        var val1 = "10cm";
+        var value = UnitValue.Parse("10cm");
 
         //Act
-        var val2 = UnitValue.Parse("10cm");
+        string text = value;
 
         //Assert
-        //Assert.AreEqual(val1, (string)val2);
-        throw new NotImplementedException();
+        text.Should().Be("10cm");
     }
 }

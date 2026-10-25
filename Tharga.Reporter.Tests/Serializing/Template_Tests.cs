@@ -1,11 +1,12 @@
-﻿using Tharga.Reporter.Entity;
+﻿using AwesomeAssertions;
+using Tharga.Reporter.Entity;
 using Xunit;
 
 namespace Tharga.Reporter.Tests.Serializing;
 
 public class Template_Tests
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Default_template()
     {
         //Arrange
@@ -16,7 +17,7 @@ public class Template_Tests
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        throw new NotImplementedException();
+        otherTemplate.SectionList.Should().ContainSingle();
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 }

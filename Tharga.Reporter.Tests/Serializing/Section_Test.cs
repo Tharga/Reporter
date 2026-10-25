@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using AwesomeAssertions;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
 using Xunit;
@@ -10,7 +11,7 @@ namespace Tharga.Reporter.Tests.Serializing;
 
 public class Section_Test
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Section_with_a_name()
     {
         //Arrange
@@ -26,15 +27,15 @@ public class Section_Test
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(section.DefaultFont.FontName, otherTemplate.SectionList.First().DefaultFont.FontName);
-        //Assert.AreEqual(section.DefaultFont.Size, otherTemplate.SectionList.First().DefaultFont.Size);
-        //Assert.AreEqual(section.DefaultFont.Color, otherTemplate.SectionList.First().DefaultFont.Color);
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        //Assert.AreEqual(name, otherTemplate.SectionList.First().Name);
-        throw new NotImplementedException();
+        var other = otherTemplate.SectionList.Single();
+        other.Name.Should().Be(name);
+        other.DefaultFont.FontName.Should().Be(section.DefaultFont.FontName);
+        other.DefaultFont.Size.Should().Be(section.DefaultFont.Size);
+        other.DefaultFont.Color.Should().Be(section.DefaultFont.Color);
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Section_with_a_defaultFont()
     {
         //Arrange
@@ -53,15 +54,14 @@ public class Section_Test
         var other = Section.Load(xme);
 
         //Assert
-        //Assert.AreEqual(section.Name, other.Name);
-        //Assert.AreEqual(section.DefaultFont.FontName, other.DefaultFont.FontName);
-        //Assert.AreEqual(section.DefaultFont.Size, other.DefaultFont.Size);
-        //Assert.AreEqual(section.DefaultFont.Color.ToArgb(), other.DefaultFont.Color.ToArgb());
-        //Assert.AreEqual(xme.OuterXml, other.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Name.Should().Be(section.Name);
+        other.DefaultFont.FontName.Should().Be("Times");
+        other.DefaultFont.Size.Should().Be(11);
+        other.DefaultFont.Color.ToArgb().Should().Be(Color.MediumTurquoise.ToArgb());
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Section_with_a_margin()
     {
         //Arrange
@@ -77,24 +77,23 @@ public class Section_Test
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        //Assert.AreEqual(margin.Left, otherTemplate.SectionList.First().Margin.Left);
-        //Assert.AreEqual(margin.Top, otherTemplate.SectionList.First().Margin.Top);
-        //Assert.AreEqual(margin.Right, otherTemplate.SectionList.First().Margin.Right);
-        //Assert.AreEqual(margin.Bottom, otherTemplate.SectionList.First().Margin.Bottom);
-        //Assert.AreEqual(margin.Width, otherTemplate.SectionList.First().Margin.Width);
-        //Assert.AreEqual(margin.Height, otherTemplate.SectionList.First().Margin.Height);
-        //Assert.AreEqual(margin, otherTemplate.SectionList.First().Margin);
-        throw new NotImplementedException();
+        var otherMargin = otherTemplate.SectionList.Single().Margin;
+        otherMargin.Left.Should().Be(margin.Left);
+        otherMargin.Top.Should().Be(margin.Top);
+        otherMargin.Right.Should().Be(margin.Right);
+        otherMargin.Bottom.Should().Be(margin.Bottom);
+        otherMargin.Width.Should().BeNull();
+        otherMargin.Height.Should().BeNull();
+        otherMargin.Should().Be(margin);
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
-    public void Section_with_header_margin()
+    [Fact]
+    public void Section_with_header_height()
     {
         //Arrange
         var section = new Section();
-        section.Footer.Height = UnitValue.Parse("4inch");
-
+        section.Header.Height = UnitValue.Parse("4inch");
         var template = new Template(section);
         var xml = template.ToXml();
 
@@ -102,20 +101,16 @@ public class Section_Test
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        //Assert.IsTrue(template.SectionList.First().Header.Height.Equals(otherTemplate.SectionList.First().Header.Height));
-        //Assert.IsTrue(template.SectionList.First().Header.Height == otherTemplate.SectionList.First().Header.Height);
-        //Assert.AreEqual(template.SectionList.First().Header.Height, otherTemplate.SectionList.First().Header.Height);
-        throw new NotImplementedException();
+        otherTemplate.SectionList.Single().Header.Height.Should().Be(section.Header.Height);
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
-    public void Section_with_footer_margin()
+    [Fact]
+    public void Section_with_footer_height()
     {
         //Arrange
         var section = new Section();
         section.Footer.Height = UnitValue.Parse("40");
-
         var template = new Template(section);
         var xml = template.ToXml();
 
@@ -123,12 +118,11 @@ public class Section_Test
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        //Assert.AreEqual(template.SectionList.First().Footer.Height, otherTemplate.SectionList.First().Footer.Height);
-        throw new NotImplementedException();
+        otherTemplate.SectionList.Single().Footer.Height.Should().Be(section.Footer.Height);
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Section_with_panes_with_element()
     {
         //Arrange
@@ -136,7 +130,6 @@ public class Section_Test
         section.Header.ElementList.Add(new Line { Left = UnitValue.Parse("1cm") });
         section.Pane.ElementList.Add(new Line { Left = UnitValue.Parse("2cm") });
         section.Footer.ElementList.Add(new Line { Left = UnitValue.Parse("3cm") });
-
         var template = new Template(section);
         var xml = template.ToXml();
 
@@ -144,14 +137,14 @@ public class Section_Test
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        //Assert.AreEqual(template.SectionList.First().Header.ElementList.First().Left, otherTemplate.SectionList.First().Header.ElementList.First().Left);
-        //Assert.AreEqual(template.SectionList.First().Pane.ElementList.First().Left, otherTemplate.SectionList.First().Pane.ElementList.First().Left);
-        //Assert.AreEqual(template.SectionList.First().Footer.ElementList.First().Left, otherTemplate.SectionList.First().Footer.ElementList.First().Left);
-        throw new NotImplementedException();
+        var other = otherTemplate.SectionList.Single();
+        other.Header.ElementList.Single().Left.Should().Be(UnitValue.Parse("1cm"));
+        other.Pane.ElementList.Single().Left.Should().Be(UnitValue.Parse("2cm"));
+        other.Footer.ElementList.Single().Left.Should().Be(UnitValue.Parse("3cm"));
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Section_with_all_types_of_elements()
     {
         //Arrange
@@ -164,7 +157,6 @@ public class Section_Test
         section.Pane.ElementList.Add(new TextBox());
         section.Pane.ElementList.Add(new ReferencePoint());
         section.Pane.ElementList.Add(new BarCode());
-
         var template = new Template(section);
         var xml = template.ToXml();
 
@@ -172,7 +164,7 @@ public class Section_Test
         var otherTemplate = Template.Load(xml);
 
         //Assert
-        //Assert.AreEqual(xml.OuterXml, otherTemplate.ToXml().OuterXml);
-        throw new NotImplementedException();
+        otherTemplate.SectionList.Single().Pane.ElementList.Select(x => x.GetType()).Should().Equal(section.Pane.ElementList.Select(x => x.GetType()));
+        otherTemplate.ToXml().OuterXml.Should().Be(xml.OuterXml);
     }
 }
