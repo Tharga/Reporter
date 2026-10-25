@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Fonts;
 using Xunit;

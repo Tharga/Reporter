@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using ZXing;
 using Moq;
 using PdfSharp.Drawing;
