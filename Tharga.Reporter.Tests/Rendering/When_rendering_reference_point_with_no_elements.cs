@@ -1,62 +1,47 @@
-﻿//using Moq;
-//using NUnit.Framework;
-//using PdfSharp.Drawing;
-//using Tharga.Reporter.Engine.Entity;
-//using Tharga.Reporter.Engine.Entity.Area;
-//using Tharga.Reporter.Engine.Interface;
+﻿using Moq;
+using PdfSharp.Drawing;
+using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
+using Xunit;
 
-//namespace Tharga.Reporter.Tests.Rendering
-//{
-//    [TestFixture]
-//    [Ignore("Can't gain access to internal stuff.")]
-//    public class When_rendering_reference_point_with_no_elements : AaaTest
-//    {
-//        private ReferencePoint _referencePoint;
-//        private Mock<IRenderData> _renderDataMock;
-//        private Mock<IGraphics> _graphicsMock;
-//        private DocumentData _documentData;
+namespace Tharga.Reporter.Tests.Rendering;
 
-//        protected override void Arrange()
-//        {
-//            _documentData = new DocumentData();
+public class When_rendering_reference_point_with_no_elements
+{
+    private readonly Mock<IGraphics> _graphicsMock;
 
-//            _graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
+    public When_rendering_reference_point_with_no_elements()
+    {
+        //Arrange
+        var documentData = new DocumentData();
 
-//            _renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
-//            _referencePoint = new ReferencePoint();
+        _graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
 
-//            _renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
-//            _renderDataMock.Setup(x => x.ParentBounds).Returns(It.IsAny<XRect>());
-//            _renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
-//            _renderDataMock.Setup(x => x.Section).Returns(new Section());
-//            _renderDataMock.Setup(x => x.DocumentData).Returns(_documentData);
-//            _renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 1));
-//            _renderDataMock.Setup(x => x.DebugData).Returns((IDebugData)null);
-//            _renderDataMock.Setup(x => x.IncludeBackground).Returns(false);
-//            _renderDataMock.Setup(x => x.ElementBounds).Returns(It.IsAny<XRect>());
-//            _renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
+        var referencePoint = new ReferencePoint();
 
-//            _referencePoint.PreRender(_renderDataMock.Object);
-//        }
+        var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
+        renderDataMock.Setup(x => x.ParentBounds).Returns(new XRect());
+        renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
+        renderDataMock.Setup(x => x.Section).Returns(new Section());
+        renderDataMock.Setup(x => x.DocumentData).Returns(documentData);
+        renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 1));
+        renderDataMock.Setup(x => x.DebugData).Returns((IDebugData)null);
+        renderDataMock.Setup(x => x.IncludeBackground).Returns(false);
+        renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect());
+        renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
 
-//        protected override void Act()
-//        {
-//            _referencePoint.Render(_renderDataMock.Object, 1);
-//        }
+        referencePoint.PreRender(renderDataMock.Object);
 
-//        [Test]
-//        [Ignore("Can't gain access to internal stuff.")]
-//        public void Then_nothing_is_drawn()
-//        {
-//            _graphicsMock.Verify(x => x.DrawLine(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()), Times.Never);
-//            _graphicsMock.Verify(x => x.DrawEllipse(It.IsAny<XPen>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-//            _graphicsMock.Verify(x => x.DrawImage(It.IsAny<XImage>(), It.IsAny<XRect>()), Times.Never);
-//            _graphicsMock.Verify(x => x.DrawRectangle(It.IsAny<XPen>(), It.IsAny<XRect>()), Times.Never);
-//            _graphicsMock.Verify(x => x.DrawRectangle(It.IsAny<XPen>(), It.IsAny<XBrush>(), It.IsAny<XRect>()), Times.Never);
-//            _graphicsMock.Verify(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>()), Times.Never());
-//            _graphicsMock.Verify(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XPoint>(), It.IsAny<XStringFormat>()), Times.Never());
-//            _graphicsMock.Verify(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XRect>(), It.IsAny<XStringFormat>()), Times.Never());
-//        }
-//    }
-//}
+        //Act
+        // The page argument is zero-based, while PageNumberInfo numbers pages from one: this renders the first page.
+        referencePoint.Render(renderDataMock.Object, 0);
+    }
 
+    [Fact]
+    public void Then_nothing_is_drawn()
+    {
+        //Assert
+        _graphicsMock.VerifyNothingDrawn();
+    }
+}

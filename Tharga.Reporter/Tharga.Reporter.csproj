@@ -5,7 +5,7 @@
 		<Authors>Daniel Bohlin</Authors>
 		<Company>Thargelion AB</Company>
 		<Product>Tharga Reporter</Product>
-		<Description>Tharga Reporter generates PDF and prints pdf-documents and send then m diretly to the printer.</Description>
+		<Description>Tharga Reporter generates PDF documents from declarative templates and data.</Description>
 		<PackageIconUrl>https://thargelion.net/assets/component-reporter.png</PackageIconUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
