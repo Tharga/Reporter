@@ -1,4 +1,5 @@
-﻿using Tharga.Reporter.Entity;
+﻿using AwesomeAssertions;
+using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
 using Xunit;
 
@@ -6,7 +7,7 @@ namespace Tharga.Reporter.Tests.Serializing;
 
 public class Image_Tests
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Default_Image()
     {
         //Arrange
@@ -14,24 +15,22 @@ public class Image_Tests
         var xme = image.ToXme();
 
         //Act
-        var otherLine = Image.Load(xme);
+        var other = Image.Load(xme);
 
         //Assert
-        //Assert.AreEqual(image.Left, otherLine.Left);
-        //Assert.AreEqual(image.Right, otherLine.Right);
-        //Assert.AreEqual(image.Width, otherLine.Width);
-        //Assert.AreEqual(image.Top, otherLine.Top);
-        //Assert.AreEqual(image.Bottom, otherLine.Bottom);
-        //Assert.AreEqual(image.Height, otherLine.Height);
-        //Assert.AreEqual(image.Source, otherLine.Source);
-        //Assert.AreEqual(image.IsBackground, otherLine.IsBackground);
-        //Assert.AreEqual(image.Name, otherLine.Name);
-        //Assert.AreEqual(image.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Left.Should().Be(image.Left);
+        other.Right.Should().Be(image.Right);
+        other.Width.Should().Be(image.Width);
+        other.Top.Should().Be(image.Top);
+        other.Bottom.Should().Be(image.Bottom);
+        other.Height.Should().Be(image.Height);
+        other.Source.Should().Be(image.Source);
+        other.IsBackground.Should().Be(image.IsBackground);
+        other.Name.Should().Be(image.Name);
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Image_with_all_propreties_set()
     {
         //Arrange
@@ -48,20 +47,18 @@ public class Image_Tests
         var xme = image.ToXme();
 
         //Act
-        var otherLine = Image.Load(xme);
+        var other = Image.Load(xme);
 
         //Assert
-        //Assert.AreEqual(image.Left, otherLine.Left);
-        //Assert.AreEqual(image.Right, otherLine.Right);
-        //Assert.AreEqual(image.Width, otherLine.Width);
-        //Assert.AreEqual(image.Top, otherLine.Top);
-        //Assert.AreEqual(image.Bottom, otherLine.Bottom);
-        //Assert.AreEqual(image.Height, otherLine.Height);
-        //Assert.AreEqual(image.Source, otherLine.Source);
-        //Assert.AreEqual(image.IsBackground, otherLine.IsBackground);
-        //Assert.AreEqual(image.Name, otherLine.Name);
-        //Assert.AreEqual(image.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Left.Should().Be(image.Left);
+        other.Right.Should().Be(image.Right);
+        other.Width.Should().Be(image.Width);
+        other.Top.Should().Be(image.Top);
+        other.Bottom.Should().Be(image.Bottom);
+        other.Height.Should().Be(image.Height);
+        other.Source.Should().Be("Blab_blah");
+        other.IsBackground.Should().BeTrue();
+        other.Name.Should().Be("Blah");
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 }

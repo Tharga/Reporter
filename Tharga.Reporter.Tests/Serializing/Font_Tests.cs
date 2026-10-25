@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using AwesomeAssertions;
 using Xunit;
 using Font = Tharga.Reporter.Entity.Font;
 
@@ -6,7 +7,7 @@ namespace Tharga.Reporter.Tests.Serializing;
 
 public class Font_Tests
 {
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Default_Font()
     {
         //Arrange
@@ -14,22 +15,20 @@ public class Font_Tests
         var xme = font.ToXme();
 
         //Act
-        var otherLine = Font.Load(xme);
+        var other = Font.Load(xme);
 
         //Assert
-        //Assert.AreEqual(font.Color, otherLine.Color);
-        //Assert.AreEqual(font.FontName, otherLine.FontName);
-        //Assert.AreEqual(font.Size, otherLine.Size);
-        //Assert.AreEqual(font.Bold, otherLine.Bold);
-        //Assert.AreEqual(font.Italic, otherLine.Italic);
-        //Assert.AreEqual(font.Strikeout, otherLine.Strikeout);
-        //Assert.AreEqual(font.Underline, otherLine.Underline);
-        //Assert.AreEqual(font.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Color.Should().Be(font.Color);
+        other.FontName.Should().Be(font.FontName);
+        other.Size.Should().Be(font.Size);
+        other.Bold.Should().BeFalse();
+        other.Italic.Should().BeFalse();
+        other.Strikeout.Should().BeFalse();
+        other.Underline.Should().BeFalse();
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_with_all_properties_set()
     {
         //Arrange
@@ -40,28 +39,24 @@ public class Font_Tests
             FontName = "Some Name",
             Bold = true,
             Italic = true
-            //Strikeout = true,
-            //Underline = true,
         };
         var xme = font.ToXme();
 
         //Act
-        var otherLine = Font.Load(xme);
+        var other = Font.Load(xme);
 
         //Assert
-        //Assert.AreEqual(font.Color.ToArgb(), otherLine.Color.ToArgb());
-        //Assert.AreEqual(font.FontName, otherLine.FontName);
-        //Assert.AreEqual(font.Size, otherLine.Size);
-        //Assert.AreEqual(font.Bold, otherLine.Bold);
-        //Assert.AreEqual(font.Italic, otherLine.Italic);
-        //Assert.AreEqual(font.Strikeout, otherLine.Strikeout);
-        //Assert.AreEqual(font.Underline, otherLine.Underline);
-        //Assert.AreEqual(font.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Color.ToArgb().Should().Be(Color.Orange.ToArgb());
+        other.FontName.Should().Be("Some Name");
+        other.Size.Should().Be(12);
+        other.Bold.Should().BeTrue();
+        other.Italic.Should().BeTrue();
+        other.Strikeout.Should().BeFalse();
+        other.Underline.Should().BeFalse();
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_with_Strikeout_set()
     {
         //Arrange
@@ -72,23 +67,16 @@ public class Font_Tests
         var xme = font.ToXme();
 
         //Act
-        var otherLine = Font.Load(xme);
+        var other = Font.Load(xme);
 
         //Assert
-        //Assert.AreEqual(font.Color.ToArgb(), otherLine.Color.ToArgb());
-        //Assert.AreEqual(font.FontName, otherLine.FontName);
-        //Assert.AreEqual(font.Size, otherLine.Size);
-        //Assert.AreEqual(font.Bold, otherLine.Bold);
-        //Assert.AreEqual(font.Italic, otherLine.Italic);
-        //Assert.AreEqual(font.Strikeout, otherLine.Strikeout);
-        //Assert.AreEqual(font.Underline, otherLine.Underline);
-        //Assert.AreEqual(font.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Strikeout.Should().BeTrue();
+        other.Underline.Should().BeFalse();
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
-    public void Font_with_Unserline_set()
+    [Fact]
+    public void Font_with_Underline_set()
     {
         //Arrange
         var font = new Font
@@ -98,168 +86,71 @@ public class Font_Tests
         var xme = font.ToXme();
 
         //Act
-        var otherLine = Font.Load(xme);
+        var other = Font.Load(xme);
 
         //Assert
-        //Assert.AreEqual(font.Color.ToArgb(), otherLine.Color.ToArgb());
-        //Assert.AreEqual(font.FontName, otherLine.FontName);
-        //Assert.AreEqual(font.Size, otherLine.Size);
-        //Assert.AreEqual(font.Bold, otherLine.Bold);
-        //Assert.AreEqual(font.Italic, otherLine.Italic);
-        //Assert.AreEqual(font.Strikeout, otherLine.Strikeout);
-        //Assert.AreEqual(font.Underline, otherLine.Underline);
-        //Assert.AreEqual(font.ToString(), otherLine.ToString());
-        //Assert.AreEqual(xme.OuterXml, otherLine.ToXme().OuterXml);
-        throw new NotImplementedException();
+        other.Underline.Should().BeTrue();
+        other.Strikeout.Should().BeFalse();
+        other.ToXme().OuterXml.Should().Be(xme.OuterXml);
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_cannot_use_bold_with_underline()
     {
-        //Arrange
-        Exception exception = null;
-
         //Act
-        try
-        {
-            var font = new Font
-            {
-                Bold = true,
-                Underline = true
-            };
-        }
-        catch (Exception exp)
-        {
-            exception = exp;
-        }
+        var act = () => new Font { Bold = true, Underline = true };
 
         //Assert
-        //Assert.AreEqual(typeof(InvalidOperationException), exception.GetType());
-        throw new NotImplementedException();
+        act.Should().Throw<InvalidOperationException>();
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_cannot_use_italic_with_underline()
     {
-        //Arrange
-        Exception exception = null;
-
         //Act
-        try
-        {
-            var font = new Font
-            {
-                Italic = true,
-                Underline = true
-            };
-        }
-        catch (Exception exp)
-        {
-            exception = exp;
-        }
+        var act = () => new Font { Italic = true, Underline = true };
 
         //Assert
-        //Assert.AreEqual(typeof(InvalidOperationException), exception.GetType());
-        throw new NotImplementedException();
+        act.Should().Throw<InvalidOperationException>();
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_cannot_use_strikeout_with_underline()
     {
-        //Arrange
-        Exception exception = null;
-
         //Act
-        try
-        {
-            var font = new Font
-            {
-                Strikeout = true,
-                Underline = true
-            };
-        }
-        catch (Exception exp)
-        {
-            exception = exp;
-        }
+        var act = () => new Font { Strikeout = true, Underline = true };
 
         //Assert
-        //Assert.AreEqual(typeof(InvalidOperationException), exception.GetType());
-        throw new NotImplementedException();
+        act.Should().Throw<InvalidOperationException>();
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_cannot_use_bold_with_strikeout()
     {
-        //Arrange
-        Exception exception = null;
-
         //Act
-        try
-        {
-            var font = new Font
-            {
-                Bold = true,
-                Strikeout = true
-            };
-        }
-        catch (Exception exp)
-        {
-            exception = exp;
-        }
+        var act = () => new Font { Bold = true, Strikeout = true };
 
         //Assert
-        //Assert.AreEqual(typeof(InvalidOperationException), exception.GetType());
-        throw new NotImplementedException();
+        act.Should().Throw<InvalidOperationException>();
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_cannot_use_italic_with_strikeout()
     {
-        //Arrange
-        Exception exception = null;
-
         //Act
-        try
-        {
-            var font = new Font
-            {
-                Italic = true,
-                Strikeout = true
-            };
-        }
-        catch (Exception exp)
-        {
-            exception = exp;
-        }
+        var act = () => new Font { Italic = true, Strikeout = true };
 
         //Assert
-        //Assert.AreEqual(typeof (InvalidOperationException), exception.GetType());
-        throw new NotImplementedException();
+        act.Should().Throw<InvalidOperationException>();
     }
 
-    [Fact(Skip = "Fix!")]
+    [Fact]
     public void Font_can_use_bold_with_italic()
     {
-        //Arrange
-        Exception exception = null;
-
         //Act
-        try
-        {
-            var font = new Font
-            {
-                Bold = true,
-                Italic = true
-            };
-        }
-        catch (Exception exp)
-        {
-            exception = exp;
-        }
+        var act = () => new Font { Bold = true, Italic = true };
 
         //Assert
-        //Assert.AreEqual(null, exception);
-        throw new NotImplementedException();
+        act.Should().NotThrow();
     }
 }

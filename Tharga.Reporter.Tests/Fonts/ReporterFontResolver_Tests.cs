@@ -1,5 +1,6 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using PdfSharp.Drawing;
+using PdfSharp.Fonts;
 using Tharga.Reporter.Fonts;
 using Xunit;
 
@@ -16,11 +17,9 @@ public class ReporterFontResolver_Tests
         var resolver = new ReporterFontResolver();
 
         //Act
-        var info = resolver.ResolveTypeface(UnknownFamily, false, false);
-        var data = resolver.GetFont(info.FaceName);
+        var data = resolver.GetFont(Resolve(resolver, UnknownFamily).FaceName);
 
         //Assert
-        info.Should().NotBeNull();
         data.Should().NotBeNullOrEmpty();
     }
 
@@ -31,8 +30,7 @@ public class ReporterFontResolver_Tests
         var resolver = new ReporterFontResolver();
 
         //Act
-        var info = resolver.ResolveTypeface(string.Empty, false, false);
-        var data = resolver.GetFont(info.FaceName);
+        var data = resolver.GetFont(Resolve(resolver, string.Empty).FaceName);
 
         //Assert
         data.Should().NotBeNullOrEmpty();
@@ -43,11 +41,11 @@ public class ReporterFontResolver_Tests
     {
         //Arrange
         var resolver = new ReporterFontResolver();
-        var fontData = resolver.GetFont(resolver.ResolveTypeface(UnknownFamily, false, false).FaceName);
+        var fontData = resolver.GetFont(Resolve(resolver, UnknownFamily).FaceName);
         ReporterFontResolver.Register("MyRegisteredFamily", false, false, fontData);
 
         //Act
-        var info = resolver.ResolveTypeface("MyRegisteredFamily", false, false);
+        var info = Resolve(resolver, "MyRegisteredFamily");
 
         //Assert
         resolver.GetFont(info.FaceName).Should().BeSameAs(fontData);
@@ -60,8 +58,8 @@ public class ReporterFontResolver_Tests
         var resolver = new ReporterFontResolver();
 
         //Act
-        var bold = resolver.GetFont(resolver.ResolveTypeface(UnknownFamily, true, false).FaceName);
-        var italic = resolver.GetFont(resolver.ResolveTypeface(UnknownFamily, false, true).FaceName);
+        var bold = resolver.GetFont(Resolve(resolver, UnknownFamily, isBold: true).FaceName);
+        var italic = resolver.GetFont(Resolve(resolver, UnknownFamily, isItalic: true).FaceName);
 
         //Assert
         bold.Should().NotBeNullOrEmpty();
@@ -82,5 +80,12 @@ public class ReporterFontResolver_Tests
         //Assert
         size.Width.Should().BeGreaterThan(0);
         size.Height.Should().BeGreaterThan(0);
+    }
+
+    private static FontResolverInfo Resolve(ReporterFontResolver resolver, string familyName, bool isBold = false, bool isItalic = false)
+    {
+        var info = resolver.ResolveTypeface(familyName, isBold, isItalic);
+        info.Should().NotBeNull();
+        return info;
     }
 }

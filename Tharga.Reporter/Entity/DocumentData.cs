@@ -42,7 +42,7 @@ public class DocumentData : IDocumentData
         xmd.AppendChild(xmeList);
 
         var xmeItemList = xmd.CreateElement("Data");
-        xmd.LastChild.AppendChild(xmeItemList);
+        xmeList.AppendChild(xmeItemList);
         foreach (var item in _data)
         {
             var xme = xmd.CreateElement(item.Key);
@@ -54,7 +54,7 @@ public class DocumentData : IDocumentData
         {
             var xmeTable = xmd.CreateElement("Table");
             xmeTable.SetAttribute("Name", table.TableName);
-            xmd.LastChild.AppendChild(xmeTable);
+            xmeList.AppendChild(xmeTable);
             foreach (var row in table.Rows)
             {
                 if (row is DocumentDataTableData)
@@ -92,10 +92,12 @@ public class DocumentData : IDocumentData
     {
         var documentData = new DocumentData();
 
-        var nodes = xmd.GetElementsByTagName("Data");
-        foreach (XmlNode node in nodes[0])
+        if (xmd.GetElementsByTagName("Data")[0] is { } data)
         {
-            documentData.Add(node.Name, node.InnerText);
+            foreach (XmlNode node in data)
+            {
+                documentData.Add(node.Name, node.InnerText);
+            }
         }
 
         var tables = xmd.GetElementsByTagName("Table");

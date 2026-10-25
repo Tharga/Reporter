@@ -1,6 +1,5 @@
 ﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using PdfSharp.Pdf.Security;
 using System.Text;
 using PdfSharp;
 using Tharga.Reporter.Entity;
@@ -94,31 +93,16 @@ public class Renderer
             pdfDocument.Info.Creator = _documentProperties.Creator;
         }
 
-        //TODO: Add other properties as well
-        //pdfDocument.Info.Keywords
-        //pdfDocument.Info.Owner
-        //pdfDocument.Info.Producer
-        //pdfDocument.PageLayout = PdfSharp.Pdf.PdfPageLayout.OneColumn
-        //pdfDocument.PageMode = PdfSharp.Pdf.PdfPageMode.FullScreen
-        //pdfDocument.Language
-        //pdfDocument.Outlines
-        //pdfDocument.SecurityHandler
-        //pdfDocument.SecuritySettings
-        //pdfDocument.Settings.PrivateFontCollection
-        //pdfDocument.Version
-        //pdfDocument.ViewerPreferences.
-
-        //TODO: Provide security settings
+        // Encryption, owner password and permissions are fixed for now. See #32.
         pdfDocument.SecurityHandler.SetEncryptionToV2With128Bits();
         pdfDocument.SecuritySettings.OwnerPassword = "qwerty12";
         pdfDocument.SecuritySettings.PermitAnnotations = false;
         pdfDocument.SecuritySettings.PermitAssembleDocument = false;
-        pdfDocument.SecuritySettings.PermitExtractContent = true; //Is this copy-paste block?
+        pdfDocument.SecuritySettings.PermitExtractContent = true;
         pdfDocument.SecuritySettings.PermitFormsFill = false;
         pdfDocument.SecuritySettings.PermitFullQualityPrint = true;
         pdfDocument.SecuritySettings.PermitModifyDocument = false;
         pdfDocument.SecuritySettings.PermitPrint = true;
-        //pdfDocument.SecuritySettings.UserPassword = "qwerty";
         return pdfDocument;
     }
 
@@ -134,46 +118,6 @@ public class Renderer
             }
         }
     }
-
-    //private void printDocument_PrintPage(object sender, PrintPageEventArgs e)
-    //{
-    //    var rawSize = GetSize(e);
-    //    var unitSize = GetSize(rawSize);
-    //    var scale = GetScale(unitSize);
-
-    //    //TODO: Not yet converted
-    //    //var gfx = XGraphics.FromGraphics(e.Graphics, rawSize, XGraphicsUnit.Point);
-    //    //gfx.ScaleTransform(scale);
-
-    //    //DoRenderStuff(new MyGraphics(gfx), new XRect(unitSize), false, _printPageCount++, _template.SectionList.Sum(x => x.GetRenderPageCount()));
-    //    throw new NotImplementedException();
-    //}
-
-    //private static XSize GetSize(XSize rawSize)
-    //{
-    //    var wm = PrinterUnitConvert.Convert(rawSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
-    //    var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
-    //    var hm = PrinterUnitConvert.Convert(rawSize.Height, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
-    //    var hx = new XUnit(hm, XGraphicsUnit.Millimeter);
-    //    var unitSize = new XSize(wx, hx);
-    //    return unitSize;
-    //}
-
-    //private static double GetScale(XSize xSize)
-    //{
-    //    var wm = PrinterUnitConvert.Convert(xSize.Width, PrinterUnit.Display, PrinterUnit.HundredthsOfAMillimeter) / 100;
-    //    var wx = new XUnit(wm, XGraphicsUnit.Millimeter);
-    //    var scale = xSize.Width / wx.Point;
-    //    return scale;
-    //}
-
-    //private static XSize GetSize(PrintPageEventArgs e)
-    //{
-    //    var w = e.PageBounds.Width;
-    //    var h = e.PageBounds.Height;
-    //    var xSize = new XSize(w, h);
-    //    return xSize;
-    //}
 
     private void DoRenderStuff(IGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
     {
@@ -287,16 +231,6 @@ public class Renderer
             : _template.SectionList.Sum(x => x.GetRenderPageCount());
     }
 
-    //public void CreatePdfFile(string fileName, PageSize pageSize = PageSize.A4)
-    //{
-    //    if (File.Exists(fileName))
-    //    {
-    //        throw new InvalidOperationException("The file already exists.").AddData("fileName", fileName);
-    //    }
-
-    //    File.WriteAllBytes(fileName, GetPdfBinary(pageSize));
-    //}
-
     public byte[] GetPdfBinary(PageFormat pageFormat)
     {
         pageFormat ??= PageSize.A4;
@@ -311,31 +245,4 @@ public class Renderer
         return memStream.ToArray();
     }
 
-    //public void Print(PrinterSettings printerSettings)
-    //{
-    //    _printPageCount = 0;
-
-    //    PageSize pageSize;
-    //    if (!Enum.TryParse(printerSettings.DefaultPageSettings.PaperSize.Kind.ToString(), out pageSize))
-    //    {
-    //        throw new InvalidOperationException(string.Format("Unable to parse {0} from as printerSettings to a page size.", printerSettings.DefaultPageSettings.PaperSize.Kind));
-    //    }
-
-    //    PreRender(pageSize);
-
-    //    var doc = GetDocument(false);
-
-    //    var docRenderer = new DocumentRenderer(doc);
-    //    docRenderer.PrepareDocument();
-
-    //    //var printDocument = new MigraDocPrintDocument();
-    //    //printDocument.PrintController = new StandardPrintController();
-    //    //
-    //    //printDocument.PrintPage += printDocument_PrintPage;
-    //    //
-    //    //printDocument.Renderer = docRenderer;
-    //    //printDocument.PrinterSettings = printerSettings;
-    //    //printDocument.Print();
-    //    throw new NotImplementedException();
-    //}
 }

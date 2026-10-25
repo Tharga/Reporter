@@ -16,14 +16,14 @@ public class ReferencePoint : MultiPageElement
         Vertical
     }
 
-    private const StackMethod _defaultStack = StackMethod.None;
+    private const StackMethod DefaultStack = StackMethod.None;
 
     private ElementList _elementList;
     private StackMethod? _stack;
 
     public StackMethod Stack
     {
-        get => _stack ?? _defaultStack;
+        get => _stack ?? DefaultStack;
         set => _stack = value;
     }
 
@@ -60,7 +60,7 @@ public class ReferencePoint : MultiPageElement
             renderData.Graphics.DrawLine(renderData.DebugData.Pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
         }
 
-        //TODO: Change the width and height to the actual area used
+        // Reports an empty area, so a vertical stack does not make room for this element. See #31.
         renderData.ElementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
     }
 
@@ -155,7 +155,7 @@ public class ReferencePoint : MultiPageElement
 
     protected override XRect GetBounds(XRect parentBounds)
     {
-        var relativeAlignment = new UnitRectangle(Left.Value, Top.Value, "0", "0");
+        var relativeAlignment = new UnitRectangle(Left.GetValueOrDefault(), Top.GetValueOrDefault(), "0", "0");
 
         var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
         //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
@@ -167,7 +167,7 @@ public class ReferencePoint : MultiPageElement
 
         if (height < 0)
         {
-            Debug.WriteLine(string.Format("Height is adjusted from {0} to 0.", height));
+            Debug.WriteLine($"Height is adjusted from {height} to 0.");
             height = 0;
         }
 

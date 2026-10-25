@@ -6,7 +6,6 @@ namespace Tharga.Reporter.Entity.Util;
 
 internal class TableColumn
 {
-    //TODO: Have an empty default constructor here as well. And set values later on. As for all other classes.
     internal TableColumn(string displayName, UnitValue? width, Table.WidthMode widthMode, Table.Alignment align, string hideValue)
     {
         if (width == null && widthMode == Table.WidthMode.Specific) throw new InvalidOperationException("When not assigning a specific value for width the width mode cannot be set to specific.");
@@ -52,8 +51,8 @@ internal class TableColumn
 
     internal static TableColumn Load(XmlElement xme)
     {
-        var displayName = xme.Attributes["DisplayName"].Value;
-        var align = (Table.Alignment)Enum.Parse(typeof(Table.Alignment), xme.Attributes["Align"].Value);
+        var displayName = GetRequiredAttribute(xme, "DisplayName");
+        var align = (Table.Alignment)Enum.Parse(typeof(Table.Alignment), GetRequiredAttribute(xme, "Align"));
 
         string hideValue = null;
         if (xme.Attributes["HideValue"] != null)
@@ -67,9 +66,14 @@ internal class TableColumn
             width = UnitValue.Parse(xme.Attributes["Width"].Value);
         }
 
-        var widthMode = (Table.WidthMode)Enum.Parse(typeof(Table.WidthMode), xme.Attributes["WidthMode"].Value);
+        var widthMode = (Table.WidthMode)Enum.Parse(typeof(Table.WidthMode), GetRequiredAttribute(xme, "WidthMode"));
 
         var tableColumn = new TableColumn(displayName, width, widthMode, align, hideValue);
         return tableColumn;
+    }
+
+    private static string GetRequiredAttribute(XmlElement xme, string name)
+    {
+        return xme.Attributes[name]?.Value ?? throw new InvalidOperationException($"The {xme.Name} element has no {name} attribute.");
     }
 }

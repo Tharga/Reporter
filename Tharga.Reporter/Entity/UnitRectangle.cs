@@ -99,6 +99,7 @@ public class UnitRectangle : IEquatable<UnitRectangle>
 
     public bool Equals(UnitRectangle other)
     {
+        if (other is null) return false;
         if (Left != other.Left) return false;
         if (Top != other.Top) return false;
         if (Right != other.Right) return false;

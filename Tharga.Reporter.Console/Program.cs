@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
+using PdfSharp;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
 using Tharga.Reporter.Entity.Element.Base;
@@ -12,34 +12,24 @@ internal static class Program
 {
     private static void Main(string[] args)
     {
-        //Blank_default_PDF_document();
-        //TextButNoData();
-        //BackgroundObjectsOrNot();
-        //SinglePageAreaElement_Sample();
-        //Barcode_Sample();
-        //MultiPageAreaElement_Sample();
-        //Basic_PDF_document_with_some_text_on_it();
-        //Multiple_sections();
-        //Multipage_PDF_document_by_section();
-        //Multipage_PDF_by_spanning_text();
-        //Multipage_PDF_by_spanning_text_using_a_reference_point();
-        //Multipage_PDF_by_spanning_text_using_a_reference_point_with_vertical_stacking();
-        //Multipage_PDF_by_spanning_text_border_case_where_text_ends_up_exactly();
-        //Create_PDF_document_with_basic_table();
-        //Create_PDF_document_with_template_that_spans_over_multiple_pages();
-        //Different_text_on_different_pages();
-        //RefWithOnePageTextBox();
-        //SkallebergSample1();
-        //SkallebergSample2();
-        //RenderFromFile(@"C:\Users\Daniel\Documents\template.xml", @"C:\Users\Daniel\Documents\data.xml");
-        //RenderFromFile(@"C:\Users\Daniel\Desktop\InvoiceTemplate.txt", @"C:\Users\Daniel\Desktop\InvoiceData.txt");
-        //DataWithLinefeed();
-        //Table_With_grouping();
-
-        HallenMedlemCard();
+        switch (args.FirstOrDefault())
+        {
+            case "text":
+                TextButNoData();
+                break;
+            case "barcode":
+                Barcode_Sample();
+                break;
+            case "elements":
+                SinglePageAreaElement_Sample();
+                break;
+            default:
+                Card_Sample();
+                break;
+        }
     }
 
-    private static void HallenMedlemCard()
+    private static void Card_Sample()
     {
         Template template = null;
         foreach (var page in new[] { ("A", "67890"), ("B", "1234567890") })
@@ -67,7 +57,7 @@ internal static class Program
         SampleCardOutput(template, null, false, false);
     }
 
-    private static async void TextButNoData()
+    private static void TextButNoData()
     {
         var section = new Section();
         section.Pane.ElementList.Add(new Text { Value = "Data: {SomeData}" });
@@ -75,7 +65,7 @@ internal static class Program
         SampleOutput(template, null);
     }
 
-    private static async void Barcode_Sample()
+    private static void Barcode_Sample()
     {
         var section = new Section();
 
@@ -103,7 +93,7 @@ internal static class Program
         SampleOutput(template, documentData);
     }
 
-    private static async void SinglePageAreaElement_Sample()
+    private static void SinglePageAreaElement_Sample()
     {
         var section = new Section();
 
@@ -137,62 +127,17 @@ internal static class Program
 
     private static void SampleOutput(Template template, DocumentData documentData, bool useBackground = true, bool debug = true)
     {
-        //try
-        //{
-        //    //Prep
-        //    var renderer = new Renderer(template, documentData, useBackground, null, debug);
-        //    var stopWatch = new Stopwatch();
-
-        //    //New way
-        //    stopWatch.Reset();
-        //    stopWatch.Start();
-        //    var bytes = renderer.GetPdfBinary();
-        //    System.Console.WriteLine("New: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-        //    FileManager.ExecuteFile(bytes);
-
-        //    //Directly to printer
-        //    //var printerSettings = new PrinterSettings
-        //    //{
-        //    //    PrinterName = "Microsoft XPS Document Writer",
-        //    //    PrintToFile = true,
-        //    //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-        //    //};
-        //    //stopWatch.Reset();
-        //    //stopWatch.Start();
-        //    //renderer.Print(printerSettings);
-        //    //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-        //}
-        //catch (Exception exception)
-        //{
-        //    System.Console.WriteLine(exception.Message);
-        //}
-        throw new NotImplementedException();
+        WriteSample(template, documentData, PageSize.A4, useBackground, debug);
     }
 
     private static void SampleCardOutput(Template template, DocumentData documentData, bool useBackground = true, bool debug = true)
     {
-        //try
-        //{
-        //    var renderer = new Renderer(template, documentData, useBackground, null, debug);
-        //    var bytes = renderer.GetPdfBinary(Renderer.PageSize.PlasticCard);
-        //    //FileManager.ExecuteFile(bytes);
+        WriteSample(template, documentData, PageFormat.PlasticCard, useBackground, debug);
+    }
 
-        //    //Directly to printer
-        //    //var printerSettings = new PrinterSettings
-        //    //{
-        //    //    PrinterName = "Microsoft XPS Document Writer",
-        //    //    PrintToFile = true,
-        //    //    PrintFileName = @"C:\Users\Daniel\Desktop\b1.xps",
-        //    //};
-        //    //stopWatch.Reset();
-        //    //stopWatch.Start();
-        //    //renderer.Print(printerSettings);
-        //    //System.Console.WriteLine("Prn: " + stopWatch.Elapsed.TotalSeconds.ToString("0.0000"));
-        //}
-        //catch (Exception exception)
-        //{
-        //    System.Console.WriteLine(exception.Message);
-        //}
-        throw new NotImplementedException();
+    private static void WriteSample(Template template, DocumentData documentData, PageFormat pageFormat, bool useBackground, bool debug)
+    {
+        var renderer = new Renderer(template, documentData, useBackground, null, debug);
+        FileManager.ExecuteFile(renderer.GetPdfBinary(pageFormat));
     }
 }

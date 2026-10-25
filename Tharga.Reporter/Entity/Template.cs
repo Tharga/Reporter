@@ -21,10 +21,8 @@ public class Template
     {
         var template = new Template();
 
-        if (document.ChildNodes.Count == 0) throw new InvalidOperationException("There are no child nodes on the root document.");
+        var xmlTemplate = document.FirstChild ?? throw new InvalidOperationException("There are no child nodes on the root document.");
         if (document.ChildNodes.Count > 1) throw new InvalidOperationException("There are more than one child node on the root document.");
-
-        var xmlTemplate = document.FirstChild;
 
         if (xmlTemplate.Name != "Template") throw new InvalidOperationException(string.Format("Template level cannot be parsed as element of type {0}.", xmlTemplate.Name));
         if (xmlTemplate.ChildNodes.Count == 0) throw new InvalidOperationException("There have to be at least one section in the template.");

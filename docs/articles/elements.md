@@ -47,6 +47,8 @@ section.Header.ElementList.Add(new Image
 
 `Source` accepts an HTTP URL, a local file path, or a byte array serialised with `Image.BytesToLongString`. PNG and JPEG are decoded by PDFsharp itself, so images work on every platform.
 
+An `http://` or `https://` source is downloaded once and cached in the system temp folder; later renders reuse the cached file. A `file://` URL reads the local file directly. Other schemes, such as `ftp://`, are not downloaded. If the image cannot be loaded (the file is missing, the server answers with an error, or the download times out after 100 seconds), the element draws a red cross with the message *Image '…' is missing.* instead of failing the render.
+
 ## BarCode
 
 A Code 39 barcode. The bars are drawn as vector rectangles rather than an embedded raster image, so the

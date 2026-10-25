@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using AwesomeAssertions;
+using Moq;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
@@ -10,31 +11,22 @@ namespace Tharga.Reporter.Tests.Rendering;
 
 public class Rendering_Text
 {
-    [Fact(Skip = "Can't gain access to internal stuff.")]
+    [Fact]
     public void When_rendering_text()
     {
         //Arrange
-        var text = new Text();
-
+        var text = new Text { Value = "Hello" };
         var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
         graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize { Height = 1000, Width = 1000 });
         graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize { Height = 1000, Width = 1000 });
         graphicsMock.Setup(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XRect>(), It.IsAny<XStringFormat>()));
-
-        var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
-        renderDataMock.Setup(x => x.ParentBounds).Returns(new XRect());
-        renderDataMock.Setup(x => x.Section).Returns(new Section());
-        renderDataMock.Setup(x => x.DocumentData).Returns((DocumentData)null);
-        renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 2));
-        renderDataMock.Setup(x => x.Graphics).Returns(graphicsMock.Object);
-        renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
-        renderDataMock.Setup(x => x.IncludeBackground).Returns(false);
-        renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect());
-        renderDataMock.Setup(x => x.DebugData).Returns((IDebugData)null);
+        var renderData = new RenderData(graphicsMock.Object, new XRect(), new Section(), null, new PageNumberInfo(1, 2), null, false);
 
         //Act
-        text.Render(renderDataMock.Object);
+        text.Render(renderData);
 
         //Assert
+        graphicsMock.Verify(x => x.DrawString("Hello", It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XRect>(), It.IsAny<XStringFormat>()), Times.Once);
+        renderData.ElementBounds.Size.Should().Be(new XSize(1000, 1000));
     }
 }

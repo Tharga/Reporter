@@ -31,7 +31,8 @@ public abstract class TextBase : SinglePageAreaElement
         }
     }
 
-    internal string FontClass //TODO: Hidden because it is not yet fully implemented
+    // Internal until font classes are applied when rendering. See #30.
+    internal string FontClass
     {
         get => _fontClass ?? string.Empty;
         set
@@ -54,7 +55,7 @@ public abstract class TextBase : SinglePageAreaElement
         var bounds = GetBounds(renderData.ParentBounds);
 
         var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-        //TODO: var brush = new XSolidBrush(XColor.FromArgb(_font.GetColor(renderData.Section)));
+        // Font.Color is not applied yet. See #28.
         var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
 
         var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);

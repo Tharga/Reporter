@@ -65,7 +65,8 @@ public class Table : MultiPageAreaElement
         }
     }
 
-    internal string HeaderFontClass //TODO: Hidden because it is not yet fully implemented
+    // Internal until font classes are applied when rendering. See #30.
+    internal string HeaderFontClass
     {
         get => _headerFontClass ?? string.Empty;
         set
@@ -117,7 +118,8 @@ public class Table : MultiPageAreaElement
         set => _groupFont = value;
     }
 
-    internal string ContentFontClass //TODO: Hidden because it is not yet fully implemented
+    // Internal until font classes are applied when rendering. See #30.
+    internal string ContentFontClass
     {
         get => _contentFontClass ?? string.Empty;
         set
@@ -258,10 +260,9 @@ public class Table : MultiPageAreaElement
         }
 
         var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-        //TODO: var headerBrush = new XSolidBrush(XColor.FromArgb(_headerFont.GetColor(renderData.Section)));
+        // Font colours are not applied yet. See #28.
         var headerBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
         var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
-        //TODO: var lineBrush = new XSolidBrush(XColor.FromArgb(_contentFont.GetColor(renderData.Section)));
         var lineBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
         var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
 
@@ -338,7 +339,7 @@ public class Table : MultiPageAreaElement
                 }
 
                 var totalWidth = renderData.ElementBounds.Width;
-                var nonSpringWidth = Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.Value.GetXUnitValue(totalWidth));
+                var nonSpringWidth = Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetValueOrDefault().GetXUnitValue(totalWidth));
 
                 if (springCount > 0)
                 {
@@ -455,18 +456,16 @@ public class Table : MultiPageAreaElement
                         lineSize = stringSize;
                         var topLeft = new XPoint(renderData.ElementBounds.Left + left, renderData.ElementBounds.Top + top);
 
+                        // Group colours are not applied yet. See #28.
                         if (GroupBackgroundColor != null)
                         {
-                            //var brush = new XSolidBrush(XColor.FromArgb(GroupBackgroundColor.Value));
                             var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                             var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                            //TODO: renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor ?? GroupBackgroundColor.Value), 0.1), brush, rect);
                             renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), brush, rect);
                         }
                         else if (GroupBorderColor != null)
                         {
                             var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                            //TODO: renderData.Graphics.DrawRectangle(new XPen(XColor.FromArgb(GroupBorderColor.Value), 0.1), rect);
                             renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), rect);
                         }
 
@@ -488,16 +487,15 @@ public class Table : MultiPageAreaElement
         }
     }
 
+    // Border and background colours and the border thickness are not applied yet. See #28.
     private void RenderBorder(XRect elementBounds, IGraphics gfx, XSize headerSize)
     {
         if (ContentBorderColor != null || ContentBackgroundColor != null)
         {
-            //TODO: var borderPen = new XPen(ContentBorderColor ?? ContentBackgroundColor.Value, 0.1); //TODO: Set the thickness of the boarder
             var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
 
             if (ContentBackgroundColor != null)
             {
-                //TODO: var brush = new XSolidBrush(XColor.FromArgb(ContentBackgroundColor.Value));
                 var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                 gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
             }
@@ -509,12 +507,10 @@ public class Table : MultiPageAreaElement
 
         if (HeaderBorderColor != null || HeaderBackgroundColor != null)
         {
-            //TODO: var borderPen = new XPen(HeaderBorderColor ?? HeaderBackgroundColor.Value, 0.1); //TODO: Se the thickness of the boarder
             var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
 
             if (HeaderBackgroundColor != null)
             {
-                //TODO: var brush = new XSolidBrush(XColor.FromArgb(HeaderBackgroundColor.Value));
                 var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
                 gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
             }

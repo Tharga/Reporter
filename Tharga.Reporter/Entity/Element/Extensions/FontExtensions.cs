@@ -3,33 +3,16 @@ using PdfSharp.Drawing;
 
 namespace Tharga.Reporter.Entity.Element.Extensions;
 
+// Font classes are not resolved here yet, only an element's own font or the section default. See #30.
 internal static class FontExtensions
 {
     internal static XFontStyleEx GetStyle(this Font font, Section section)
     {
-        var bold = false;
-        var italic = false;
-        var underline = false;
-        var strikeout = false;
-
-        //TODO: Use the font class (Somehow)
-
-        if (font != null)
-        {
-            bold = font.Bold;
-            italic = font.Italic;
-            underline = font.Underline;
-            strikeout = font.Strikeout;
-        }
-        else
-        {
-            bold = section.DefaultFont.Bold;
-            italic = section.DefaultFont.Italic;
-            underline = section.DefaultFont.Underline;
-            strikeout = section.DefaultFont.Strikeout;
-        }
-
-        var style = XFontStyleEx.Regular;
+        var source = font ?? section.DefaultFont;
+        var bold = source.Bold;
+        var italic = source.Italic;
+        var underline = source.Underline;
+        var strikeout = source.Strikeout;
 
         if (bold && italic)
         {
@@ -66,8 +49,6 @@ internal static class FontExtensions
             return font.FontName;
         }
 
-        //TODO: Use the font class.
-
         return section.DefaultFont.FontName;
     }
 
@@ -78,8 +59,6 @@ internal static class FontExtensions
             return font.Size;
         }
 
-        //TODO: Use the font class
-
         return section.DefaultFont.Size;
     }
 
@@ -89,8 +68,6 @@ internal static class FontExtensions
         {
             return font.Color;
         }
-
-        //TODO: Use the font class
 
         return section.DefaultFont.Color;
     }
