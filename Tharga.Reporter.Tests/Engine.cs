@@ -38,37 +38,4 @@ public class Engine
         first.Margin.Height.Should().BeNull();
         first.Margin.Width.Should().BeNull();
     }
-
-    //[Test]
-    //public void Create_pdf_document()
-    //{
-    //    ////Arrange
-    //    //var template = new Template(new Section());
-
-    //    ////Act
-    //    //var byteArray = Rendering.CreatePDFDocument(template);
-
-    //    ////Assert
-    //    //Assert.IsTrue(byteArray.Length > 0);
-    //}
-
-    //[Test]
-    //public void Serialize_to_xml()
-    //{
-    //    //Arrange
-    //    //var section = Section.Create(); //TODO: Create a section builder that randomizes the construction of a document.
-    //    //var text = Text.Create("Some text");
-    //    //text.Font.FontName = "Times New Roman";
-    //    //section.Header.ElementList.Add(text);
-    //    //var template = Template.Create(section);
-
-    //    ////Act
-    //    //var xml = template.ToXml();
-    //    //var otherTemplate = Template.Create(xml);
-    //    //var otherXml = otherTemplate.ToXml();
-
-    //    ////Assert
-    //    xml.InnerXml, otherXml.InnerXml);
-    //    ////TODO: Also assert that the properties of the objects are equal
-    //}
 }

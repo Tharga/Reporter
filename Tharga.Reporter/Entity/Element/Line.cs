@@ -35,7 +35,7 @@ public sealed class Line : SinglePageAreaElement
 
         if (renderData.IncludeBackground || !IsBackground)
         {
-            //TODO: var pen = new XPen(XColor.FromArgb(Color), Thickness.GetXUnitValue(0)); See #28.
+            // Color and Thickness are not applied yet. See #28.
             var pen = new XPen(XColor.FromKnownColor(XKnownColor.Black));
 
             renderData.Graphics.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);

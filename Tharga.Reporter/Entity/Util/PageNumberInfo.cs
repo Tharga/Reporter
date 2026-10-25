@@ -14,7 +14,6 @@ public class PageNumberInfo
 
     public int? TotalPages { get; }
 
-    //TODO: Write tests for this
     public string GetPageNumberInfo(string dataName)
     {
         switch (dataName)

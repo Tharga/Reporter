@@ -60,7 +60,7 @@ public class ReferencePoint : MultiPageElement
             renderData.Graphics.DrawLine(renderData.DebugData.Pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
         }
 
-        //TODO: Change the width and height to the actual area used
+        // Reports an empty area, so a vertical stack does not make room for this element. See #31.
         renderData.ElementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
     }
 
