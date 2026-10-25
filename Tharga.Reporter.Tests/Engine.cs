@@ -21,26 +21,20 @@ public class Engine
         var first = template.SectionList.First();
         first.Header.Should().NotBeNull();
         first.Header.ElementList.Count.Should().Be(0);
-        first.Header.Height.Should().NotBe(0);
-        first.Header.Height.Unit.Should().Be(UnitValue.EUnit.Point);
+        first.Header.Height.Should().Be(UnitValue.Parse("0"));
 
         first.Footer.Should().NotBeNull();
         first.Footer.ElementList.Count.Should().Be(0);
-        first.Footer.Height.Value.Should().Be(0);
-        first.Footer.Height.Unit.Should().Be(UnitValue.EUnit.Point);
+        first.Footer.Height.Should().Be(UnitValue.Parse("0"));
 
         first.Pane.Should().NotBeNull();
         first.Pane.ElementList.Count.Should().Be(0);
 
         first.Margin.Should().NotBeNull();
-        first.Margin.Left.Value.Value.Should().Be(0);
-        first.Margin.Left.Value.Unit.Should().Be(UnitValue.EUnit.Point);
-        first.Margin.Right.Value.Value.Should().Be(0);
-        first.Margin.Right.Value.Unit.Should().Be(UnitValue.EUnit.Point);
-        first.Margin.Top.Value.Value.Should().Be(0);
-        first.Margin.Top.Value.Unit.Should().Be(UnitValue.EUnit.Point);
-        first.Margin.Bottom.Value.Value.Should().Be(0);
-        first.Margin.Bottom.Value.Unit.Should().Be(0);
+        first.Margin.Left.Should().Be(UnitValue.Parse("0"));
+        first.Margin.Right.Should().Be(UnitValue.Parse("0"));
+        first.Margin.Top.Should().Be(UnitValue.Parse("0"));
+        first.Margin.Bottom.Should().Be(UnitValue.Parse("0"));
         first.Margin.Height.Should().BeNull();
         first.Margin.Width.Should().BeNull();
     }

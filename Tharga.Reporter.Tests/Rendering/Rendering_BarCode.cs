@@ -41,7 +41,11 @@ public class Rendering_BarCode
 
         //Assert
         bars.Should().OnlyContain(x => x.Left >= bounds.Left && x.Right <= bounds.Right);
-        bars.Should().OnlyContain(x => x.Top == bounds.Top && x.Height == bounds.Height);
+        bars.Should().AllSatisfy(x =>
+        {
+            x.Top.Should().Be(bounds.Top);
+            x.Height.Should().Be(bounds.Height);
+        });
         bars.Should().OnlyContain(x => x.Width > 0);
     }
 
