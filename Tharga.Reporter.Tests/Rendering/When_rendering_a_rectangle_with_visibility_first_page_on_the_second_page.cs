@@ -1,59 +1,54 @@
-﻿//using Moq;
-//using NUnit.Framework;
-//using PdfSharp.Drawing;
-//using Tharga.Reporter.Engine.Entity.Area;
-//using Tharga.Reporter.Engine.Entity.Element;
-//using Tharga.Reporter.Engine.Interface;
+﻿using AwesomeAssertions;
+using Moq;
+using PdfSharp.Drawing;
+using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Entity.Element.Base;
+using Tharga.Reporter.Entity.Util;
+using Tharga.Reporter.Interface;
+using Xunit;
 
-//namespace Tharga.Reporter.Tests.Rendering
-//{
-//    [TestFixture]
-//    [Ignore("Can't gain access to internal stuff.")]
-//    class When_rendering_a_rectangle_with_visibility_first_page_on_the_second_page : AaaTest
-//    {
-//        private Rectangle _rectangle;
-//        private Mock<IRenderData> _renderDataMock;
-//        private Mock<IGraphics> _graphicsMock;
-//        private XRect _elementBounds;
+namespace Tharga.Reporter.Tests.Rendering;
 
-//        protected override void Arrange()
-//        {
-//            _rectangle = new Rectangle { Visibility = PageVisibility.FirstPage };
+public class When_rendering_a_rectangle_with_visibility_first_page_on_the_second_page
+{
+    private readonly Mock<IGraphics> _graphicsMock;
+    private XRect _elementBounds;
 
-//            _graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
-//            _graphicsMock.Setup(x => x.DrawRectangle(It.IsAny<XPen>(), It.IsAny<XRect>()));
+    public When_rendering_a_rectangle_with_visibility_first_page_on_the_second_page()
+    {
+        //Arrange
+        var rectangle = new Rectangle { Visibility = PageVisibility.FirstPage };
 
-//            _renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
-//            _renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>()).Callback<XRect>(x => _elementBounds = x);
-//            _renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect { Width = 10, Height = 10 });
-//            _renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(2, 2));
-//        }
+        _graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
+        _graphicsMock.Setup(x => x.DrawRectangle(It.IsAny<XPen>(), It.IsAny<XRect>()));
 
-//        protected override void Act()
-//        {
-//            _rectangle.Render(_renderDataMock.Object);
-//        }
+        var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
+        renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>()).Callback<XRect>(x => _elementBounds = x);
+        renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect { Width = 10, Height = 10 });
+        renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(2, 2));
 
-//        [Test]
-//        [Ignore("Can't gain access to internal stuff.")]
-//        public void Then_the_rectangle_is_not_drawn()
-//        {
-//            _graphicsMock.Verify(x => x.DrawRectangle(It.IsAny<XPen>(), It.IsAny<XRect>()), Times.Never);
-//        }
+        //Act
+        rectangle.Render(renderDataMock.Object);
+    }
 
-//        [Test]
-//        [Ignore("Can't gain access to internal stuff.")]
-//        public void Then_the_element_bounds_is_set_to_width_0()
-//        {
-//            Assert.AreEqual(0, _elementBounds.Width);
-//        }
+    [Fact]
+    public void Then_the_rectangle_is_not_drawn()
+    {
+        //Assert
+        _graphicsMock.Verify(x => x.DrawRectangle(It.IsAny<XPen>(), It.IsAny<XRect>()), Times.Never);
+    }
 
-//        [Test]
-//        [Ignore("Can't gain access to internal stuff.")]
-//        public void Then_the_element_bounds_is_set_to_height_0()
-//        {
-//            Assert.AreEqual(0, _elementBounds.Height);
-//        }
-//    }
-//}
+    [Fact]
+    public void Then_the_element_bounds_is_set_to_width_0()
+    {
+        //Assert
+        _elementBounds.Width.Should().Be(0);
+    }
 
+    [Fact]
+    public void Then_the_element_bounds_is_set_to_height_0()
+    {
+        //Assert
+        _elementBounds.Height.Should().Be(0);
+    }
+}
