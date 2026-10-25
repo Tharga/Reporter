@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Net;
 using System.Text;
 using System.Xml;
 using PdfSharp.Drawing;
@@ -14,6 +13,10 @@ public class Image : SinglePageAreaElement
 {
     private const string MissingImageFontName = "Verdana";
     private const double MissingImageFontSize = 10;
+    private const char CacheNameReplacement = '_';
+
+    private static readonly HttpClient SharedHttpClient = new(new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(2) });
+    private static readonly char[] InvalidCacheNameChars = Path.GetInvalidFileNameChars().Concat(['?', '=', '&']).ToArray();
 
     private string _source;
 
@@ -126,7 +129,7 @@ public class Image : SinglePageAreaElement
         }
     }
 
-    private static bool WebResourceExists(string imageUrl, out string cacheFileName)
+    internal static bool WebResourceExists(string imageUrl, out string cacheFileName)
     {
         cacheFileName = null;
 
@@ -135,26 +138,44 @@ public class Image : SinglePageAreaElement
             return false;
         }
 
-        var localName = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3).Replace("/", "_").Replace("?", "_").Replace("=", "_").Replace("&", "_");
-        cacheFileName = string.Format("{0}{1}", Path.GetTempPath(), localName);
-
-        if (!File.Exists(cacheFileName))
+        if (Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri) && uri.IsFile)
         {
-            try
-            {
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(imageUrl, cacheFileName);
-                }
-            }
-            catch (WebException)
-            {
-                File.Delete(cacheFileName);
-                return false;
-            }
+            cacheFileName = uri.LocalPath;
+            return File.Exists(cacheFileName);
         }
 
-        return true;
+        cacheFileName = Path.GetTempPath() + GetCacheName(imageUrl);
+
+        return File.Exists(cacheFileName) || TryDownload(imageUrl, cacheFileName);
+    }
+
+    private static string GetCacheName(string imageUrl)
+    {
+        var name = imageUrl.Substring(imageUrl.IndexOf(":", StringComparison.Ordinal) + 3);
+        return string.Concat(name.Select(x => InvalidCacheNameChars.Contains(x) ? CacheNameReplacement : x));
+    }
+
+    private static bool TryDownload(string imageUrl, string fileName)
+    {
+        try
+        {
+            DownloadAsync(imageUrl, fileName).GetAwaiter().GetResult();
+            return true;
+        }
+        catch (Exception exception) when (exception is not OutOfMemoryException)
+        {
+            File.Delete(fileName);
+            return false;
+        }
+    }
+
+    private static async Task DownloadAsync(string imageUrl, string fileName)
+    {
+        using var response = await SharedHttpClient.GetAsync(imageUrl).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+
+        await using var file = File.Create(fileName);
+        await response.Content.CopyToAsync(file).ConfigureAwait(false);
     }
 
     internal override XmlElement ToXme()
