@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Xml;
 using PdfSharp.Drawing;
+using Tharga.Reporter.Interface;
 
 namespace Tharga.Reporter.Entity.Element.Base;
 
@@ -52,11 +53,28 @@ public abstract class AreaElement : Element
     protected override XRect GetBounds(XRect parentBounds)
     {
         if (_relativeAlignment == null) throw new InvalidOperationException("No relative alignment for the Area.");
-        var relativeAlignment = _relativeAlignment;
+        return GetBounds(parentBounds, _relativeAlignment);
+    }
 
+    /// <summary>
+    /// The bounds of the element where it is drawn in this render. An element without a top of its own, placed in a
+    /// vertical stack, is drawn at the stack position, which is applied to a copy so the template is left untouched.
+    /// </summary>
+    internal XRect GetBounds(IRenderData renderData)
+    {
+        if (_relativeAlignment.Top == null && renderData.StackTop is { } stackTop)
+        {
+            return GetBounds(renderData.ParentBounds, _relativeAlignment.WithTop(new UnitValue(stackTop, UnitValue.EUnit.Point)));
+        }
+
+        return GetBounds(renderData.ParentBounds);
+    }
+
+    private static XRect GetBounds(XRect parentBounds, UnitRectangle relativeAlignment)
+    {
         var left = parentBounds.X + relativeAlignment.GetLeft(parentBounds.Width);
         //var right = parentBounds.Right - relativeAlignment.GetRight(parentBounds.Width);
-        var width = _relativeAlignment.GetWidht(parentBounds.Width);
+        var width = relativeAlignment.GetWidht(parentBounds.Width);
 
         var top = parentBounds.Y + relativeAlignment.GetTop(parentBounds.Height);
         //var bottom = parentBounds.Bottom - relativeAlignment.GetBottom(parentBounds.Height);

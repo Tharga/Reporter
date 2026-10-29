@@ -44,7 +44,6 @@ public class Table : MultiPageAreaElement
 
     private Font _headerFont;
     private string _headerFontClass;
-    private List<PageRowSet> _pageRowSet;
 
     private UnitValue? _rowPadding;
 
@@ -172,9 +171,10 @@ public class Table : MultiPageAreaElement
 
     internal override int PreRender(IRenderData renderData)
     {
-        _pageRowSet = new List<PageRowSet>();
+        var pageRowSets = new List<PageRowSet>();
+        renderData.Context.SetPages(this, pageRowSets);
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (IsBackground && !renderData.IncludeBackground)
         {
@@ -226,7 +226,7 @@ public class Table : MultiPageAreaElement
 
                     if (top > renderData.ElementBounds.Height - lineSize.Height)
                     {
-                        _pageRowSet.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = i });
+                        pageRowSets.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = i });
                         firstLineOnPage = i + 1;
                         top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
                     }
@@ -234,12 +234,12 @@ public class Table : MultiPageAreaElement
 
                 if (firstLineOnPage != dataTable.Rows.Count)
                 {
-                    _pageRowSet.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1 });
+                    pageRowSets.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1 });
                 }
             }
         }
 
-        return _pageRowSet.Count;
+        return pageRowSets.Count;
     }
 
     internal override void Render(IRenderData renderData, int page)
@@ -249,9 +249,10 @@ public class Table : MultiPageAreaElement
             return;
         }
 
-        if (_pageRowSet == null) throw new InvalidOperationException("PreRendering has not yet been performed.");
+        var pageRowSets = renderData.Context.GetPages<PageRowSet>(this);
+        if (pageRowSets == null) throw new InvalidOperationException("PreRendering has not yet been performed.");
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!renderData.IncludeBackground && IsBackground)
         {
@@ -319,17 +320,17 @@ public class Table : MultiPageAreaElement
 
                 var defaultRowset = true;
                 var pageRowSet = new PageRowSet { FromRow = 1 };
-                var index = page - renderData.Section.GetPageOffset();
-                if (_pageRowSet.Count > index)
+                var index = page - renderData.Context.GetPageOffset(renderData.Section);
+                if (pageRowSets.Count > index)
                 {
                     try
                     {
                         defaultRowset = false;
-                        pageRowSet = _pageRowSet[index];
+                        pageRowSet = pageRowSets[index];
                     }
                     catch (Exception exception)
                     {
-                        throw new InvalidOperationException(string.Format("_pageRowSet.Count={0}, index={1}", _pageRowSet.Count, index), exception);
+                        throw new InvalidOperationException(string.Format("pageRowSets.Count={0}, index={1}", pageRowSets.Count, index), exception);
                     }
                 }
 
@@ -343,7 +344,7 @@ public class Table : MultiPageAreaElement
                     catch (Exception exception)
                     {
                         var msg = string.Format("Looping from {0} to {1}. Currently at {2}, collection has {3} lines.", pageRowSet.FromRow, pageRowSet.ToRow + 1, i, dataTable.Rows.Count);
-                        throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, _pageRowSet.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Section.GetPageOffset(), index, pageRowSet.FromRow, pageRowSet.ToRow, _pageRowSet.Count, defaultRowset), exception);
+                        throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, pageRowSets.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Context.GetPageOffset(renderData.Section), index, pageRowSet.FromRow, pageRowSet.ToRow, pageRowSets.Count, defaultRowset), exception);
                     }
 
                     left = 0;

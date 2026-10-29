@@ -43,7 +43,7 @@ public sealed class Rectangle : SinglePageAreaElement
     {
         if (IsNotVisible(renderData)) return;
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!IsBackground || renderData.IncludeBackground)
         {

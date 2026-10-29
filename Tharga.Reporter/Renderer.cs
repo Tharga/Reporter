@@ -18,6 +18,7 @@ public class Renderer
     private readonly DocumentProperties _documentProperties;
     private readonly IGraphicsFactory _graphicsFactory;
     private readonly bool _includeBackgroundObjects;
+    private readonly RenderContext _context = new();
 
     private readonly Template _template;
     private bool _preRendered;
@@ -73,7 +74,7 @@ public class Renderer
 
             var gfx = _graphicsFactory.PrepareGraphics(page);
 
-            DoRenderStuff(gfx, new XRect(0, 0, page.Width.Point, page.Height.Point), preRender, ii, _template.SectionList.Sum(x => x.GetRenderPageCount()));
+            DoRenderStuff(gfx, new XRect(0, 0, page.Width.Point, page.Height.Point), preRender, ii, _template.SectionList.Sum(x => _context.GetPageCount(x)));
         }
 
         if (preRender)
@@ -152,12 +153,12 @@ public class Renderer
         var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
         var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
 
-        var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects);
+        var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context);
 
         if (preRender)
         {
             var pageCount = section.Pane.PreRender(renderData);
-            section.SetRenderPageCount(pageCount);
+            _context.SetPageCount(section, pageCount);
         }
         else
         {
@@ -167,7 +168,7 @@ public class Renderer
             if (section.Header != null)
             {
                 var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
-                var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects);
+                var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context);
                 postRendering.Add(() => section.Header.Render(renderDataHeader, page));
 
                 if (_debugData != null)
@@ -180,7 +181,7 @@ public class Renderer
             if (section.Footer != null)
             {
                 var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
-                var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects);
+                var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context);
                 postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
 
                 if (_debugData != null)
@@ -210,11 +211,11 @@ public class Renderer
                 var tot = 0;
                 foreach (var s in _template.SectionList)
                 {
-                    tot += s.GetRenderPageCount();
+                    tot += _context.GetPageCount(s);
                     if (tot >= page + 1)
                     {
                         section = s;
-                        section.SetPageOffset(tot - s.GetRenderPageCount());
+                        _context.SetPageOffset(section, tot - _context.GetPageCount(s));
                         break;
                     }
                 }
@@ -228,7 +229,7 @@ public class Renderer
     {
         return preRender
             ? _template.SectionList.Count
-            : _template.SectionList.Sum(x => x.GetRenderPageCount());
+            : _template.SectionList.Sum(x => _context.GetPageCount(x));
     }
 
     public byte[] GetPdfBinary(PageFormat pageFormat)

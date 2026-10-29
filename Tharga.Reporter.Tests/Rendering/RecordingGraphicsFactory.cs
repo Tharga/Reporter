@@ -22,6 +22,11 @@ internal sealed class RecordingGraphicsFactory : IGraphicsFactory
     /// </summary>
     public Action<int> DocumentStarted { get; init; }
 
+    /// <summary>
+    /// Called after each drawing call is recorded, while the renderer is still inside the element that made it.
+    /// </summary>
+    public Action<DrawCall> Drawn { get; init; }
+
     public IEnumerable<DrawnString> Strings => Calls.OfType<DrawnString>();
     public IEnumerable<DrawnLine> Lines => Calls.OfType<DrawnLine>();
     public IEnumerable<DrawnRectangle> Rectangles => Calls.OfType<DrawnRectangle>();
@@ -41,19 +46,25 @@ internal sealed class RecordingGraphicsFactory : IGraphicsFactory
             _pageIndex++;
         }
 
-        return new RecordingGraphics(new MyGraphics(XGraphics.FromPdfPage(page)), Calls, _pageIndex);
+        return new RecordingGraphics(new MyGraphics(XGraphics.FromPdfPage(page)), Record, _pageIndex);
+    }
+
+    private void Record(DrawCall call)
+    {
+        Calls.Add(call);
+        Drawn?.Invoke(call);
     }
 
     private sealed class RecordingGraphics : IGraphics
     {
         private readonly IGraphics _inner;
-        private readonly List<DrawCall> _calls;
+        private readonly Action<DrawCall> _record;
         private readonly int _page;
 
-        public RecordingGraphics(IGraphics inner, List<DrawCall> calls, int page)
+        public RecordingGraphics(IGraphics inner, Action<DrawCall> record, int page)
         {
             _inner = inner;
-            _calls = calls;
+            _record = record;
             _page = page;
         }
 
@@ -62,43 +73,43 @@ internal sealed class RecordingGraphicsFactory : IGraphicsFactory
 
         public void DrawString(string s, XFont font, XBrush brush, XPoint point)
         {
-            _calls.Add(new DrawnString(_page, s, font, brush, point));
+            _record(new DrawnString(_page, s, font, brush, point));
             _inner.DrawString(s, font, brush, point);
         }
 
         public void DrawString(string s, XFont font, XBrush brush, XPoint point, XStringFormat format)
         {
-            _calls.Add(new DrawnString(_page, s, font, brush, point));
+            _record(new DrawnString(_page, s, font, brush, point));
             _inner.DrawString(s, font, brush, point, format);
         }
 
         public void DrawString(string s, XFont font, XBrush brush, XRect rect, XStringFormat format)
         {
-            _calls.Add(new DrawnString(_page, s, font, brush, rect.TopLeft));
+            _record(new DrawnString(_page, s, font, brush, rect.TopLeft));
             _inner.DrawString(s, font, brush, rect, format);
         }
 
         public void DrawLine(XPen pen, double x1, double y1, double x2, double y2)
         {
-            _calls.Add(new DrawnLine(_page, pen, new XPoint(x1, y1), new XPoint(x2, y2)));
+            _record(new DrawnLine(_page, pen, new XPoint(x1, y1), new XPoint(x2, y2)));
             _inner.DrawLine(pen, x1, y1, x2, y2);
         }
 
         public void DrawRectangle(XPen pen, XRect rect)
         {
-            _calls.Add(new DrawnRectangle(_page, pen, null, rect));
+            _record(new DrawnRectangle(_page, pen, null, rect));
             _inner.DrawRectangle(pen, rect);
         }
 
         public void DrawRectangle(XPen pen, XBrush brush, XRect rect)
         {
-            _calls.Add(new DrawnRectangle(_page, pen, brush, rect));
+            _record(new DrawnRectangle(_page, pen, brush, rect));
             _inner.DrawRectangle(pen, brush, rect);
         }
 
         public void DrawRectangle(XBrush brush, XRect rect)
         {
-            _calls.Add(new DrawnRectangle(_page, null, brush, rect));
+            _record(new DrawnRectangle(_page, null, brush, rect));
             _inner.DrawRectangle(brush, rect);
         }
 

@@ -97,6 +97,13 @@ public class UnitRectangle : IEquatable<UnitRectangle>
         }
     }
 
+    internal UnitRectangle WithTop(UnitValue top)
+    {
+        var copy = (UnitRectangle)MemberwiseClone();
+        copy.Top = top;
+        return copy;
+    }
+
     public bool Equals(UnitRectangle other)
     {
         if (other is null) return false;

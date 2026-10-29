@@ -20,7 +20,7 @@ public class Rendering_Text
         graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XStringFormat>())).Returns(new XSize { Height = 1000, Width = 1000 });
         graphicsMock.Setup(x => x.MeasureString(It.IsAny<string>(), It.IsAny<XFont>())).Returns(new XSize { Height = 1000, Width = 1000 });
         graphicsMock.Setup(x => x.DrawString(It.IsAny<string>(), It.IsAny<XFont>(), It.IsAny<XBrush>(), It.IsAny<XRect>(), It.IsAny<XStringFormat>()));
-        var renderData = new RenderData(graphicsMock.Object, new XRect(), new Section(), null, new PageNumberInfo(1, 2), null, false);
+        var renderData = new RenderData(graphicsMock.Object, new XRect(), new Section(), null, new PageNumberInfo(1, 2), null, false, new RenderContext());
 
         //Act
         text.Render(renderData);

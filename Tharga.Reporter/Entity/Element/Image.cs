@@ -30,7 +30,7 @@ public class Image : SinglePageAreaElement
     {
         if (IsNotVisible(renderData)) return;
 
-        var bounds = GetBounds(renderData.ParentBounds);
+        var bounds = GetBounds(renderData);
         var source = Source.ParseValue(renderData.DocumentData, null, false);
 
         using var imageData = GetImage(source);

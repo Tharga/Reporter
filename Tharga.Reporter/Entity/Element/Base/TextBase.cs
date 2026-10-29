@@ -52,7 +52,7 @@ public abstract class TextBase : SinglePageAreaElement
     {
         if (IsNotVisible(renderData)) return;
 
-        var bounds = GetBounds(renderData.ParentBounds);
+        var bounds = GetBounds(renderData);
 
         var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
         // Font.Color is not applied yet. See #28.

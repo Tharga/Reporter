@@ -16,7 +16,6 @@ public class TextBox : MultiPageAreaElement
     private Font _font;
     private string _fontClass;
     private string _hideValue;
-    private List<string[]> _pageText;
     private string _value;
 
     public string Value
@@ -53,9 +52,10 @@ public class TextBox : MultiPageAreaElement
 
     internal override int PreRender(IRenderData renderData)
     {
-        _pageText = new List<string[]>();
+        var pageText = new List<string[]>();
+        renderData.Context.SetPages(this, pageText);
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!renderData.IncludeBackground && IsBackground)
         {
@@ -102,7 +102,7 @@ public class TextBox : MultiPageAreaElement
                     if (top > renderData.ElementBounds.Bottom - nextTextSize.Height)
                     {
                         //Now we have reached the limit of the page
-                        _pageText.Add(lines.ToArray());
+                        pageText.Add(lines.ToArray());
                         lines.Clear();
                         top = renderData.ElementBounds.Top;
                     }
@@ -110,14 +110,14 @@ public class TextBox : MultiPageAreaElement
             }
 
             lines.Add(sb.ToString());
-            _pageText.Add(lines.ToArray());
+            pageText.Add(lines.ToArray());
         }
         else
         {
-            _pageText.Add(new[] { text });
+            pageText.Add(new[] { text });
         }
 
-        return _pageText.Count;
+        return pageText.Count;
     }
 
     internal override void Render(IRenderData renderData, int page)
@@ -127,9 +127,10 @@ public class TextBox : MultiPageAreaElement
             return;
         }
 
-        if (_pageText == null) throw new InvalidOperationException("Pre-render has not been performed.");
+        var pageText = renderData.Context.GetPages<string[]>(this);
+        if (pageText == null) throw new InvalidOperationException("Pre-render has not been performed.");
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!renderData.IncludeBackground && IsBackground)
         {
@@ -148,9 +149,9 @@ public class TextBox : MultiPageAreaElement
         var left = renderData.ElementBounds.Left;
         var top = renderData.ElementBounds.Top;
 
-        if (_pageText.Count > page - renderData.Section.GetPageOffset())
+        if (pageText.Count > page - renderData.Context.GetPageOffset(renderData.Section))
         {
-            foreach (var line in _pageText[page - renderData.Section.GetPageOffset()])
+            foreach (var line in pageText[page - renderData.Context.GetPageOffset(renderData.Section)])
             {
                 renderData.Graphics.DrawString(line, font, brush, new XPoint(left, top), XStringFormats.TopLeft);
                 var newTextSize = renderData.Graphics.MeasureString(line, font, XStringFormats.TopLeft);

@@ -30,7 +30,7 @@ public class BarCode : SinglePageAreaElement
 
         if (IsNotVisible(renderData)) return;
 
-        var bounds = GetBounds(renderData.ParentBounds);
+        var bounds = GetBounds(renderData);
 
         renderData.ElementBounds = bounds;
 

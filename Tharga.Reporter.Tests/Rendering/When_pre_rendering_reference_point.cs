@@ -29,6 +29,7 @@ public class When_pre_rendering_reference_point
         var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
         renderDataMock.Setup(x => x.ParentBounds).Returns(new XRect());
         renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
+        renderDataMock.Setup(x => x.Context).Returns(new RenderContext());
         renderDataMock.Setup(x => x.Section).Returns(new Section());
         renderDataMock.Setup(x => x.DocumentData).Returns(documentData);
         renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 2));

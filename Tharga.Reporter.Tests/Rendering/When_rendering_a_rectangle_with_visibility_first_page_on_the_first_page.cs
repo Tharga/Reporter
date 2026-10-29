@@ -27,6 +27,7 @@ public class When_rendering_a_rectangle_with_visibility_first_page_on_the_first_
         renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>()).Callback<XRect>(x => _elementBounds = x);
         renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect { Width = 10, Height = 10 });
         renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 2));
 
         //Act

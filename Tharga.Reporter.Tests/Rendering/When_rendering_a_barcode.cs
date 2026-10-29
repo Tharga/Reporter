@@ -28,6 +28,7 @@ public class When_rendering_a_barcode
         renderDataMock.Setup(x => x.DocumentData).Returns(documentData.Object);
         renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect { Width = 10, Height = 10 });
         renderDataMock.Setup(x => x.Graphics).Returns(graphicsMock.Object);
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 2));
 
         //Act

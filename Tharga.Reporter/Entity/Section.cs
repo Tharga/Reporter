@@ -5,13 +5,14 @@ namespace Tharga.Reporter.Entity;
 
 public class Section
 {
+    private const string PageOffsetObsoleteMessage = "The renderer keeps page offsets per render and no longer reads or writes this value. It will be removed in the next major version.";
+
     private readonly Font _globalDefaultFont = new();
     private Font _defaultFont;
 
     private UnitRectangle _margin;
     private string _name;
     private int? _pageOffset;
-    private int? _renderPageCount;
 
     public Section()
     {
@@ -121,23 +122,15 @@ public class Section
         return section;
     }
 
+    [Obsolete(PageOffsetObsoleteMessage)]
     public int GetPageOffset()
     {
         return _pageOffset ?? 0;
     }
 
+    [Obsolete(PageOffsetObsoleteMessage)]
     public void SetPageOffset(int pageOffset)
     {
         _pageOffset = pageOffset;
-    }
-
-    internal void SetRenderPageCount(int renderPageCount)
-    {
-        _renderPageCount = renderPageCount;
-    }
-
-    internal int GetRenderPageCount()
-    {
-        return _renderPageCount ?? 1;
     }
 }

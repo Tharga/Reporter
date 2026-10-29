@@ -31,7 +31,7 @@ public sealed class Line : SinglePageAreaElement
     {
         if (IsNotVisible(renderData)) return;
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (renderData.IncludeBackground || !IsBackground)
         {

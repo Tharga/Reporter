@@ -128,7 +128,7 @@ public class Rendering_Image : IDisposable
         var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
         graphicsMock.Setup(x => x.DrawImage(It.IsAny<XImage>(), It.IsAny<XRect>()))
             .Callback<XImage, XRect>((drawn, _) => drawnSizes.Add((drawn.PixelWidth, drawn.PixelHeight)));
-        var renderData = new RenderData(graphicsMock.Object, new XRect(0, 0, 600, 600), new Section(), null, new PageNumberInfo(1, 1), null, true);
+        var renderData = new RenderData(graphicsMock.Object, new XRect(0, 0, 600, 600), new Section(), null, new PageNumberInfo(1, 1), null, true, new RenderContext());
 
         //Act
         image.Render(renderData);
