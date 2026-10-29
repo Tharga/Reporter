@@ -32,6 +32,10 @@ section.Pane.ElementList.Add(new TextBox
 
 Use a `TextBox` whenever the content length is unbounded. Combine with `ReferencePoint` (below) to stack content that grows.
 
+Text wraps between words. A single word wider than the box is drawn on a line of its own and runs past the edge.
+
+> **Changed in 3.1:** a word wider than the box used to be drawn twice.
+
 ## Image
 
 Embed an image from a URL, file path, or stream.
@@ -47,7 +51,10 @@ section.Header.ElementList.Add(new Image
 
 `Source` accepts an HTTP URL, a local file path, or a byte array serialised with `Image.BytesToLongString`. PNG and JPEG are decoded by PDFsharp itself, so images work on every platform.
 
-An `http://` or `https://` source is downloaded once and cached in the system temp folder; later renders reuse the cached file. A `file://` URL reads the local file directly. Other schemes, such as `ftp://`, are not downloaded. If the image cannot be loaded (the file is missing, the server answers with an error, or the download times out after 100 seconds), the element draws a red cross with the message *Image '…' is missing.* instead of failing the render.
+An `http://` or `https://` source is downloaded and cached in `Tharga.Reporter/Images` under the system temp folder; later renders reuse the cached file until it is older than `Image.CacheDuration` (one hour by default, `TimeSpan.Zero` downloads on every render). If a new download fails, the cached copy is used. A download only appears in the cache once it is complete, and renders that need the same URL at the same time share one download. A `file://` URL reads the local file directly. Other schemes, such as `ftp://`, are not downloaded. If the image cannot be loaded (the file is missing, the server answers with an error, or the download times out after 100 seconds), the element draws a red cross with the message *Image '…' is missing.* instead of failing the render.
+
+> **Changed in 3.1:** downloads used to be cached directly in the system temp folder and never
+> refreshed, and a render could read a file another render was still writing.
 
 ## BarCode
 
@@ -91,6 +98,10 @@ section.Pane.ElementList.Add(new Line
 });
 ```
 
+Without a `Thickness` the line is one point wide.
+
+> **Changed in 3.1:** `Color` and `Thickness` used to be ignored; every line was drawn black and one point wide.
+
 ## Rectangle
 
 Outlined or filled rectangle.
@@ -106,6 +117,9 @@ section.Pane.ElementList.Add(new Rectangle
 ```
 
 Set only `BorderColor` for outline, only `BackgroundColor` for solid fill, or both.
+
+> **Changed in 3.1:** the border used to be drawn black whatever `BorderColor` said, and any
+> `BackgroundColor` filled the rectangle solid black.
 
 ## Table
 
@@ -129,6 +143,14 @@ section.Pane.ElementList.Add(table);
 
 The matching table data goes onto the `DocumentData` — see [Data and rendering](data-and-rendering.md).
 
+Header, content and group rows are drawn in the colours of `HeaderFont`, `ContentFont` and `GroupFont`. The header
+area, the content area and each group row can each have a border colour (`HeaderBorderColor`, `ContentBorderColor`,
+`GroupBorderColor`) and a background colour (`HeaderBackgroundColor`, `ContentBackgroundColor`,
+`GroupBackgroundColor`); an area with only a background colour is filled without a border.
+
+> **Changed in 3.1:** table colours used to be ignored; text and borders were black and any background colour
+> filled its area solid black.
+
 ## ReferencePoint
 
 A logical container that holds child elements, with optional vertical stacking. Use it when you want a group of elements to flow as one block and grow downward.
@@ -147,6 +169,12 @@ section.Pane.ElementList.Add(rp);
 ```
 
 With `Stack = Vertical`, each child is anchored directly below the previous one, so a growing `TextBox` shifts the elements after it instead of overlapping them.
+
+A `ReferencePoint` takes up the area its children use, so a reference point nested in a vertical stack pushes the
+elements after it down.
+
+> **Changed in 3.1:** a reference point used to report an empty area, so in a vertical stack the element after a
+> nested reference point was drawn on top of its content.
 
 ## Z-order and `IsBackground`
 
