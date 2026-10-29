@@ -39,10 +39,8 @@ public struct UnitValue : IEquatable<UnitValue>
         if (collection[0].Index != 0) throw new InvalidOperationException(string.Format("Cannot parse {0}.", s));
 
         //Get the value part
-        var value = s.Substring(0, collection[0].Length);
-        double d;
-        value = value.Replace(".", CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-        if (!double.TryParse(value, out d)) throw new InvalidOperationException(string.Format("Cannot parse {0} to a double.", value));
+        var value = s.Substring(0, collection[0].Length).Replace(',', '.');
+        if (!double.TryParse(value, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var d)) throw new InvalidOperationException(string.Format("Cannot parse {0} to a double.", value));
         Value = d;
 
         //Get the unit part
