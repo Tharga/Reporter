@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Globalization;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity.Element.Base;
@@ -25,6 +24,8 @@ public class Table : MultiPageAreaElement
         Spring
     }
 
+    private const double BorderPenWidth = 0.1;
+
     private readonly UnitValue _defaultColumnPadding = "2px";
     private readonly Font _defaultContentFont = new();
     private readonly Font _defaultHeaderFont = new() { Size = 18 };
@@ -45,7 +46,6 @@ public class Table : MultiPageAreaElement
 
     private Font _headerFont;
     private string _headerFontClass;
-    private List<PageRowSet> _pageRowSet;
 
     private UnitValue? _rowPadding;
 
@@ -65,8 +65,7 @@ public class Table : MultiPageAreaElement
         }
     }
 
-    // Internal until font classes are applied when rendering. See #30.
-    internal string HeaderFontClass
+    public string HeaderFontClass
     {
         get => _headerFontClass ?? string.Empty;
         set
@@ -118,8 +117,7 @@ public class Table : MultiPageAreaElement
         set => _groupFont = value;
     }
 
-    // Internal until font classes are applied when rendering. See #30.
-    internal string ContentFontClass
+    public string ContentFontClass
     {
         get => _contentFontClass ?? string.Empty;
         set
@@ -173,17 +171,20 @@ public class Table : MultiPageAreaElement
 
     internal override int PreRender(IRenderData renderData)
     {
-        _pageRowSet = new List<PageRowSet>();
+        var pageRowSets = new List<PageRowSet>();
+        renderData.Context.SetPages(this, pageRowSets);
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (IsBackground && !renderData.IncludeBackground)
         {
             return 0;
         }
 
-        var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-        var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
+        var headerFontSource = _headerFont.OrFontClass(_headerFontClass, renderData.Section);
+        var contentFontSource = _contentFont.OrFontClass(_contentFontClass, renderData.Section);
+        var headerFont = new XFont(headerFontSource.GetName(renderData.Section), headerFontSource.GetSize(renderData.Section), headerFontSource.GetStyle(renderData.Section));
+        var lineFont = new XFont(contentFontSource.GetName(renderData.Section), contentFontSource.GetSize(renderData.Section), contentFontSource.GetStyle(renderData.Section));
         var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
 
         var firstColumn = Columns.FirstOrDefault();
@@ -227,7 +228,7 @@ public class Table : MultiPageAreaElement
 
                     if (top > renderData.ElementBounds.Height - lineSize.Height)
                     {
-                        _pageRowSet.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = i });
+                        pageRowSets.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = i });
                         firstLineOnPage = i + 1;
                         top = headerSize.Height + RowPadding.GetXUnitValue(renderData.ElementBounds.Height);
                     }
@@ -235,12 +236,12 @@ public class Table : MultiPageAreaElement
 
                 if (firstLineOnPage != dataTable.Rows.Count)
                 {
-                    _pageRowSet.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1 });
+                    pageRowSets.Add(new PageRowSet { FromRow = firstLineOnPage, ToRow = dataTable.Rows.Count - 1 });
                 }
             }
         }
 
-        return _pageRowSet.Count;
+        return pageRowSets.Count;
     }
 
     internal override void Render(IRenderData renderData, int page)
@@ -250,21 +251,24 @@ public class Table : MultiPageAreaElement
             return;
         }
 
-        if (_pageRowSet == null) throw new InvalidOperationException("PreRendering has not yet been performed.");
+        var pageRowSets = renderData.Context.GetPages<PageRowSet>(this);
+        if (pageRowSets == null) throw new InvalidOperationException("PreRendering has not yet been performed.");
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!renderData.IncludeBackground && IsBackground)
         {
             return;
         }
 
-        var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-        // Font colours are not applied yet. See #28.
-        var headerBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-        var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
-        var lineBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+        var headerFontSource = _headerFont.OrFontClass(_headerFontClass, renderData.Section);
+        var contentFontSource = _contentFont.OrFontClass(_contentFontClass, renderData.Section);
+        var headerFont = new XFont(headerFontSource.GetName(renderData.Section), headerFontSource.GetSize(renderData.Section), headerFontSource.GetStyle(renderData.Section));
+        var headerBrush = new XSolidBrush(headerFontSource.GetColor(renderData.Section).ToXColor());
+        var lineFont = new XFont(contentFontSource.GetName(renderData.Section), contentFontSource.GetSize(renderData.Section), contentFontSource.GetStyle(renderData.Section));
+        var lineBrush = new XSolidBrush(contentFontSource.GetColor(renderData.Section).ToXColor());
         var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
+        var groupBrush = new XSolidBrush(_groupFont.GetColor(renderData.Section).ToXColor());
 
         var firstColumn = Columns.FirstOrDefault();
         if (firstColumn.Value == null)
@@ -288,77 +292,18 @@ public class Table : MultiPageAreaElement
             if (dataTable != null)
             {
                 var columnPadding = ColumnPadding.GetXUnitValue(renderData.ElementBounds.Width);
-
-                var springCount = Columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
-
-                //Calculate column width
-                foreach (var column in Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
-                {
-                    var stringSize = renderData.Graphics.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
-
-                    if (column.Value.Width == null)
-                    {
-                        throw new NullReferenceException(string.Format("Column {0} does not have a width.", column.Value.DisplayName));
-                    }
-
-                    if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                    {
-                        column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
-                    }
-
-                    if (column.Value.HideValue != null)
-                    {
-                        column.Value.Hide = true;
-                    }
-
-                    foreach (var row in dataTable.Rows)
-                    {
-                        if (row is DocumentDataTableData)
-                        {
-                            var rowData = row as DocumentDataTableData;
-
-                            var cellData = GetValue(column.Key, rowData.Columns);
-                            stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                            {
-                                column.Value.Width = UnitValue.Parse((stringSize.Width + columnPadding * 2).ToString(CultureInfo.InvariantCulture) + "px");
-                            }
-
-                            var parsedHideValue = GetValue(column.Value.HideValue, rowData.Columns);
-                            if (parsedHideValue != cellData)
-                            {
-                                column.Value.Hide = false;
-                            }
-                        }
-                    }
-
-                    if (column.Value.Hide)
-                    {
-                        column.Value.Width = new UnitValue();
-                    }
-                }
-
-                var totalWidth = renderData.ElementBounds.Width;
-                var nonSpringWidth = Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetValueOrDefault().GetXUnitValue(totalWidth));
-
-                if (springCount > 0)
-                {
-                    foreach (var column in Columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
-                    {
-                        column.Value.Width = UnitValue.Parse(((renderData.ElementBounds.Width - nonSpringWidth) / springCount).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
+                var visibleColumns = GetVisibleColumnWidths(renderData, dataTable, headerFont, lineFont, columnPadding);
 
                 //Create header
                 double left = 0;
-                var tableColumns = Columns.Values.Where(x => !x.Hide).ToList();
-                foreach (var column in tableColumns)
+                foreach (var (key, columnWidth) in visibleColumns)
                 {
+                    var column = Columns[key];
                     var alignmentJusttification = 0D;
                     if (column.Align == Alignment.Right)
                     {
                         var stringSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
-                        alignmentJusttification = column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                        alignmentJusttification = columnWidth - stringSize.Width - columnPadding;
                     }
                     else
                     {
@@ -366,7 +311,7 @@ public class Table : MultiPageAreaElement
                     }
 
                     renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top), XStringFormats.TopLeft);
-                    left += column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                    left += columnWidth;
 
                     if (renderData.DebugData != null)
                     {
@@ -379,17 +324,17 @@ public class Table : MultiPageAreaElement
 
                 var defaultRowset = true;
                 var pageRowSet = new PageRowSet { FromRow = 1 };
-                var index = page - renderData.Section.GetPageOffset();
-                if (_pageRowSet.Count > index)
+                var index = page - renderData.Context.GetPageOffset(renderData.Section);
+                if (pageRowSets.Count > index)
                 {
                     try
                     {
                         defaultRowset = false;
-                        pageRowSet = _pageRowSet[index];
+                        pageRowSet = pageRowSets[index];
                     }
                     catch (Exception exception)
                     {
-                        throw new InvalidOperationException(string.Format("_pageRowSet.Count={0}, index={1}", _pageRowSet.Count, index), exception);
+                        throw new InvalidOperationException(string.Format("pageRowSets.Count={0}, index={1}", pageRowSets.Count, index), exception);
                     }
                 }
 
@@ -403,7 +348,7 @@ public class Table : MultiPageAreaElement
                     catch (Exception exception)
                     {
                         var msg = string.Format("Looping from {0} to {1}. Currently at {2}, collection has {3} lines.", pageRowSet.FromRow, pageRowSet.ToRow + 1, i, dataTable.Rows.Count);
-                        throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, _pageRowSet.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Section.GetPageOffset(), index, pageRowSet.FromRow, pageRowSet.ToRow, _pageRowSet.Count, defaultRowset), exception);
+                        throw new InvalidOperationException(msg + string.Format("dataTable.Rows.Count={0}, i={1}, pageIndex={2}, page={3}, GetPageOffset={4}, index={5}, FromRow={6}, ToRow={7}, pageRowSets.Count={8}, defaultRowset={9}", dataTable.Rows.Count, i, pageIndex, page, renderData.Context.GetPageOffset(renderData.Section), index, pageRowSet.FromRow, pageRowSet.ToRow, pageRowSets.Count, defaultRowset), exception);
                     }
 
                     left = 0;
@@ -412,29 +357,30 @@ public class Table : MultiPageAreaElement
                     {
                         var rowData = row as DocumentDataTableData;
 
-                        foreach (var column in Columns.Where(x => !x.Value.Hide).ToList())
+                        foreach (var (key, columnWidth) in visibleColumns)
                         {
-                            var cellData = GetValue(column.Key, rowData.Columns);
+                            var column = Columns[key];
+                            var cellData = GetValue(key, rowData.Columns);
 
                             var alignmentJusttification = 0D;
-                            if (column.Value.Align == Alignment.Right)
+                            if (column.Align == Alignment.Right)
                             {
                                 var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                                alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                                alignmentJusttification = columnWidth - stringSize.Width - columnPadding;
                             }
                             else
                             {
                                 alignmentJusttification += columnPadding;
                             }
 
-                            var parsedHideValue = GetValue(column.Value.HideValue, rowData.Columns);
+                            var parsedHideValue = GetValue(column.HideValue, rowData.Columns);
                             if (parsedHideValue == cellData)
                             {
                                 cellData = "";
                             }
 
                             renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
-                            left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                            left += columnWidth;
                         }
 
                         if (SkipLine != null && pageIndex % SkipLine.Interval == 0)
@@ -456,20 +402,9 @@ public class Table : MultiPageAreaElement
                         lineSize = stringSize;
                         var topLeft = new XPoint(renderData.ElementBounds.Left + left, renderData.ElementBounds.Top + top);
 
-                        // Group colours are not applied yet. See #28.
-                        if (GroupBackgroundColor != null)
-                        {
-                            var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                            var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                            renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), brush, rect);
-                        }
-                        else if (GroupBorderColor != null)
-                        {
-                            var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                            renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), rect);
-                        }
+                        RenderArea(renderData.Graphics, new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height)), GroupBorderColor, GroupBackgroundColor);
 
-                        renderData.Graphics.DrawString(groupData, groupFont, lineBrush, topLeft, XStringFormats.TopLeft);
+                        renderData.Graphics.DrawString(groupData, groupFont, groupBrush, topLeft, XStringFormats.TopLeft);
                         pageIndex = 0;
                     }
 
@@ -487,37 +422,81 @@ public class Table : MultiPageAreaElement
         }
     }
 
-    // Border and background colours and the border thickness are not applied yet. See #28.
-    private void RenderBorder(XRect elementBounds, IGraphics gfx, XSize headerSize)
+    private IReadOnlyList<(string Key, double Width)> GetVisibleColumnWidths(IRenderData renderData, DocumentDataTable dataTable, XFont headerFont, XFont lineFont, double columnPadding)
     {
-        if (ContentBorderColor != null || ContentBackgroundColor != null)
-        {
-            var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
+        var totalWidth = renderData.ElementBounds.Width;
+        var widths = new Dictionary<string, double>();
+        var hidden = new HashSet<string>();
 
-            if (ContentBackgroundColor != null)
+        foreach (var (key, column) in Columns.Where(x => x.Value.WidthMode != WidthMode.Spring))
+        {
+            if (column.Width == null)
             {
-                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
+                throw new NullReferenceException(string.Format("Column {0} does not have a width.", column.DisplayName));
             }
-            else
+
+            var width = column.Width.Value.GetXUnitValue(totalWidth);
+            var headerSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
+            if (headerSize.Width > width)
             {
-                gfx.DrawRectangle(borderPen, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
+                width = headerSize.Width;
             }
+
+            var hide = column.HideValue != null;
+            foreach (var rowData in dataTable.Rows.OfType<DocumentDataTableData>())
+            {
+                var cellData = GetValue(key, rowData.Columns);
+                var cellSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                if (cellSize.Width > width)
+                {
+                    width = cellSize.Width + columnPadding * 2;
+                }
+
+                if (GetValue(column.HideValue, rowData.Columns) != cellData)
+                {
+                    hide = false;
+                }
+            }
+
+            if (hide)
+            {
+                hidden.Add(key);
+            }
+
+            widths[key] = hide ? 0 : width;
         }
 
-        if (HeaderBorderColor != null || HeaderBackgroundColor != null)
-        {
-            var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
+        var springCount = Columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
+        var springWidth = springCount == 0 ? 0 : (totalWidth - widths.Values.Sum()) / springCount;
 
-            if (HeaderBackgroundColor != null)
-            {
-                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
-            }
-            else
-            {
-                gfx.DrawRectangle(borderPen, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
-            }
+        return Columns
+            .Where(x => !hidden.Contains(x.Key))
+            .Select(x => (x.Key, x.Value.WidthMode == WidthMode.Spring ? springWidth : widths[x.Key]))
+            .ToArray();
+    }
+
+    private void RenderBorder(XRect elementBounds, IGraphics gfx, XSize headerSize)
+    {
+        RenderArea(gfx, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height), ContentBorderColor, ContentBackgroundColor);
+        RenderArea(gfx, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height), HeaderBorderColor, HeaderBackgroundColor);
+    }
+
+    private static void RenderArea(IGraphics gfx, XRect area, Color? borderColor, Color? backgroundColor)
+    {
+        var pen = borderColor == null ? null : new XPen(borderColor.Value.ToXColor(), BorderPenWidth);
+        var brush = backgroundColor == null ? null : new XSolidBrush(backgroundColor.Value.ToXColor());
+
+        if (pen != null && brush != null)
+        {
+            gfx.DrawRectangle(pen, brush, area);
+        }
+        else if (brush != null)
+        {
+            gfx.DrawRectangle(brush, area);
+        }
+        else if (pen != null)
+        {
+            gfx.DrawRectangle(pen, area);
         }
     }
 

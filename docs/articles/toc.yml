@@ -10,5 +10,7 @@
   href: fonts.md
 - name: Upgrading to 3.0
   href: upgrading-to-3.md
+- name: Upgrading to 3.1
+  href: upgrading-to-3.1.md
 - name: Data and rendering
   href: data-and-rendering.md

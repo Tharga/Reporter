@@ -68,6 +68,8 @@ internal static class Converter
         while (pos != -1)
         {
             var posE = parsedValue.IndexOf("}", pos, StringComparison.Ordinal);
+            if (posE == -1) break;
+
             var dataName = parsedValue.Substring(pos + 1, posE - pos - 1);
             var dataValue = row.ContainsKey(dataName) ? row[dataName] : string.Format("[Data row '{0}' is missing]", dataName);
             startIndex = pos + dataValue.Length;
@@ -94,6 +96,8 @@ internal static class Converter
         while (pos != -1)
         {
             var posE = parsedValue.IndexOf("}", pos, StringComparison.Ordinal);
+            if (posE == -1) break;
+
             var dataName = parsedValue.Substring(pos + 1, posE - pos - 1);
 
             string dataValue = null;

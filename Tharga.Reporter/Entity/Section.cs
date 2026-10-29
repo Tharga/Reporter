@@ -5,13 +5,16 @@ namespace Tharga.Reporter.Entity;
 
 public class Section
 {
+    private const string FontClassElementName = "FontClass";
+    private const string FontClassNameAttribute = "Name";
+    private const string PageOffsetObsoleteMessage = "The renderer keeps page offsets per render and no longer reads or writes this value. It will be removed in the next major version.";
+
     private readonly Font _globalDefaultFont = new();
     private Font _defaultFont;
 
     private UnitRectangle _margin;
     private string _name;
     private int? _pageOffset;
-    private int? _renderPageCount;
 
     public Section()
     {
@@ -42,6 +45,13 @@ public class Section
         set => _defaultFont = value;
     }
 
+    /// <summary>
+    /// Named fonts that elements in this section refer to with <c>FontClass</c>, <c>HeaderFontClass</c> or
+    /// <c>ContentFontClass</c>. An element with a font of its own uses that font; an element whose class is not
+    /// defined here uses <see cref="DefaultFont"/>.
+    /// </summary>
+    public Dictionary<string, Font> FontClasses { get; } = new();
+
     internal XmlElement ToXme()
     {
         var xmd = new XmlDocument();
@@ -67,6 +77,13 @@ public class Section
             var xmeDefaultFont = DefaultFont.ToXme("DefaultFont");
             var importedDefaultFont = ownerDocument.ImportNode(xmeDefaultFont, true);
             section.AppendChild(importedDefaultFont);
+        }
+
+        foreach (var (name, font) in FontClasses)
+        {
+            var xmeFontClass = font.ToXme(FontClassElementName);
+            xmeFontClass.SetAttribute(FontClassNameAttribute, name);
+            section.AppendChild(ownerDocument.ImportNode(xmeFontClass, true));
         }
 
         var header = Header.ToXme();
@@ -113,6 +130,10 @@ public class Section
                 case "DefaultFont":
                     section.DefaultFont = Font.Load(child);
                     break;
+                case FontClassElementName:
+                    var fontClassName = child.Attributes[FontClassNameAttribute]?.Value ?? throw new InvalidOperationException($"A {FontClassElementName} element has no {FontClassNameAttribute} attribute.");
+                    section.FontClasses[fontClassName] = Font.Load(child);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(string.Format("Unknown subelement {0} to section.", child.Name));
             }
@@ -121,23 +142,15 @@ public class Section
         return section;
     }
 
+    [Obsolete(PageOffsetObsoleteMessage)]
     public int GetPageOffset()
     {
         return _pageOffset ?? 0;
     }
 
+    [Obsolete(PageOffsetObsoleteMessage)]
     public void SetPageOffset(int pageOffset)
     {
         _pageOffset = pageOffset;
-    }
-
-    internal void SetRenderPageCount(int renderPageCount)
-    {
-        _renderPageCount = renderPageCount;
-    }
-
-    internal int GetRenderPageCount()
-    {
-        return _renderPageCount ?? 1;
     }
 }

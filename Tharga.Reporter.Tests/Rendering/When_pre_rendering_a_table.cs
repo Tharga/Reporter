@@ -2,6 +2,7 @@
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity;
 using Tharga.Reporter.Entity.Element;
+using Tharga.Reporter.Entity.Util;
 using Tharga.Reporter.Fonts;
 using Tharga.Reporter.Interface;
 using Xunit;
@@ -37,6 +38,8 @@ public class When_pre_rendering_a_table
         renderDataMock.Setup(x => x.ElementBounds).Returns(new XRect());
         renderDataMock.Setup(x => x.Section).Returns(new Section());
         renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
+        renderDataMock.Setup(x => x.Context).Returns(new RenderContext());
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.DocumentData).Returns(documentData);
 
         //Act

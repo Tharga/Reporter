@@ -62,7 +62,7 @@ public class Null_safety_Tests
     {
         //Arrange
         var referencePoint = new ReferencePoint();
-        var renderData = new RenderData(Mock.Of<IGraphics>(), new XRect(10, 20, 300, 400), new Section(), null, new PageNumberInfo(1, 1), null, true);
+        var renderData = new RenderData(Mock.Of<IGraphics>(), new XRect(10, 20, 300, 400), new Section(), null, new PageNumberInfo(1, 1), null, true, new RenderContext());
 
         //Act
         referencePoint.Render(renderData, 0);

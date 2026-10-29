@@ -5,7 +5,7 @@ namespace Tharga.Reporter.Entity.Util;
 
 internal class RenderData : IRenderData
 {
-    public RenderData(IGraphics graphics, XRect parentBounds, Section section, IDocumentData documentData, PageNumberInfo pageNumberInfo, IDebugData debugData, bool includeBackground)
+    public RenderData(IGraphics graphics, XRect parentBounds, Section section, IDocumentData documentData, PageNumberInfo pageNumberInfo, IDebugData debugData, bool includeBackground, RenderContext context)
     {
         ParentBounds = parentBounds;
         Section = section;
@@ -14,6 +14,7 @@ internal class RenderData : IRenderData
         PageNumberInfo = pageNumberInfo;
         DebugData = debugData;
         IncludeBackground = includeBackground;
+        Context = context;
     }
 
     public XRect ParentBounds { get; }
@@ -27,4 +28,6 @@ internal class RenderData : IRenderData
 
     public PageNumberInfo PageNumberInfo { get; }
     public IDebugData DebugData { get; }
+    public RenderContext Context { get; }
+    public double? StackTop { get; set; }
 }

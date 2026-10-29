@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using AwesomeAssertions;
@@ -16,6 +17,8 @@ public class Rendering_Image : IDisposable
     private const string MissingPath = "missing";
 
     private static readonly byte[] Png = PngWriter.FromGreyscale(new byte[,] { { 0, 255 }, { 255, 0 } });
+    private static readonly byte[] OtherPng = PngWriter.FromGreyscale(new byte[,] { { 255, 0, 0 }, { 0, 255, 0 } });
+    private static readonly string CacheFolder = Path.Combine(Path.GetTempPath(), "Tharga.Reporter", "Images");
 
     private readonly LocalHttpServer _server = new(Png, MissingPath);
     private readonly List<string> _cacheFiles = new();
@@ -58,7 +61,107 @@ public class Rendering_Image : IDisposable
         //Assert
         _cacheFiles.Add(cacheFileName);
         Path.GetFileName(cacheFileName).IndexOfAny(Path.GetInvalidFileNameChars()).Should().Be(-1);
-        Path.GetDirectoryName(cacheFileName).Should().Be(Path.GetDirectoryName(Path.GetTempPath()));
+    }
+
+    [Fact]
+    public void Downloads_are_cached_in_a_folder_of_their_own()
+    {
+        //Act
+        Image.WebResourceExists(_server.UrlFor(UniqueName()), out var cacheFileName);
+
+        //Assert
+        _cacheFiles.Add(cacheFileName);
+        Path.GetDirectoryName(cacheFileName).Should().Be(CacheFolder);
+    }
+
+    [Fact]
+    public void A_cached_download_that_has_expired_is_downloaded_again()
+    {
+        //Arrange
+        var url = _server.UrlFor(UniqueName());
+        Image.WebResourceExists(url, out var cacheFileName);
+        _cacheFiles.Add(cacheFileName);
+        File.SetLastWriteTimeUtc(cacheFileName, DateTime.UtcNow.AddDays(-2));
+        _server.Content = OtherPng;
+
+        //Act
+        var exists = Image.WebResourceExists(url, out _);
+
+        //Assert
+        exists.Should().BeTrue();
+        _server.RequestCount.Should().Be(2);
+        File.ReadAllBytes(cacheFileName).Should().Equal(OtherPng);
+    }
+
+    [Fact]
+    public void An_expired_download_that_cannot_be_refreshed_is_still_used()
+    {
+        //Arrange
+        var url = _server.UrlFor(UniqueName());
+        Image.WebResourceExists(url, out var cacheFileName);
+        _cacheFiles.Add(cacheFileName);
+        File.SetLastWriteTimeUtc(cacheFileName, DateTime.UtcNow.AddDays(-2));
+        _server.RespondWithError = true;
+
+        //Act
+        var exists = Image.WebResourceExists(url, out var secondCacheFileName);
+
+        //Assert
+        exists.Should().BeTrue();
+        File.ReadAllBytes(secondCacheFileName).Should().Equal(Png);
+    }
+
+    [Fact]
+    public void A_cached_file_that_is_not_an_image_is_downloaded_again_when_rendering()
+    {
+        //Arrange
+        var url = _server.UrlFor($"{UniqueName()}.png");
+        Image.WebResourceExists(url, out var cacheFileName);
+        _cacheFiles.Add(cacheFileName);
+        File.WriteAllBytes(cacheFileName, [1, 2, 3]);
+        var image = new Image { Source = url, Width = "10cm", Height = "10cm" };
+        var drawnSizes = new List<(int Width, int Height)>();
+        var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
+        graphicsMock.Setup(x => x.DrawImage(It.IsAny<XImage>(), It.IsAny<XRect>()))
+            .Callback<XImage, XRect>((drawn, _) => drawnSizes.Add((drawn.PixelWidth, drawn.PixelHeight)));
+        var renderData = new RenderData(graphicsMock.Object, new XRect(0, 0, 600, 600), new Section(), null, new PageNumberInfo(1, 1), null, true, new RenderContext());
+
+        //Act
+        image.Render(renderData);
+
+        //Assert
+        drawnSizes.Should().Equal((2, 2));
+        _server.RequestCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Renders_asking_for_one_url_at_the_same_time_download_it_once_and_all_get_the_whole_image()
+    {
+        //Arrange
+        var url = _server.UrlFor(UniqueName());
+        var cacheFileNames = new ConcurrentBag<string>();
+
+        byte[] Download()
+        {
+            var exists = Image.WebResourceExists(url, out var cacheFileName);
+            cacheFileNames.Add(cacheFileName);
+            return exists ? File.ReadAllBytes(cacheFileName) : null;
+        }
+
+        _server.HoldResponses();
+        var first = Task.Run(Download);
+        await _server.FirstRequestReceived;
+
+        //Act
+        var second = Task.Run(Download);
+        await Task.WhenAny(second, Task.Delay(TimeSpan.FromMilliseconds(500), TestContext.Current.CancellationToken));
+        _server.ReleaseResponses();
+        var results = await Task.WhenAll(first, second);
+
+        //Assert
+        _cacheFiles.AddRange(cacheFileNames.Distinct());
+        results.Should().AllSatisfy(x => x.Should().Equal(Png));
+        _server.RequestCount.Should().Be(1);
     }
 
     [Fact]
@@ -128,7 +231,7 @@ public class Rendering_Image : IDisposable
         var graphicsMock = new Mock<IGraphics>(MockBehavior.Strict);
         graphicsMock.Setup(x => x.DrawImage(It.IsAny<XImage>(), It.IsAny<XRect>()))
             .Callback<XImage, XRect>((drawn, _) => drawnSizes.Add((drawn.PixelWidth, drawn.PixelHeight)));
-        var renderData = new RenderData(graphicsMock.Object, new XRect(0, 0, 600, 600), new Section(), null, new PageNumberInfo(1, 1), null, true);
+        var renderData = new RenderData(graphicsMock.Object, new XRect(0, 0, 600, 600), new Section(), null, new PageNumberInfo(1, 1), null, true, new RenderContext());
 
         //Act
         image.Render(renderData);
@@ -154,14 +257,15 @@ public class Rendering_Image : IDisposable
     private sealed class LocalHttpServer : IDisposable
     {
         private readonly HttpListener _listener = new();
-        private readonly byte[] _content;
         private readonly string _missingPath;
         private readonly int _port = GetFreePort();
+        private readonly TaskCompletionSource _firstRequestReceived = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private TaskCompletionSource _hold;
         private int _requestCount;
 
         public LocalHttpServer(byte[] content, string missingPath)
         {
-            _content = content;
+            Content = content;
             _missingPath = missingPath;
             _listener.Prefixes.Add($"http://localhost:{_port}/");
             _listener.Start();
@@ -169,6 +273,22 @@ public class Rendering_Image : IDisposable
         }
 
         public int RequestCount => Volatile.Read(ref _requestCount);
+
+        public byte[] Content { get; set; }
+
+        public bool RespondWithError { get; set; }
+
+        public Task FirstRequestReceived => _firstRequestReceived.Task;
+
+        public void HoldResponses()
+        {
+            _hold = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
+        public void ReleaseResponses()
+        {
+            _hold?.TrySetResult();
+        }
 
         public string UrlFor(string pathAndQuery)
         {
@@ -199,6 +319,12 @@ public class Rendering_Image : IDisposable
                 }
 
                 Interlocked.Increment(ref _requestCount);
+                _firstRequestReceived.TrySetResult();
+                if (_hold != null)
+                {
+                    await _hold.Task;
+                }
+
                 using var response = context.Response;
                 if (context.Request.RawUrl?.StartsWith($"/{_missingPath}/", StringComparison.Ordinal) == true)
                 {
@@ -206,8 +332,14 @@ public class Rendering_Image : IDisposable
                     continue;
                 }
 
+                if (RespondWithError)
+                {
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    continue;
+                }
+
                 response.ContentType = "image/png";
-                await response.OutputStream.WriteAsync(_content);
+                await response.OutputStream.WriteAsync(Content);
             }
         }
 

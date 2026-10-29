@@ -22,7 +22,6 @@ public class TableColumn_Tests
         other.Width.Should().Be(UnitValue.Parse("2cm"));
         other.Align.Should().Be(Table.Alignment.Left);
         other.DisplayName.Should().Be("A");
-        other.Hide.Should().BeFalse();
         other.HideValue.Should().Be("***");
         other.WidthMode.Should().Be(Table.WidthMode.Specific);
         other.ToXme().OuterXml.Should().Be(xme.OuterXml);

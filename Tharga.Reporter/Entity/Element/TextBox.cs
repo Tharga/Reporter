@@ -16,7 +16,6 @@ public class TextBox : MultiPageAreaElement
     private Font _font;
     private string _fontClass;
     private string _hideValue;
-    private List<string[]> _pageText;
     private string _value;
 
     public string Value
@@ -53,16 +52,18 @@ public class TextBox : MultiPageAreaElement
 
     internal override int PreRender(IRenderData renderData)
     {
-        _pageText = new List<string[]>();
+        var pageText = new List<string[]>();
+        renderData.Context.SetPages(this, pageText);
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!renderData.IncludeBackground && IsBackground)
         {
             return 0;
         }
 
-        var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+        var elementFont = _font.OrFontClass(_fontClass, renderData.Section);
+        var font = new XFont(elementFont.GetName(renderData.Section), elementFont.GetSize(renderData.Section), elementFont.GetStyle(renderData.Section));
 
         var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
         var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
@@ -88,6 +89,7 @@ public class TextBox : MultiPageAreaElement
                         //One singe word that is too long, print it anyway
                         //renderData.Gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
                         lines.Add(sb.ToString());
+                        sb.Clear();
                     }
                     else
                     {
@@ -102,22 +104,29 @@ public class TextBox : MultiPageAreaElement
                     if (top > renderData.ElementBounds.Bottom - nextTextSize.Height)
                     {
                         //Now we have reached the limit of the page
-                        _pageText.Add(lines.ToArray());
+                        pageText.Add(lines.ToArray());
                         lines.Clear();
                         top = renderData.ElementBounds.Top;
                     }
                 }
             }
 
-            lines.Add(sb.ToString());
-            _pageText.Add(lines.ToArray());
+            if (sb.Length > 0)
+            {
+                lines.Add(sb.ToString());
+            }
+
+            if (lines.Count > 0 || pageText.Count == 0)
+            {
+                pageText.Add(lines.ToArray());
+            }
         }
         else
         {
-            _pageText.Add(new[] { text });
+            pageText.Add(new[] { text });
         }
 
-        return _pageText.Count;
+        return pageText.Count;
     }
 
     internal override void Render(IRenderData renderData, int page)
@@ -127,9 +136,10 @@ public class TextBox : MultiPageAreaElement
             return;
         }
 
-        if (_pageText == null) throw new InvalidOperationException("Pre-render has not been performed.");
+        var pageText = renderData.Context.GetPages<string[]>(this);
+        if (pageText == null) throw new InvalidOperationException("Pre-render has not been performed.");
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (!renderData.IncludeBackground && IsBackground)
         {
@@ -141,16 +151,16 @@ public class TextBox : MultiPageAreaElement
             renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
         }
 
-        var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-        // Font.Color is not applied yet. See #28.
-        var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+        var elementFont = _font.OrFontClass(_fontClass, renderData.Section);
+        var font = new XFont(elementFont.GetName(renderData.Section), elementFont.GetSize(renderData.Section), elementFont.GetStyle(renderData.Section));
+        var brush = new XSolidBrush(elementFont.GetColor(renderData.Section).ToXColor());
 
         var left = renderData.ElementBounds.Left;
         var top = renderData.ElementBounds.Top;
 
-        if (_pageText.Count > page - renderData.Section.GetPageOffset())
+        if (pageText.Count > page - renderData.Context.GetPageOffset(renderData.Section))
         {
-            foreach (var line in _pageText[page - renderData.Section.GetPageOffset()])
+            foreach (var line in pageText[page - renderData.Context.GetPageOffset(renderData.Section)])
             {
                 renderData.Graphics.DrawString(line, font, brush, new XPoint(left, top), XStringFormats.TopLeft);
                 var newTextSize = renderData.Graphics.MeasureString(line, font, XStringFormats.TopLeft);

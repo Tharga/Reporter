@@ -10,7 +10,7 @@ namespace Tharga.Reporter.Entity.Element;
 public sealed class Line : SinglePageAreaElement
 {
     private readonly Color _defaultColor = Color.Black;
-    private readonly UnitValue _defaultThickness = "0.1px";
+    private readonly UnitValue _defaultThickness = "1px";
 
     private Color? _color;
     private UnitValue? _thickness;
@@ -31,12 +31,11 @@ public sealed class Line : SinglePageAreaElement
     {
         if (IsNotVisible(renderData)) return;
 
-        renderData.ElementBounds = GetBounds(renderData.ParentBounds);
+        renderData.ElementBounds = GetBounds(renderData);
 
         if (renderData.IncludeBackground || !IsBackground)
         {
-            // Color and Thickness are not applied yet. See #28.
-            var pen = new XPen(XColor.FromKnownColor(XKnownColor.Black));
+            var pen = new XPen(Color.ToXColor(), Thickness.GetXUnitValue(0));
 
             renderData.Graphics.DrawLine(pen, renderData.ElementBounds.Left, renderData.ElementBounds.Top, renderData.ElementBounds.Right, renderData.ElementBounds.Bottom);
         }

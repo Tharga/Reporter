@@ -141,6 +141,7 @@ public class Rendering_BarCode
         renderDataMock.Setup(x => x.DocumentData).Returns((DocumentData)null);
         renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 1));
         renderDataMock.Setup(x => x.Graphics).Returns(graphicsMock.Object);
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.IncludeBackground).Returns(true);
         renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
 
@@ -166,6 +167,7 @@ public class Rendering_BarCode
         renderDataMock.Setup(x => x.DocumentData).Returns((DocumentData)null);
         renderDataMock.Setup(x => x.PageNumberInfo).Returns(new PageNumberInfo(1, 1));
         renderDataMock.Setup(x => x.Graphics).Returns(graphicsMock.Object);
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.IncludeBackground).Returns(true);
         renderDataMock.SetupSet(x => x.ElementBounds = It.IsAny<XRect>());
 

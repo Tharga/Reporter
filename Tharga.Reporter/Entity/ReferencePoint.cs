@@ -37,10 +37,10 @@ public class ReferencePoint : MultiPageElement
     {
         var bounds = GetBounds(renderData.ParentBounds);
 
-        var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground);
-        var pageCount = PreRenderChildren(rd);
+        var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground, renderData.Context);
+        var (pageCount, usedArea) = PreRenderChildren(rd);
 
-        renderData.ElementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
+        renderData.ElementBounds = usedArea;
 
         return pageCount;
     }
@@ -49,8 +49,8 @@ public class ReferencePoint : MultiPageElement
     {
         var bounds = GetBounds(renderData.ParentBounds);
 
-        var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground);
-        RenderChildren(rd, page);
+        var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground, renderData.Context);
+        var usedArea = RenderChildren(rd, page);
 
         if (renderData.DebugData != null)
         {
@@ -60,24 +60,16 @@ public class ReferencePoint : MultiPageElement
             renderData.Graphics.DrawLine(renderData.DebugData.Pen, bounds.Left, bounds.Top - radius - 2, bounds.Left, bounds.Top + radius + 2);
         }
 
-        // Reports an empty area, so a vertical stack does not make room for this element. See #31.
-        renderData.ElementBounds = new XRect(bounds.Left, bounds.Right, 0, 0);
+        renderData.ElementBounds = usedArea;
     }
 
-    private void RenderChildren(IRenderData renderData, int page)
+    private XRect RenderChildren(RenderData renderData, int page)
     {
-        var stackTop = new UnitValue();
+        var usedArea = new XRect(renderData.ParentBounds.TopLeft, new XSize());
+        var stackTop = 0D;
         foreach (var element in ElementList)
         {
-            var resetLocation = false;
-            if (Stack == StackMethod.Vertical)
-            {
-                if (element.Top == null)
-                {
-                    resetLocation = true;
-                    element.Top = stackTop;
-                }
-            }
+            renderData.StackTop = GetStackTop(element, stackTop);
 
             if (element is SinglePageAreaElement)
             {
@@ -96,32 +88,23 @@ public class ReferencePoint : MultiPageElement
                 throw new ArgumentOutOfRangeException(string.Format("Unknown type {0}.", element.GetType()));
             }
 
-            stackTop = new UnitValue(stackTop.Value + renderData.ElementBounds.Height, stackTop.Unit);
-
-            if (resetLocation)
-            {
-                element.Top = null;
-            }
+            stackTop += renderData.ElementBounds.Height;
+            usedArea = Include(usedArea, renderData.ElementBounds);
         }
+
+        return usedArea;
     }
 
-    private int PreRenderChildren(IRenderData renderData)
+    private (int PageCount, XRect UsedArea) PreRenderChildren(RenderData renderData)
     {
         var maxPageCount = 1;
         var elementsToRender = ElementList.Where(x => x is MultiPageAreaElement || x is MultiPageElement);
 
-        var stackTop = new UnitValue();
+        var usedArea = new XRect(renderData.ParentBounds.TopLeft, new XSize());
+        var stackTop = 0D;
         foreach (var element in elementsToRender)
         {
-            var resetLocation = false;
-            if (Stack == StackMethod.Vertical)
-            {
-                if (element.Top == null)
-                {
-                    resetLocation = true;
-                    element.Top = stackTop;
-                }
-            }
+            renderData.StackTop = GetStackTop(element, stackTop);
 
             int pageCount;
             if (element is MultiPageAreaElement)
@@ -137,12 +120,8 @@ public class ReferencePoint : MultiPageElement
                 throw new ArgumentOutOfRangeException(string.Format("Unknown type {0}.", element.GetType()));
             }
 
-            stackTop = new UnitValue(stackTop.Value + renderData.ElementBounds.Height, stackTop.Unit);
-
-            if (resetLocation)
-            {
-                element.Top = null;
-            }
+            stackTop += renderData.ElementBounds.Height;
+            usedArea = Include(usedArea, renderData.ElementBounds);
 
             if (pageCount > maxPageCount)
             {
@@ -150,7 +129,19 @@ public class ReferencePoint : MultiPageElement
             }
         }
 
-        return maxPageCount;
+        return (maxPageCount, usedArea);
+    }
+
+    private static XRect Include(XRect usedArea, XRect childBounds)
+    {
+        var right = Math.Max(usedArea.Right, childBounds.Right);
+        var bottom = Math.Max(usedArea.Bottom, childBounds.Bottom);
+        return new XRect(usedArea.Left, usedArea.Top, right - usedArea.Left, bottom - usedArea.Top);
+    }
+
+    private double? GetStackTop(Element.Base.Element element, double stackTop)
+    {
+        return Stack == StackMethod.Vertical && element.Top == null ? stackTop : null;
     }
 
     protected override XRect GetBounds(XRect parentBounds)

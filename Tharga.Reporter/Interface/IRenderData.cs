@@ -14,4 +14,6 @@ internal interface IRenderData
     IDocumentData DocumentData { get; }
     PageNumberInfo PageNumberInfo { get; }
     IDebugData DebugData { get; }
+    RenderContext Context { get; }
+    double? StackTop { get; }
 }

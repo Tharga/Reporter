@@ -27,6 +27,10 @@ var pdf = new Renderer(template, data).GetPdfBinary(PageSize.A4);
 
 If a placeholder references an unknown key, it renders empty. Use `Text.HideValue` to suppress an entire element when a particular key is empty.
 
+A `{` with no closing `}` after it is not a placeholder and is drawn as it is.
+
+> **Changed in 3.1:** a `{` without a closing `}` used to make the render throw `ArgumentOutOfRangeException`.
+
 ## Built-in placeholders
 
 The renderer fills these automatically — you don't need to add them to `DocumentData`:
@@ -82,6 +86,15 @@ byte[] pdf = renderer.GetPdfBinary(PageSize.A4);
 - **`includeBackgroundObjects`** — set `false` to omit elements marked `IsBackground = true`. Useful when the foreground is rendered onto pre-printed paper.
 - **`documentProperties`** — fills the PDF metadata: `Author`, `Title`, `Subject`, `Creator`.
 - **`debug`** — draws guides for element bounds, reference points, and the page grid. Off for production.
+- **`Security`** — an init-only property that encrypts the PDF. See [Document security](#document-security).
+
+A `Renderer` renders one document. Create a new one for each document; the `Template` can be shared.
+Rendering never changes the template, so one template can serve many documents, also from several
+threads at the same time.
+
+> **Changed in 3.1:** rendering used to store pagination and measured table column widths on the
+> template, so renders running at the same time mixed up each other's pages, and a table could keep
+> the column widths of an earlier document.
 
 ## DocumentProperties
 
@@ -96,6 +109,34 @@ var props = new DocumentProperties
     Creator = "MyApp 1.2.0"
 };
 ```
+
+## Document security
+
+A PDF is not encrypted unless you set `Security` on the renderer:
+
+```csharp
+var renderer = new Renderer(template, data)
+{
+    Security = new DocumentSecurity
+    {
+        OwnerPassword = ownerPassword,
+        PermitModifyDocument = false
+    }
+};
+```
+
+- **`OwnerPassword`** gives full access, including changing the permissions.
+- **`UserPassword`** is needed to open the document at all. Leave it empty to let anyone open and read it.
+- **`Permit…`** — `PermitPrint`, `PermitFullQualityPrint`, `PermitExtractContent`, `PermitModifyDocument`,
+  `PermitAnnotations`, `PermitFormsFill` and `PermitAssembleDocument`. All are allowed unless you turn them off.
+  They are honoured by the PDF reader, so they only restrict anything while the owner password stays secret.
+- **`Encryption`** — `Aes128` (the default, read by practically every reader), `Aes256` (stronger, PDF 2.0), or
+  `Rc4With128Bits` (weak; only for readers that cannot open AES).
+
+At least one of the two passwords is required.
+
+> **Changed in 3.1:** every PDF used to be encrypted with RC4, fixed permissions and an owner password
+> that was published in the source code. See [Upgrading to 3.1](upgrading-to-3.1.md).
 
 ## PageFormat
 
