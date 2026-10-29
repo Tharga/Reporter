@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Globalization;
 using System.Xml;
 using PdfSharp.Drawing;
 using Tharga.Reporter.Entity.Element.Base;
@@ -288,77 +287,18 @@ public class Table : MultiPageAreaElement
             if (dataTable != null)
             {
                 var columnPadding = ColumnPadding.GetXUnitValue(renderData.ElementBounds.Width);
-
-                var springCount = Columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
-
-                //Calculate column width
-                foreach (var column in Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).ToList())
-                {
-                    var stringSize = renderData.Graphics.MeasureString(column.Value.DisplayName, headerFont, XStringFormats.TopLeft);
-
-                    if (column.Value.Width == null)
-                    {
-                        throw new NullReferenceException(string.Format("Column {0} does not have a width.", column.Value.DisplayName));
-                    }
-
-                    if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                    {
-                        column.Value.Width = UnitValue.Parse(stringSize.Width.ToString(CultureInfo.InvariantCulture));
-                    }
-
-                    if (column.Value.HideValue != null)
-                    {
-                        column.Value.Hide = true;
-                    }
-
-                    foreach (var row in dataTable.Rows)
-                    {
-                        if (row is DocumentDataTableData)
-                        {
-                            var rowData = row as DocumentDataTableData;
-
-                            var cellData = GetValue(column.Key, rowData.Columns);
-                            stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                            if (stringSize.Width > column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width))
-                            {
-                                column.Value.Width = UnitValue.Parse((stringSize.Width + columnPadding * 2).ToString(CultureInfo.InvariantCulture) + "px");
-                            }
-
-                            var parsedHideValue = GetValue(column.Value.HideValue, rowData.Columns);
-                            if (parsedHideValue != cellData)
-                            {
-                                column.Value.Hide = false;
-                            }
-                        }
-                    }
-
-                    if (column.Value.Hide)
-                    {
-                        column.Value.Width = new UnitValue();
-                    }
-                }
-
-                var totalWidth = renderData.ElementBounds.Width;
-                var nonSpringWidth = Columns.Where(x => x.Value.WidthMode != WidthMode.Spring).Sum(x => x.Value.Width.GetValueOrDefault().GetXUnitValue(totalWidth));
-
-                if (springCount > 0)
-                {
-                    foreach (var column in Columns.Where(x => x.Value.WidthMode == WidthMode.Spring && !x.Value.Hide).ToList())
-                    {
-                        column.Value.Width = UnitValue.Parse(((renderData.ElementBounds.Width - nonSpringWidth) / springCount).ToString(CultureInfo.InvariantCulture));
-                    }
-                }
+                var visibleColumns = GetVisibleColumnWidths(renderData, dataTable, headerFont, lineFont, columnPadding);
 
                 //Create header
                 double left = 0;
-                var tableColumns = Columns.Values.Where(x => !x.Hide).ToList();
-                foreach (var column in tableColumns)
+                foreach (var (key, columnWidth) in visibleColumns)
                 {
+                    var column = Columns[key];
                     var alignmentJusttification = 0D;
                     if (column.Align == Alignment.Right)
                     {
                         var stringSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
-                        alignmentJusttification = column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                        alignmentJusttification = columnWidth - stringSize.Width - columnPadding;
                     }
                     else
                     {
@@ -366,7 +306,7 @@ public class Table : MultiPageAreaElement
                     }
 
                     renderData.Graphics.DrawString(column.DisplayName, headerFont, headerBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top), XStringFormats.TopLeft);
-                    left += column.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                    left += columnWidth;
 
                     if (renderData.DebugData != null)
                     {
@@ -412,29 +352,30 @@ public class Table : MultiPageAreaElement
                     {
                         var rowData = row as DocumentDataTableData;
 
-                        foreach (var column in Columns.Where(x => !x.Value.Hide).ToList())
+                        foreach (var (key, columnWidth) in visibleColumns)
                         {
-                            var cellData = GetValue(column.Key, rowData.Columns);
+                            var column = Columns[key];
+                            var cellData = GetValue(key, rowData.Columns);
 
                             var alignmentJusttification = 0D;
-                            if (column.Value.Align == Alignment.Right)
+                            if (column.Align == Alignment.Right)
                             {
                                 var stringSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
-                                alignmentJusttification = column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width) - stringSize.Width - columnPadding;
+                                alignmentJusttification = columnWidth - stringSize.Width - columnPadding;
                             }
                             else
                             {
                                 alignmentJusttification += columnPadding;
                             }
 
-                            var parsedHideValue = GetValue(column.Value.HideValue, rowData.Columns);
+                            var parsedHideValue = GetValue(column.HideValue, rowData.Columns);
                             if (parsedHideValue == cellData)
                             {
                                 cellData = "";
                             }
 
                             renderData.Graphics.DrawString(cellData, lineFont, lineBrush, new XPoint(renderData.ElementBounds.Left + left + alignmentJusttification, renderData.ElementBounds.Top + top), XStringFormats.TopLeft);
-                            left += column.Value.Width.Value.GetXUnitValue(renderData.ElementBounds.Width);
+                            left += columnWidth;
                         }
 
                         if (SkipLine != null && pageIndex % SkipLine.Interval == 0)
@@ -485,6 +426,59 @@ public class Table : MultiPageAreaElement
         {
             renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
         }
+    }
+
+    private IReadOnlyList<(string Key, double Width)> GetVisibleColumnWidths(IRenderData renderData, DocumentDataTable dataTable, XFont headerFont, XFont lineFont, double columnPadding)
+    {
+        var totalWidth = renderData.ElementBounds.Width;
+        var widths = new Dictionary<string, double>();
+        var hidden = new HashSet<string>();
+
+        foreach (var (key, column) in Columns.Where(x => x.Value.WidthMode != WidthMode.Spring))
+        {
+            if (column.Width == null)
+            {
+                throw new NullReferenceException(string.Format("Column {0} does not have a width.", column.DisplayName));
+            }
+
+            var width = column.Width.Value.GetXUnitValue(totalWidth);
+            var headerSize = renderData.Graphics.MeasureString(column.DisplayName, headerFont, XStringFormats.TopLeft);
+            if (headerSize.Width > width)
+            {
+                width = headerSize.Width;
+            }
+
+            var hide = column.HideValue != null;
+            foreach (var rowData in dataTable.Rows.OfType<DocumentDataTableData>())
+            {
+                var cellData = GetValue(key, rowData.Columns);
+                var cellSize = renderData.Graphics.MeasureString(cellData, lineFont, XStringFormats.TopLeft);
+                if (cellSize.Width > width)
+                {
+                    width = cellSize.Width + columnPadding * 2;
+                }
+
+                if (GetValue(column.HideValue, rowData.Columns) != cellData)
+                {
+                    hide = false;
+                }
+            }
+
+            if (hide)
+            {
+                hidden.Add(key);
+            }
+
+            widths[key] = hide ? 0 : width;
+        }
+
+        var springCount = Columns.Count(x => x.Value.WidthMode == WidthMode.Spring);
+        var springWidth = springCount == 0 ? 0 : (totalWidth - widths.Values.Sum()) / springCount;
+
+        return Columns
+            .Where(x => !hidden.Contains(x.Key))
+            .Select(x => (x.Key, x.Value.WidthMode == WidthMode.Spring ? springWidth : widths[x.Key]))
+            .ToArray();
     }
 
     // Border and background colours and the border thickness are not applied yet. See #28.

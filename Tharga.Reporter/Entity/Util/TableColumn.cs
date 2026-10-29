@@ -15,17 +15,13 @@ internal class TableColumn
         WidthMode = widthMode;
         Align = align;
         HideValue = hideValue;
-
-        Hide = false;
     }
 
     public string DisplayName { get; }
-    public UnitValue? Width { get; internal set; }
+    public UnitValue? Width { get; }
     public Table.WidthMode WidthMode { get; }
     public Table.Alignment Align { get; }
     public string HideValue { get; }
-
-    internal bool Hide { get; set; }
 
     internal XmlElement ToXme()
     {
