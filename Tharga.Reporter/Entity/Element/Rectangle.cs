@@ -47,12 +47,11 @@ public sealed class Rectangle : SinglePageAreaElement
 
         if (!IsBackground || renderData.IncludeBackground)
         {
-            // BorderColor and BackgroundColor are not applied yet. See #28.
-            var pen = new XPen(XColor.FromKnownColor(XKnownColor.Black), BorderWidth.GetXUnitValue(0));
+            var pen = new XPen(BorderColor.ToXColor(), BorderWidth.GetXUnitValue(0));
 
             if (BackgroundColor != null)
             {
-                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+                var brush = new XSolidBrush(BackgroundColor.Value.ToXColor());
                 renderData.Graphics.DrawRectangle(pen, brush, renderData.ElementBounds);
             }
             else

@@ -151,8 +151,7 @@ public class TextBox : MultiPageAreaElement
         }
 
         var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-        // Font.Color is not applied yet. See #28.
-        var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+        var brush = new XSolidBrush(_font.GetColor(renderData.Section).ToXColor());
 
         var left = renderData.ElementBounds.Left;
         var top = renderData.ElementBounds.Top;

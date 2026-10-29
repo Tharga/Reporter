@@ -24,6 +24,8 @@ public class Table : MultiPageAreaElement
         Spring
     }
 
+    private const double BorderPenWidth = 0.1;
+
     private readonly UnitValue _defaultColumnPadding = "2px";
     private readonly Font _defaultContentFont = new();
     private readonly Font _defaultHeaderFont = new() { Size = 18 };
@@ -260,11 +262,11 @@ public class Table : MultiPageAreaElement
         }
 
         var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-        // Font colours are not applied yet. See #28.
-        var headerBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+        var headerBrush = new XSolidBrush(_headerFont.GetColor(renderData.Section).ToXColor());
         var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
-        var lineBrush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+        var lineBrush = new XSolidBrush(_contentFont.GetColor(renderData.Section).ToXColor());
         var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
+        var groupBrush = new XSolidBrush(_groupFont.GetColor(renderData.Section).ToXColor());
 
         var firstColumn = Columns.FirstOrDefault();
         if (firstColumn.Value == null)
@@ -398,20 +400,9 @@ public class Table : MultiPageAreaElement
                         lineSize = stringSize;
                         var topLeft = new XPoint(renderData.ElementBounds.Left + left, renderData.ElementBounds.Top + top);
 
-                        // Group colours are not applied yet. See #28.
-                        if (GroupBackgroundColor != null)
-                        {
-                            var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                            var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                            renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), brush, rect);
-                        }
-                        else if (GroupBorderColor != null)
-                        {
-                            var rect = new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height));
-                            renderData.Graphics.DrawRectangle(new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1), rect);
-                        }
+                        RenderArea(renderData.Graphics, new XRect(topLeft, new XSize(renderData.ElementBounds.Width, stringSize.Height)), GroupBorderColor, GroupBackgroundColor);
 
-                        renderData.Graphics.DrawString(groupData, groupFont, lineBrush, topLeft, XStringFormats.TopLeft);
+                        renderData.Graphics.DrawString(groupData, groupFont, groupBrush, topLeft, XStringFormats.TopLeft);
                         pageIndex = 0;
                     }
 
@@ -482,37 +473,28 @@ public class Table : MultiPageAreaElement
             .ToArray();
     }
 
-    // Border and background colours and the border thickness are not applied yet. See #28.
     private void RenderBorder(XRect elementBounds, IGraphics gfx, XSize headerSize)
     {
-        if (ContentBorderColor != null || ContentBackgroundColor != null)
-        {
-            var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
+        RenderArea(gfx, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height), ContentBorderColor, ContentBackgroundColor);
+        RenderArea(gfx, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height), HeaderBorderColor, HeaderBackgroundColor);
+    }
 
-            if (ContentBackgroundColor != null)
-            {
-                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
-            }
-            else
-            {
-                gfx.DrawRectangle(borderPen, new XRect(elementBounds.Left, elementBounds.Top + headerSize.Height, elementBounds.Width, elementBounds.Height - headerSize.Height));
-            }
+    private static void RenderArea(IGraphics gfx, XRect area, Color? borderColor, Color? backgroundColor)
+    {
+        var pen = borderColor == null ? null : new XPen(borderColor.Value.ToXColor(), BorderPenWidth);
+        var brush = backgroundColor == null ? null : new XSolidBrush(backgroundColor.Value.ToXColor());
+
+        if (pen != null && brush != null)
+        {
+            gfx.DrawRectangle(pen, brush, area);
         }
-
-        if (HeaderBorderColor != null || HeaderBackgroundColor != null)
+        else if (brush != null)
         {
-            var borderPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), 0.1);
-
-            if (HeaderBackgroundColor != null)
-            {
-                var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
-                gfx.DrawRectangle(borderPen, brush, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
-            }
-            else
-            {
-                gfx.DrawRectangle(borderPen, new XRect(elementBounds.Left, elementBounds.Top, elementBounds.Width, headerSize.Height));
-            }
+            gfx.DrawRectangle(brush, area);
+        }
+        else if (pen != null)
+        {
+            gfx.DrawRectangle(pen, area);
         }
     }
 

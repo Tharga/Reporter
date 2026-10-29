@@ -55,8 +55,7 @@ public abstract class TextBase : SinglePageAreaElement
         var bounds = GetBounds(renderData);
 
         var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-        // Font.Color is not applied yet. See #28.
-        var brush = new XSolidBrush(XColor.FromKnownColor(XKnownColor.Black));
+        var brush = new XSolidBrush(_font.GetColor(renderData.Section).ToXColor());
 
         var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
         var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);

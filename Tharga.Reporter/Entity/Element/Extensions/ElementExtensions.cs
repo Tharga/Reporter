@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Globalization;
+using PdfSharp.Drawing;
 
 namespace Tharga.Reporter.Entity.Element.Extensions;
 
@@ -17,5 +18,10 @@ internal static class ElementExtensions
 
         var color = Color.FromArgb(r, g, b);
         return color;
+    }
+
+    internal static XColor ToXColor(this Color color)
+    {
+        return XColor.FromArgb(color.A, color.R, color.G, color.B);
     }
 }
