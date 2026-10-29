@@ -1,5 +1,6 @@
 ﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using PdfSharp.Pdf.Security;
 using System.Text;
 using PdfSharp;
 using Tharga.Reporter.Entity;
@@ -44,6 +45,12 @@ public class Renderer
 
         _graphicsFactory = graphicsFactory;
     }
+
+    /// <summary>
+    /// Encrypts the produced PDF with the given passwords and permissions. When it is not set, the PDF is not
+    /// encrypted.
+    /// </summary>
+    public DocumentSecurity Security { get; init; }
 
     private void RenderPdfDocument(PdfDocument pdfDocument, bool preRender, PageFormat pageFormat)
     {
@@ -94,17 +101,39 @@ public class Renderer
             pdfDocument.Info.Creator = _documentProperties.Creator;
         }
 
-        // Encryption, owner password and permissions are fixed for now. See #32.
-        pdfDocument.SecurityHandler.SetEncryptionToV2With128Bits();
-        pdfDocument.SecuritySettings.OwnerPassword = "qwerty12";
-        pdfDocument.SecuritySettings.PermitAnnotations = false;
-        pdfDocument.SecuritySettings.PermitAssembleDocument = false;
-        pdfDocument.SecuritySettings.PermitExtractContent = true;
-        pdfDocument.SecuritySettings.PermitFormsFill = false;
-        pdfDocument.SecuritySettings.PermitFullQualityPrint = true;
-        pdfDocument.SecuritySettings.PermitModifyDocument = false;
-        pdfDocument.SecuritySettings.PermitPrint = true;
+        if (Security != null)
+        {
+            ApplySecurity(pdfDocument, Security);
+        }
+
         return pdfDocument;
+    }
+
+    private static void ApplySecurity(PdfDocument pdfDocument, DocumentSecurity security)
+    {
+        if (string.IsNullOrEmpty(security.OwnerPassword) && string.IsNullOrEmpty(security.UserPassword))
+        {
+            throw new InvalidOperationException($"{nameof(DocumentSecurity)} needs an {nameof(DocumentSecurity.OwnerPassword)} or a {nameof(DocumentSecurity.UserPassword)}.");
+        }
+
+        pdfDocument.SecurityHandler.SetEncryption(security.Encryption switch
+        {
+            DocumentEncryption.Aes128 => PdfDefaultEncryption.V4UsingAES,
+            DocumentEncryption.Aes256 => PdfDefaultEncryption.V5,
+            DocumentEncryption.Rc4With128Bits => PdfDefaultEncryption.V2With128Bits,
+            _ => throw new ArgumentOutOfRangeException(nameof(security), security.Encryption, "Unknown encryption.")
+        });
+
+        var settings = pdfDocument.SecuritySettings;
+        settings.OwnerPassword = security.OwnerPassword ?? string.Empty;
+        settings.UserPassword = security.UserPassword ?? string.Empty;
+        settings.PermitPrint = security.PermitPrint;
+        settings.PermitFullQualityPrint = security.PermitFullQualityPrint;
+        settings.PermitExtractContent = security.PermitExtractContent;
+        settings.PermitModifyDocument = security.PermitModifyDocument;
+        settings.PermitAnnotations = security.PermitAnnotations;
+        settings.PermitFormsFill = security.PermitFormsFill;
+        settings.PermitAssembleDocument = security.PermitAssembleDocument;
     }
 
     private void PreRender(PageFormat pageFormat)
