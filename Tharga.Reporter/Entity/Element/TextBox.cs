@@ -88,6 +88,7 @@ public class TextBox : MultiPageAreaElement
                         //One singe word that is too long, print it anyway
                         //renderData.Gfx.DrawString(sb.ToString(), font, brush, left, top, XStringFormats.TopLeft);
                         lines.Add(sb.ToString());
+                        sb.Clear();
                     }
                     else
                     {
@@ -109,8 +110,15 @@ public class TextBox : MultiPageAreaElement
                 }
             }
 
-            lines.Add(sb.ToString());
-            pageText.Add(lines.ToArray());
+            if (sb.Length > 0)
+            {
+                lines.Add(sb.ToString());
+            }
+
+            if (lines.Count > 0 || pageText.Count == 0)
+            {
+                pageText.Add(lines.ToArray());
+            }
         }
         else
         {
