@@ -62,7 +62,8 @@ public class TextBox : MultiPageAreaElement
             return 0;
         }
 
-        var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
+        var elementFont = _font.OrFontClass(_fontClass, renderData.Section);
+        var font = new XFont(elementFont.GetName(renderData.Section), elementFont.GetSize(renderData.Section), elementFont.GetStyle(renderData.Section));
 
         var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
         var textSize = renderData.Graphics.MeasureString(text, font, XStringFormats.TopLeft);
@@ -150,8 +151,9 @@ public class TextBox : MultiPageAreaElement
             renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
         }
 
-        var font = new XFont(_font.GetName(renderData.Section), _font.GetSize(renderData.Section), _font.GetStyle(renderData.Section));
-        var brush = new XSolidBrush(_font.GetColor(renderData.Section).ToXColor());
+        var elementFont = _font.OrFontClass(_fontClass, renderData.Section);
+        var font = new XFont(elementFont.GetName(renderData.Section), elementFont.GetSize(renderData.Section), elementFont.GetStyle(renderData.Section));
+        var brush = new XSolidBrush(elementFont.GetColor(renderData.Section).ToXColor());
 
         var left = renderData.ElementBounds.Left;
         var top = renderData.ElementBounds.Top;

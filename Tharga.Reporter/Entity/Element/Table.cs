@@ -65,8 +65,7 @@ public class Table : MultiPageAreaElement
         }
     }
 
-    // Internal until font classes are applied when rendering. See #30.
-    internal string HeaderFontClass
+    public string HeaderFontClass
     {
         get => _headerFontClass ?? string.Empty;
         set
@@ -118,8 +117,7 @@ public class Table : MultiPageAreaElement
         set => _groupFont = value;
     }
 
-    // Internal until font classes are applied when rendering. See #30.
-    internal string ContentFontClass
+    public string ContentFontClass
     {
         get => _contentFontClass ?? string.Empty;
         set
@@ -183,8 +181,10 @@ public class Table : MultiPageAreaElement
             return 0;
         }
 
-        var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-        var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
+        var headerFontSource = _headerFont.OrFontClass(_headerFontClass, renderData.Section);
+        var contentFontSource = _contentFont.OrFontClass(_contentFontClass, renderData.Section);
+        var headerFont = new XFont(headerFontSource.GetName(renderData.Section), headerFontSource.GetSize(renderData.Section), headerFontSource.GetStyle(renderData.Section));
+        var lineFont = new XFont(contentFontSource.GetName(renderData.Section), contentFontSource.GetSize(renderData.Section), contentFontSource.GetStyle(renderData.Section));
         var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
 
         var firstColumn = Columns.FirstOrDefault();
@@ -261,10 +261,12 @@ public class Table : MultiPageAreaElement
             return;
         }
 
-        var headerFont = new XFont(_headerFont.GetName(renderData.Section), _headerFont.GetSize(renderData.Section), _headerFont.GetStyle(renderData.Section));
-        var headerBrush = new XSolidBrush(_headerFont.GetColor(renderData.Section).ToXColor());
-        var lineFont = new XFont(_contentFont.GetName(renderData.Section), _contentFont.GetSize(renderData.Section), _contentFont.GetStyle(renderData.Section));
-        var lineBrush = new XSolidBrush(_contentFont.GetColor(renderData.Section).ToXColor());
+        var headerFontSource = _headerFont.OrFontClass(_headerFontClass, renderData.Section);
+        var contentFontSource = _contentFont.OrFontClass(_contentFontClass, renderData.Section);
+        var headerFont = new XFont(headerFontSource.GetName(renderData.Section), headerFontSource.GetSize(renderData.Section), headerFontSource.GetStyle(renderData.Section));
+        var headerBrush = new XSolidBrush(headerFontSource.GetColor(renderData.Section).ToXColor());
+        var lineFont = new XFont(contentFontSource.GetName(renderData.Section), contentFontSource.GetSize(renderData.Section), contentFontSource.GetStyle(renderData.Section));
+        var lineBrush = new XSolidBrush(contentFontSource.GetColor(renderData.Section).ToXColor());
         var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
         var groupBrush = new XSolidBrush(_groupFont.GetColor(renderData.Section).ToXColor());
 

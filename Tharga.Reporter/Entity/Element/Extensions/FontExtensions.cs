@@ -3,9 +3,18 @@ using PdfSharp.Drawing;
 
 namespace Tharga.Reporter.Entity.Element.Extensions;
 
-// Font classes are not resolved here yet, only an element's own font or the section default. See #30.
 internal static class FontExtensions
 {
+    /// <summary>
+    /// The font an element draws with when it has a font of its own or names a font class defined in the section.
+    /// Null when it has neither, so the getters below fall back to the section default font.
+    /// </summary>
+    internal static Font OrFontClass(this Font font, string fontClass, Section section)
+    {
+        if (font != null || string.IsNullOrEmpty(fontClass)) return font;
+        return section.FontClasses.GetValueOrDefault(fontClass);
+    }
+
     internal static XFontStyleEx GetStyle(this Font font, Section section)
     {
         var source = font ?? section.DefaultFont;
