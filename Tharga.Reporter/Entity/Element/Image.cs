@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -14,11 +15,21 @@ public class Image : SinglePageAreaElement
     private const string MissingImageFontName = "Verdana";
     private const double MissingImageFontSize = 10;
     private const char CacheNameReplacement = '_';
+    private const string DownloadExtension = ".download";
 
     private static readonly HttpClient SharedHttpClient = new(new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(2) });
     private static readonly char[] InvalidCacheNameChars = Path.GetInvalidFileNameChars().Concat(['?', '=', '&']).ToArray();
+    private static readonly string CacheFolder = Path.Combine(Path.GetTempPath(), "Tharga.Reporter", "Images");
+    private static readonly ConcurrentDictionary<string, object> CacheLocks = new();
 
     private string _source;
+
+    /// <summary>
+    /// How long an image downloaded from an <c>http://</c> or <c>https://</c> source is reused before it is
+    /// downloaded again. The default is one hour; <see cref="TimeSpan.Zero"/> downloads the image on every render.
+    /// When a new download fails, the copy already cached is used.
+    /// </summary>
+    public static TimeSpan CacheDuration { get; set; } = TimeSpan.FromHours(1);
 
     public string Source
     {
@@ -115,7 +126,7 @@ public class Image : SinglePageAreaElement
 
         if (WebResourceExists(source, out var cacheFileName))
         {
-            return XImage.FromFile(cacheFileName);
+            return IsCacheFile(cacheFileName) ? LoadCachedImage(source, cacheFileName) : XImage.FromFile(cacheFileName);
         }
 
         try
@@ -144,9 +155,45 @@ public class Image : SinglePageAreaElement
             return File.Exists(cacheFileName);
         }
 
-        cacheFileName = Path.GetTempPath() + GetCacheName(imageUrl);
+        cacheFileName = Path.Combine(CacheFolder, GetCacheName(imageUrl));
 
-        return File.Exists(cacheFileName) || TryDownload(imageUrl, cacheFileName);
+        return IsFresh(cacheFileName) || TryDownload(imageUrl, cacheFileName);
+    }
+
+    private static bool IsCacheFile(string fileName)
+    {
+        return string.Equals(Path.GetDirectoryName(fileName), CacheFolder, StringComparison.Ordinal);
+    }
+
+    private static bool IsFresh(string cacheFileName)
+    {
+        return File.Exists(cacheFileName) && DateTime.UtcNow - File.GetLastWriteTimeUtc(cacheFileName) < CacheDuration;
+    }
+
+    private static XImage LoadCachedImage(string imageUrl, string cacheFileName)
+    {
+        var image = TryLoad(cacheFileName);
+        if (image != null) return image;
+
+        lock (GetCacheLock(cacheFileName))
+        {
+            TryDelete(cacheFileName);
+        }
+
+        return TryDownload(imageUrl, cacheFileName) ? TryLoad(cacheFileName) : null;
+    }
+
+    private static XImage TryLoad(string fileName)
+    {
+        try
+        {
+            return XImage.FromStream(new MemoryStream(File.ReadAllBytes(fileName)));
+        }
+        catch (Exception exception) when (exception is not OutOfMemoryException)
+        {
+            Debug.WriteLine(exception.Message);
+            return null;
+        }
     }
 
     private static string GetCacheName(string imageUrl)
@@ -155,17 +202,47 @@ public class Image : SinglePageAreaElement
         return string.Concat(name.Select(x => InvalidCacheNameChars.Contains(x) ? CacheNameReplacement : x));
     }
 
-    private static bool TryDownload(string imageUrl, string fileName)
+    /// <summary>
+    /// Downloads to a name of its own and then moves the file into place, so the cache name never holds a partly
+    /// written file. Downloads of one URL are serialised, so concurrent renders share a single download.
+    /// </summary>
+    private static bool TryDownload(string imageUrl, string cacheFileName)
+    {
+        lock (GetCacheLock(cacheFileName))
+        {
+            if (IsFresh(cacheFileName)) return true;
+
+            var downloadFileName = $"{cacheFileName}.{Guid.NewGuid():N}{DownloadExtension}";
+            try
+            {
+                Directory.CreateDirectory(CacheFolder);
+                DownloadAsync(imageUrl, downloadFileName).GetAwaiter().GetResult();
+                File.Move(downloadFileName, cacheFileName, true);
+                return true;
+            }
+            catch (Exception exception) when (exception is not OutOfMemoryException)
+            {
+                Debug.WriteLine(exception.Message);
+                TryDelete(downloadFileName);
+                return File.Exists(cacheFileName);
+            }
+        }
+    }
+
+    private static object GetCacheLock(string cacheFileName)
+    {
+        return CacheLocks.GetOrAdd(cacheFileName, _ => new object());
+    }
+
+    private static void TryDelete(string fileName)
     {
         try
         {
-            DownloadAsync(imageUrl, fileName).GetAwaiter().GetResult();
-            return true;
-        }
-        catch (Exception exception) when (exception is not OutOfMemoryException)
-        {
             File.Delete(fileName);
-            return false;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            Debug.WriteLine(exception.Message);
         }
     }
 
