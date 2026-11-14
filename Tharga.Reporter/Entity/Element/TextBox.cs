@@ -11,7 +11,6 @@ namespace Tharga.Reporter.Entity.Element;
 
 public class TextBox : MultiPageAreaElement
 {
-    private readonly Font _defaultFont = new();
 
     private Font _font;
     private string _fontClass;
@@ -32,7 +31,7 @@ public class TextBox : MultiPageAreaElement
 
     public Font Font
     {
-        get => _font ?? _defaultFont;
+        get => _font ??= new Font();
         set
         {
             if (!string.IsNullOrEmpty(_fontClass)) throw new InvalidOperationException("Cannot set both Font and FontClass. FontClass has already been set.");
@@ -45,7 +44,7 @@ public class TextBox : MultiPageAreaElement
         get => _fontClass ?? string.Empty;
         set
         {
-            if (_font != null) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
+            if (_font?.HasAnyValue == true) throw new InvalidOperationException("Cannot set both Font and FontClass. Font has already been set.");
             _fontClass = value;
         }
     }
@@ -62,7 +61,7 @@ public class TextBox : MultiPageAreaElement
             return 0;
         }
 
-        var elementFont = _font.OrFontClass(_fontClass, renderData.Section);
+        var elementFont = _font.Resolve(_fontClass, renderData.Section);
         var font = new XFont(elementFont.GetName(renderData.Section), elementFont.GetSize(renderData.Section), elementFont.GetStyle(renderData.Section));
 
         var text = GetValue(renderData.DocumentData, renderData.PageNumberInfo);
@@ -151,7 +150,7 @@ public class TextBox : MultiPageAreaElement
             renderData.Graphics.DrawRectangle(renderData.DebugData.Pen, renderData.ElementBounds);
         }
 
-        var elementFont = _font.OrFontClass(_fontClass, renderData.Section);
+        var elementFont = _font.Resolve(_fontClass, renderData.Section);
         var font = new XFont(elementFont.GetName(renderData.Section), elementFont.GetSize(renderData.Section), elementFont.GetStyle(renderData.Section));
         var brush = new XSolidBrush(elementFont.GetColor(renderData.Section).ToXColor());
 
@@ -187,7 +186,7 @@ public class TextBox : MultiPageAreaElement
     {
         var xme = base.ToXme();
 
-        if (_font != null)
+        if (_font?.HasAnyValue == true)
         {
             var fontXme = _font.ToXme();
             var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);

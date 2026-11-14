@@ -151,6 +151,11 @@ area, the content area and each group row can each have a border colour (`Header
 > **Changed in 3.1:** table colours used to be ignored; text and borders were black and any background colour
 > filled its area solid black.
 
+The font properties (`Font` on `Text` and `TextBox`, `HeaderFont`, `ContentFont` and `GroupFont` on `Table`) can be
+changed in place, for example `new Text { Font = { Size = 20, Bold = true } }`. A value that is not set on an element's
+font comes from its font class, and then from the section's `DefaultFont`. A table header without a font of its own is
+drawn in the section's default font; group rows are drawn in `GroupFont` and never fall back to `ContentFont`.
+
 ## ReferencePoint
 
 A logical container that holds child elements, with optional vertical stacking. Use it when you want a group of elements to flow as one block and grow downward.

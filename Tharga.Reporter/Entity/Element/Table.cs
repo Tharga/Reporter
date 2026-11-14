@@ -27,8 +27,6 @@ public class Table : MultiPageAreaElement
     private const double BorderPenWidth = 0.1;
 
     private readonly UnitValue _defaultColumnPadding = "2px";
-    private readonly Font _defaultContentFont = new();
-    private readonly Font _defaultHeaderFont = new() { Size = 18 };
     private readonly UnitValue _defaultRowPadding = "2px";
     private UnitValue? _columnPadding;
     private Color? _contentBackgroundColor;
@@ -53,7 +51,7 @@ public class Table : MultiPageAreaElement
 
     public Font HeaderFont
     {
-        get => _headerFont ?? _defaultHeaderFont;
+        get => _headerFont ??= new Font();
         set
         {
             if (!string.IsNullOrEmpty(_headerFontClass))
@@ -70,7 +68,7 @@ public class Table : MultiPageAreaElement
         get => _headerFontClass ?? string.Empty;
         set
         {
-            if (_headerFont != null)
+            if (_headerFont?.HasAnyValue == true)
             {
                 throw new InvalidOperationException("Cannot set both HeaderFont and HeaderFontClass. HeaderFont has already been set.");
             }
@@ -93,7 +91,7 @@ public class Table : MultiPageAreaElement
 
     public Font ContentFont
     {
-        get => _contentFont ?? _defaultContentFont;
+        get => _contentFont ??= new Font();
         set
         {
             if (!string.IsNullOrEmpty(_contentFontClass))
@@ -113,7 +111,7 @@ public class Table : MultiPageAreaElement
 
     public Font GroupFont
     {
-        get => _groupFont ?? _contentFont ?? _defaultContentFont;
+        get => _groupFont ??= new Font();
         set => _groupFont = value;
     }
 
@@ -122,7 +120,7 @@ public class Table : MultiPageAreaElement
         get => _contentFontClass ?? string.Empty;
         set
         {
-            if (_contentFont != null)
+            if (_contentFont?.HasAnyValue == true)
             {
                 throw new InvalidOperationException("Cannot set both ContentFont and ContentFontClass. ContentFont has already been set.");
             }
@@ -181,11 +179,12 @@ public class Table : MultiPageAreaElement
             return 0;
         }
 
-        var headerFontSource = _headerFont.OrFontClass(_headerFontClass, renderData.Section);
-        var contentFontSource = _contentFont.OrFontClass(_contentFontClass, renderData.Section);
+        var headerFontSource = _headerFont.Resolve(_headerFontClass, renderData.Section);
+        var contentFontSource = _contentFont.Resolve(_contentFontClass, renderData.Section);
         var headerFont = new XFont(headerFontSource.GetName(renderData.Section), headerFontSource.GetSize(renderData.Section), headerFontSource.GetStyle(renderData.Section));
         var lineFont = new XFont(contentFontSource.GetName(renderData.Section), contentFontSource.GetSize(renderData.Section), contentFontSource.GetStyle(renderData.Section));
-        var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
+        var groupFontSource = _groupFont.Resolve(null, renderData.Section);
+        var groupFont = new XFont(groupFontSource.GetName(renderData.Section), groupFontSource.GetSize(renderData.Section), groupFontSource.GetStyle(renderData.Section));
 
         var firstColumn = Columns.FirstOrDefault();
         if (firstColumn.Value == null)
@@ -261,14 +260,15 @@ public class Table : MultiPageAreaElement
             return;
         }
 
-        var headerFontSource = _headerFont.OrFontClass(_headerFontClass, renderData.Section);
-        var contentFontSource = _contentFont.OrFontClass(_contentFontClass, renderData.Section);
+        var headerFontSource = _headerFont.Resolve(_headerFontClass, renderData.Section);
+        var contentFontSource = _contentFont.Resolve(_contentFontClass, renderData.Section);
         var headerFont = new XFont(headerFontSource.GetName(renderData.Section), headerFontSource.GetSize(renderData.Section), headerFontSource.GetStyle(renderData.Section));
         var headerBrush = new XSolidBrush(headerFontSource.GetColor(renderData.Section).ToXColor());
         var lineFont = new XFont(contentFontSource.GetName(renderData.Section), contentFontSource.GetSize(renderData.Section), contentFontSource.GetStyle(renderData.Section));
         var lineBrush = new XSolidBrush(contentFontSource.GetColor(renderData.Section).ToXColor());
-        var groupFont = new XFont(_groupFont.GetName(renderData.Section), _groupFont.GetSize(renderData.Section), _groupFont.GetStyle(renderData.Section));
-        var groupBrush = new XSolidBrush(_groupFont.GetColor(renderData.Section).ToXColor());
+        var groupFontSource = _groupFont.Resolve(null, renderData.Section);
+        var groupFont = new XFont(groupFontSource.GetName(renderData.Section), groupFontSource.GetSize(renderData.Section), groupFontSource.GetStyle(renderData.Section));
+        var groupBrush = new XSolidBrush(groupFontSource.GetColor(renderData.Section).ToXColor());
 
         var firstColumn = Columns.FirstOrDefault();
         if (firstColumn.Value == null)
@@ -547,7 +547,7 @@ public class Table : MultiPageAreaElement
             xme.SetAttribute("HeaderBorderColor", string.Format("{0}{1}{2}", _headerBorderColor.Value.R.ToString("X2"), _headerBorderColor.Value.G.ToString("X2"), _headerBorderColor.Value.B.ToString("X2")));
         }
 
-        if (_headerFont != null)
+        if (_headerFont?.HasAnyValue == true)
         {
             var fontXme = _headerFont.ToXme("HeaderFont");
             var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
@@ -559,7 +559,7 @@ public class Table : MultiPageAreaElement
             xme.SetAttribute("HeaderFontClass", _headerFontClass);
         }
 
-        if (_contentFont != null)
+        if (_contentFont?.HasAnyValue == true)
         {
             var fontXme = _contentFont.ToXme("ContentFont");
             var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);
@@ -571,7 +571,7 @@ public class Table : MultiPageAreaElement
             xme.SetAttribute("ContentFontClass", _contentFontClass);
         }
 
-        if (_groupFont != null)
+        if (_groupFont?.HasAnyValue == true)
         {
             var fontXme = _groupFont.ToXme("GroupFont");
             var importedFont = xme.OwnerDocument.ImportNode(fontXme, true);

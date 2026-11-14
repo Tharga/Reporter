@@ -81,6 +81,27 @@ public class Font
         }
     }
 
+    internal bool HasAnyValue => _bold != null || _color != null || _fontName != null || _italic != null || _size != null || _strikeout != null || _underline != null;
+
+    /// <summary>
+    /// A font with the values set on this font, and for every value that is not set, the value of <paramref name="fallback"/>.
+    /// </summary>
+    internal Font Over(Font fallback)
+    {
+        if (fallback == null) return this;
+
+        return new Font
+        {
+            _bold = _bold ?? fallback._bold,
+            _color = _color ?? fallback._color,
+            _fontName = _fontName ?? fallback._fontName,
+            _italic = _italic ?? fallback._italic,
+            _size = _size ?? fallback._size,
+            _strikeout = _strikeout ?? fallback._strikeout,
+            _underline = _underline ?? fallback._underline
+        };
+    }
+
     internal XmlElement ToXme(string elementName = null)
     {
         var xmd = new XmlDocument();
