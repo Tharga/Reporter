@@ -19,6 +19,8 @@ public abstract class Element
         set => _top = value;
     }
 
+    internal virtual bool HasTop => _top != null;
+
     public virtual UnitValue? Left
     {
         get => _left ?? "0";

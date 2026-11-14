@@ -20,6 +20,8 @@ public abstract class AreaElement : Element
         set => _relativeAlignment.Top = value;
     }
 
+    internal override bool HasTop => _relativeAlignment.Top != null;
+
     public virtual UnitValue? Bottom
     {
         get => _relativeAlignment.Bottom;
