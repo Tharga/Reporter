@@ -4,6 +4,7 @@ using PdfSharp.Pdf.Security;
 using System.Text;
 using PdfSharp;
 using Tharga.Reporter.Entity;
+using Tharga.Reporter.Entity.Area;
 using Tharga.Reporter.Fonts;
 using Tharga.Reporter.Entity.Element.Base;
 using Tharga.Reporter.Entity.Util;
@@ -140,13 +141,18 @@ public class Renderer
     {
         if (!_preRendered)
         {
-            var hasMultiPageElements = _template.SectionList.Any(x => x.Pane.ElementList.Any(y => y is MultiPageAreaElement || y is MultiPageElement));
+            var hasMultiPageElements = _template.SectionList.Any(x => HasMultiPageElements(x.Pane) || HasMultiPageElements(x.Header) || HasMultiPageElements(x.Footer));
             if (hasMultiPageElements)
             {
                 var pdfDocument = CreatePdfDocument();
                 RenderPdfDocument(pdfDocument, true, pageFormat);
             }
         }
+    }
+
+    private static bool HasMultiPageElements(Pane pane)
+    {
+        return pane != null && pane.ElementList.Any(x => x is MultiPageAreaElement || x is MultiPageElement);
     }
 
     private void DoRenderStuff(IGraphics gfx, XRect size, bool preRender, int page, int? totalPages)
@@ -182,12 +188,18 @@ public class Renderer
         var footerHeight = section.Footer.Height.GetXUnitValue(sectionBounds.Height);
         var paneBounds = new XRect(sectionBounds.Left, sectionBounds.Top + headerHeight, sectionBounds.Width, sectionBounds.Height - headerHeight - footerHeight);
 
+        var headerBounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+        var footerBounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+
         var renderData = new RenderData(gfx, paneBounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context);
 
         if (preRender)
         {
             var pageCount = section.Pane.PreRender(renderData);
             _context.SetPageCount(section, pageCount);
+
+            section.Header?.PreRender(new RenderData(gfx, headerBounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context));
+            section.Footer?.PreRender(new RenderData(gfx, footerBounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context));
         }
         else
         {
@@ -196,9 +208,9 @@ public class Renderer
             //Header
             if (section.Header != null)
             {
-                var bounds = new XRect(sectionBounds.Left, sectionBounds.Top, sectionBounds.Width, headerHeight);
+                var bounds = headerBounds;
                 var renderDataHeader = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context);
-                postRendering.Add(() => section.Header.Render(renderDataHeader, page));
+                postRendering.Add(() => section.Header.Render(renderDataHeader, _context.GetPageOffset(section)));
 
                 if (_debugData != null)
                 {
@@ -209,9 +221,9 @@ public class Renderer
             //Footer
             if (section.Footer != null)
             {
-                var bounds = new XRect(sectionBounds.Left, sectionBounds.Bottom - footerHeight, sectionBounds.Width, footerHeight);
+                var bounds = footerBounds;
                 var renderDataFooter = new RenderData(gfx, bounds, section, _documentData, pageNumberInfo, _debugData, _includeBackgroundObjects, _context);
-                postRendering.Add(() => section.Footer.Render(renderDataFooter, page));
+                postRendering.Add(() => section.Footer.Render(renderDataFooter, _context.GetPageOffset(section)));
 
                 if (_debugData != null)
                 {
