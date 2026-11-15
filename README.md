@@ -9,6 +9,6 @@
 
 A .NET library for building and rendering PDF documents from declarative templates. Define a `Template` of `Section`s with text, images, barcodes, lines, rectangles, and tables, feed it data, and render to a PDF byte array.
 
-Targets .NET 10. Runs on Windows, Linux and macOS — rendering uses no platform graphics library.
+Targets .NET 10 and .NET 11 (`net10.0` and `net11.0`). Runs on Windows, Linux and macOS — rendering uses no platform graphics library.
 
 Upgrading from 2.x? See [Upgrading to 3.0](https://reporter.tharga.net/articles/upgrading-to-3.html). Upgrading from 3.0? See [Upgrading to 3.1](https://reporter.tharga.net/articles/upgrading-to-3.1.html): PDFs are no longer encrypted by default, and colours, font classes and line thickness are now drawn.

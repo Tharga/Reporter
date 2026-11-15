@@ -22,6 +22,7 @@ public class When_rendering_reference_point_with_no_elements
 
         var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
         renderDataMock.Setup(x => x.ParentBounds).Returns(new XRect());
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
         renderDataMock.Setup(x => x.Context).Returns(new RenderContext());
         renderDataMock.Setup(x => x.Section).Returns(new Section());

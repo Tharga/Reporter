@@ -35,7 +35,7 @@ public class ReferencePoint : MultiPageElement
 
     internal override int PreRender(IRenderData renderData)
     {
-        var bounds = GetBounds(renderData.ParentBounds);
+        var bounds = GetBounds(renderData);
 
         var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground, renderData.Context);
         var (pageCount, usedArea) = PreRenderChildren(rd);
@@ -47,7 +47,7 @@ public class ReferencePoint : MultiPageElement
 
     internal override void Render(IRenderData renderData, int page)
     {
-        var bounds = GetBounds(renderData.ParentBounds);
+        var bounds = GetBounds(renderData);
 
         var rd = new RenderData(renderData.Graphics, bounds, renderData.Section, renderData.DocumentData, renderData.PageNumberInfo, renderData.DebugData, renderData.IncludeBackground, renderData.Context);
         var usedArea = RenderChildren(rd, page);
@@ -141,7 +141,18 @@ public class ReferencePoint : MultiPageElement
 
     private double? GetStackTop(Element.Base.Element element, double stackTop)
     {
-        return Stack == StackMethod.Vertical && element.Top == null ? stackTop : null;
+        return Stack == StackMethod.Vertical && !element.HasTop ? stackTop : null;
+    }
+
+    private XRect GetBounds(IRenderData renderData)
+    {
+        var bounds = GetBounds(renderData.ParentBounds);
+        if (!HasTop && renderData.StackTop is { } stackTop)
+        {
+            return new XRect(bounds.X, bounds.Y + stackTop, bounds.Width, bounds.Height);
+        }
+
+        return bounds;
     }
 
     protected override XRect GetBounds(XRect parentBounds)

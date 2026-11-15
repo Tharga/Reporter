@@ -12,7 +12,7 @@ Useful when you want to generate receipts, invoices, member cards, labels, repor
 
 | Package | Target | What it does |
 |---|---|---|
-| [Tharga.Reporter](https://www.nuget.org/packages/Tharga.Reporter) | net10.0 | Template model (`Section`, `Pane`, `Header`, `Footer`), elements (`Text`, `TextBox`, `Image`, `BarCode`, `Line`, `Rectangle`, `Table`), and a `Renderer` that produces a PDF. |
+| [Tharga.Reporter](https://www.nuget.org/packages/Tharga.Reporter) | net10.0, net11.0 | Template model (`Section`, `Pane`, `Header`, `Footer`), elements (`Text`, `TextBox`, `Image`, `BarCode`, `Line`, `Rectangle`, `Table`), and a `Renderer` that produces a PDF. |
 
 > Tharga.Reporter runs on Windows, Linux and macOS. Rendering goes through PDFsharp and needs no
 > platform graphics library, so it works on a Linux container with no fonts installed. See

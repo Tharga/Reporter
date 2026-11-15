@@ -31,6 +31,7 @@ public class When_rendering_reference_point
 
         var renderDataMock = new Mock<IRenderData>(MockBehavior.Strict);
         renderDataMock.Setup(x => x.ParentBounds).Returns(new XRect { Width = 200, Height = 200 });
+        renderDataMock.Setup(x => x.StackTop).Returns((double?)null);
         renderDataMock.Setup(x => x.Graphics).Returns(_graphicsMock.Object);
         renderDataMock.Setup(x => x.Context).Returns(new RenderContext());
         renderDataMock.Setup(x => x.Section).Returns(new Section());
